@@ -443,8 +443,8 @@ class ZopePublicationTests(BasePublicationTests):
 
         set = []
         clear = []
-        ztapi.handle(IBeforeTraverseEvent, set.append)
-        ztapi.handle(IEndRequestEvent, clear.append)
+        ztapi.handle([IBeforeTraverseEvent], set.append)
+        ztapi.handle([IEndRequestEvent], clear.append)
 
         ob = object()
 
