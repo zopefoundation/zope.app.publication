@@ -150,7 +150,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         self.object = object()  # doesn't matter what it is
 
     def testRetryAllowed(self):
-        from zodb.interfaces import ConflictError
+        from ZODB.POSException import ConflictError
         from zope.publisher.interfaces import Retry
         try:
             raise ConflictError
@@ -160,7 +160,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
             self.object, self.request, sys.exc_info(), retry_allowed=True)
 
     def testRetryNotAllowed(self):
-        from zodb.interfaces import ConflictError
+        from ZODB.POSException import ConflictError
         try:
             raise ConflictError
         except:
@@ -176,7 +176,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
                          ' ConflictError: database conflict error')
 
     def testViewOnException(self):
-        from zodb.interfaces import ConflictError
+        from ZODB.POSException import ConflictError
         from zope.interface import Interface
         class IConflictError(Interface):
             pass
@@ -238,7 +238,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
                 self.adapter = SideEffects(exception)
                 return self.adapter
         factory = SideEffectsFactory()
-        from zodb.interfaces import ConflictError
+        from ZODB.POSException import ConflictError
         from zope.interface import Interface
         class IConflictError(Interface):
             pass
@@ -262,7 +262,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         self.request._response = BrowserResponse(self.request.response._outstream)
         self.request.response.setHeader('Content-Type', 'application/pdf')
         self.request.response.setCookie('spam', 'eggs')
-        from zodb.interfaces import ConflictError
+        from ZODB.POSException import ConflictError
         try:
             raise ConflictError
         except:
