@@ -48,6 +48,7 @@ from zope.app.publication.interfaces import EndRequestEvent
 from zope.app.publication.publicationtraverse import PublicationTraverse
 from zope.app.security.principalregistry import principalRegistry as prin_reg
 from zope.app.security.interfaces import IUnauthenticatedPrincipal
+from zope.app.security.interfaces import IAuthenticationUtility
 from zope.app.site.interfaces import ISite
 from zope.app.traversing.interfaces import IPhysicallyLocatable
 
@@ -95,15 +96,16 @@ class ZopePublication(PublicationTraverse):
         sm = removeSecurityProxy(ob).getSiteManager()
 
         try:
-            auth_service = sm.getService(zapi.servicenames.Authentication)
+            utils = sm.getService(zapi.servicenames.Utilities)
+            auth = utils.getUtility(IAuthenticationUtility)
         except ComponentLookupError:
-            # No auth service here
+            # No auth utility here
             return
 
         # Try to authenticate against the auth service
-        principal = auth_service.authenticate(request)
+        principal = auth.authenticate(request)
         if principal is None:
-            principal = auth_service.unauthenticatedPrincipal()
+            principal = auth.unauthenticatedPrincipal()
             if principal is None:
                 # nothing to do here
                 return

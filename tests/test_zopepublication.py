@@ -61,7 +61,7 @@ class Principal(object):
 class UnauthenticatedPrincipal(Principal):
     implements(IUnauthenticatedPrincipal)
 
-class AuthService1(object):
+class AuthUtility1(object):
 
     def authenticate(self, request):
         return None
@@ -75,7 +75,7 @@ class AuthService1(object):
     def getPrincipal(self, id):
         return UnauthenticatedPrincipal(id)
 
-class AuthService2(AuthService1):
+class AuthUtility2(AuthUtility1):
 
     def authenticate(self, request):
         return Principal('test.bob')
@@ -92,15 +92,24 @@ class ErrorReportingUtility(object):
     def raising(self, info, request=None):
         self.exceptions.append([info, request])
 
+
+class UtilityService(object):
+
+    utility = None
+
+    def getUtility(self, interface, name=''):
+        return self.utility
+
+
 class ServiceManager(object):
     implements(IServiceService) # a dirty lie
 
-    def __init__(self, auth):
-        self.auth = auth
+    def __init__(self, utils):
+        self.utils = utils
 
     def getService(self, name):
-        if name == Authentication:
-            return self.auth
+        if name == 'Utilities':
+            return self.utils
         raise ComponentLookupError(name)
 
 class LocatableObject(Location):
@@ -408,9 +417,13 @@ class ZopePublicationTests(BasePublicationTests):
         app['f1'] = Folder()
         f1 = app['f1']
         f1['f2'] = Folder()
-        f1.setSiteManager(ServiceManager(AuthService1()))
+        utilservice1 = UtilityService()
+        utilservice1.utility = AuthUtility1()
+        f1.setSiteManager(ServiceManager(utilservice1))
         f2 = f1['f2']
-        f2.setSiteManager(ServiceManager(AuthService2()))
+        utilservice2 = UtilityService()
+        utilservice2.utility = AuthUtility2()
+        f2.setSiteManager(ServiceManager(utilservice2))
         get_transaction().commit()
 
         from zope.app.container.interfaces import ISimpleReadContainer
