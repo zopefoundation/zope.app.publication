@@ -14,6 +14,7 @@
 import unittest
 import sys
 
+from zope.app import zapi
 from zope.interface.verify import verifyClass
 from zope.interface import implements, classImplements, implementedBy
 
@@ -21,8 +22,7 @@ from zodb.db import DB
 from zodb.storage.mapping import MappingStorage
 
 from zope.app.tests.placelesssetup import PlacelessSetup
-from zope.component.adapter import provideAdapter
-from zope.component.view import provideView, setDefaultViewName
+from zope.app.tests import ztapi
 
 from zope.i18n.interfaces import IUserPreferredCharsets
 
@@ -49,11 +49,13 @@ from cStringIO import StringIO
 
 from zope.app.services.servicenames import Authentication
 
+from zope.publisher.interfaces import IRequest
+
 class BasePublicationTests(PlacelessSetup, unittest.TestCase):
 
     def setUp(self):
         PlacelessSetup.setUp(self)
-        provideAdapter(IHTTPRequest, IUserPreferredCharsets, HTTPCharsets)
+        ztapi.provideAdapter(IHTTPRequest, IUserPreferredCharsets, HTTPCharsets)
         self.policy = setSecurityPolicy(
             simplepolicies.PermissiveSecurityPolicy()
             )
@@ -179,10 +181,13 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         class IConflictError(Interface):
             pass
         classImplements(ConflictError, IConflictError)
-        setDefaultViewName(IConflictError, self.presentation_type, 'name')
+        s = zapi.getService(None, zapi.servicenames.Presentation)
+        s.setDefaultViewName(IConflictError,
+                             self.presentation_type, 'name')
         view_text = 'You had a conflict error'
-        provideView(IConflictError, 'name', self.presentation_type,
-                    [lambda obj,request: lambda: view_text])
+        s = zapi.getService(None, zapi.servicenames.Presentation) 
+        s.provideView(IConflictError, 'name', self.presentation_type,
+                      [lambda obj,request: lambda: view_text])
         try:
             raise ConflictError
         except:
@@ -200,10 +205,11 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         class IClassicError(Interface):
             pass
         classImplements(ClassicError, IClassicError)
-        setDefaultViewName(IClassicError, self.presentation_type, 'name')
+        s = zapi.getService(None, zapi.servicenames.Presentation)
+        s.setDefaultViewName(IClassicError, self.presentation_type, 'name')
         view_text = 'You made a classic error ;-)'
-        provideView(IClassicError, 'name', self.presentation_type,
-                    [lambda obj,request: lambda: view_text])
+        s.provideView(IClassicError, 'name', self.presentation_type,
+                      [lambda obj,request: lambda: view_text])
         try:
             raise ClassicError
         except:
@@ -237,7 +243,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         class IConflictError(Interface):
             pass
         classImplements(ConflictError, IConflictError)
-        provideAdapter(IConflictError, IExceptionSideEffects, factory)
+        ztapi.provideAdapter(IConflictError, IExceptionSideEffects, factory)
         exception = ConflictError()
         try:
             raise exception
@@ -285,18 +291,16 @@ class ZopePublicationTests(BasePublicationTests):
 
         request = TestRequest('/f1/f2')
 
-        from zope.component.view import provideView
         from zope.app.interfaces.container import ISimpleReadContainer
         from zope.app.container.traversal import ContainerTraverser
-        from zope.component.interfaces import IPresentation
-        provideView(ISimpleReadContainer, '_traverse', IPresentation,
-                    ContainerTraverser)
+
+        s = zapi.getService(None, zapi.servicenames.Presentation) 
+        s.provideView(ISimpleReadContainer, '_traverse', IRequest,
+                      ContainerTraverser)
 
         from zope.app.interfaces.content.folder import IFolder
         from zope.security.checker import defineChecker, InterfaceChecker
         defineChecker(Folder, InterfaceChecker(IFolder))
-        
-        request.setViewType(IPresentation)
 
         publication = ZopePublication(self.db)
 

@@ -13,7 +13,7 @@
 ##############################################################################
 """XML-RPC Publication Tests
 
-$Id: test_xmlrpcpublication.py,v 1.3 2003/09/21 17:31:57 jim Exp $
+$Id: test_xmlrpcpublication.py,v 1.4 2003/11/21 17:10:20 jim Exp $
 """
 import unittest
 
@@ -21,12 +21,13 @@ from zope.app.publication.tests.test_zopepublication import \
      BasePublicationTests
 from zope.app.publication.traversers import TestTraverser
 from zope.app.publication.xmlrpc import XMLRPCPublication
-from zope.app.services.servicenames import Views
+from zope.app.services.servicenames import Presentation
 from zope.component import getService
 from zope.interface import Interface, implements
 from zope.proxy import removeAllProxies
 from zope.publisher.interfaces import NotFound
 from zope.publisher.interfaces.xmlrpc import IXMLRPCPresentation
+from zope.publisher.interfaces.xmlrpc import IXMLRPCRequest
 from zope.publisher.xmlrpc import TestRequest
 
 
@@ -50,8 +51,8 @@ class XMLRPCPublicationTests(BasePublicationTests):
             x = SimpleObject(1)
         ob = C()
         r = self._createRequest('/x', pub)
-        provideView=getService(None, Views).provideView
-        provideView(None, '_traverse', IXMLRPCPresentation, [TestTraverser])
+        provideView=getService(None, Presentation).provideView
+        provideView(None, '_traverse', IXMLRPCRequest, [TestTraverser])
         ob2 = pub.traverseName(r, ob, 'x')
         self.assertEqual(removeAllProxies(ob2).v, 1)
 
@@ -73,8 +74,8 @@ class XMLRPCPublicationTests(BasePublicationTests):
 
         ob = C()
         r = self._createRequest('/foo', pub)
-        provideView=getService(None, Views).provideView
-        setDefaultViewName=getService(None, Views).setDefaultViewName
+        provideView=getService(None, Presentation).provideView
+        setDefaultViewName=getService(None, Presentation).setDefaultViewName
         provideView(I, 'view', IXMLRPCPresentation, [V])
         setDefaultViewName(I, IXMLRPCPresentation, 'view')
         self.assertRaises(NotFound, pub.traverseName, r, ob, 'foo')
@@ -97,8 +98,8 @@ class XMLRPCPublicationTests(BasePublicationTests):
             implements(IXMLRPCPresentation)
 
         r = self._createRequest('/@@spam', pub)
-        provideView=getService(None, Views).provideView
-        provideView(I, 'spam', IXMLRPCPresentation, [V])
+        provideView=getService(None, Presentation).provideView
+        provideView(I, 'spam', IXMLRPCRequest, [V])
         ob2 = pub.traverseName(r, ob, '@@spam')
         self.assertEqual(removeAllProxies(ob2).__class__, V)
         
@@ -127,10 +128,10 @@ class XMLRPCPublicationTests(BasePublicationTests):
                 return 'foo'
 
         r = self._createRequest('/spam', pub)
-        provideView=getService(None, Views).provideView
-        setDefaultViewName=getService(None, Views).setDefaultViewName
-        provideView(I, 'view', IXMLRPCPresentation, [V])
-        setDefaultViewName(I, IXMLRPCPresentation, 'view')
+        provideView=getService(None, Presentation).provideView
+        setDefaultViewName=getService(None, Presentation).setDefaultViewName
+        provideView(I, 'view', IXMLRPCRequest, [V])
+        setDefaultViewName(I, IXMLRPCRequest, 'view')
 
         ob2 = pub.traverseName(r, ob, '@@spam')
         self.assertEqual(removeAllProxies(ob2).__name__, V.spam.__name__)

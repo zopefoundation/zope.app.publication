@@ -12,17 +12,17 @@
 #
 ##############################################################################
 """
-$Id: test_http.py,v 1.3 2003/06/06 20:25:30 stevea Exp $
+$Id: test_http.py,v 1.4 2003/11/21 17:10:20 jim Exp $
 """
 
 from unittest import TestCase, TestSuite, main, makeSuite
+from zope.app import zapi
 import zope.app.publication.http
 from zope.publisher.http import HTTPRequest
 from zope.app.tests.placelesssetup import PlacelessSetup
 from StringIO import StringIO
-from zope.component.view import provideView
 from zope.interface import Interface, implements
-from zope.publisher.interfaces.http import IHTTPPresentation
+from zope.publisher.interfaces.http import IHTTPRequest
 
 class I(Interface): pass
 class C:
@@ -45,7 +45,9 @@ class Test(PlacelessSetup, TestCase):
         pub = zope.app.publication.http.HTTPPublication(None)
         request = HTTPRequest(StringIO(''), StringIO(), {})
         request.method = 'SPAM'
-        provideView(I, 'SPAM', IHTTPPresentation, V)
+
+        s = zapi.getService(None, zapi.servicenames.Presentation)
+        s.provideView(I, 'SPAM', IHTTPRequest, V)
 
         ob = C()
         pub.callObject(request, ob)
