@@ -15,6 +15,8 @@
 
 $Id$
 """
+__docformat__ = 'restructuredtext'
+
 from zope.component import queryViewProviding
 from zope.publisher.interfaces import NotFound
 from types import StringTypes

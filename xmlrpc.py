@@ -13,10 +13,12 @@
 ##############################################################################
 """XML-RPC Publication Handler.
 
-This module specifically implements a custom nameTraverse() method.
+This module specifically implements a custom `nameTraverse()` method.
 
 $Id$
 """
+__docformat__ = 'restructuredtext'
+
 from zope.component import queryView, queryDefaultViewName
 from zope.proxy import removeAllProxies
 from zope.app.publisher.interfaces.xmlrpc import IXMLRPCPresentation
@@ -31,18 +33,19 @@ class XMLRPCPublication(BaseHTTPPublication):
 
         The method should try the following things in this order:
 
-        1. Check whether ob is a view; if so try to find a public method
+        1. Check whether `ob` is a view; if so try to find a public method
            having the passed name.
 
-        2. If the ob is not a view, then we try to find a view for it. This
+        2. If `ob` is not a view, then we try to find a view for it. This
            can be done in two ways:
 
            (a) Look whether there is a view registered for this name.
 
-           (b) Check whether the default view has a matching method called name.
+           (b) Check whether the default view has a matching method called
+           name.
 
         3. See whether the object has a subobject of this name. This test is
-           done last, since this is done by ZopePublication, and it knows how
+           done last, since this is done by `ZopePublication`, and it knows how
            to create all the correct error messages. No need for us to do that.
 
         """
