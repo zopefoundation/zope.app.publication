@@ -139,7 +139,6 @@ class ZopePublicationErrorHandling(BasePublicationTests):
 
     def setUp(self):
         BasePublicationTests.setUp(self)
-        root = self.db.open().root()
         self.out = StringIO()
         self.request = TestRequest('/f1/f2', outstream=self.out)
         from zope.interface import Interface
@@ -160,7 +159,6 @@ class ZopePublicationErrorHandling(BasePublicationTests):
 
     def testRetryNotAllowed(self):
         from zodb.interfaces import ConflictError
-        from zope.publisher.interfaces import Retry
         try:
             raise ConflictError
         except:
@@ -195,7 +193,6 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         self.assertEqual(self.out.getvalue(), view_text)
 
     def testNoViewOnClassicClassException(self):
-        from zodb.interfaces import ConflictError
         from zope.interface import Interface
         from types import ClassType
         class ClassicError:

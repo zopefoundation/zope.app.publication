@@ -13,7 +13,7 @@
 ##############################################################################
 """XXX short summary goes here.
 
-$Id: browser.py,v 1.10 2003/09/21 17:32:36 jim Exp $
+$Id: browser.py,v 1.11 2003/11/03 21:37:58 jeremy Exp $
 """
 __metaclass__ = type
 
@@ -46,9 +46,6 @@ class BrowserPublication(ZopePublication):
     """Web browser publication handling."""
 
     def getDefaultTraversal(self, request, ob):
-
-        r = ()
-
         if IBrowserPublisher.isImplementedBy(removeAllProxies(ob)):
             # ob is already proxied, so the result of calling a method will be
             return ob.browserDefault(request)
@@ -60,7 +57,7 @@ class BrowserPublication(ZopePublication):
                 return ob, path
             else:
                 # ob is already proxied
-                return (ob, None)
+                return ob, None
 
     def afterCall(self, request):
         super(BrowserPublication, self).afterCall(request)
