@@ -30,6 +30,7 @@ from zope.app.publisher.interfaces.xmlrpc import IXMLRPCPresentation
 from zope.publisher.interfaces.xmlrpc import IXMLRPCRequest
 from zope.publisher.interfaces.xmlrpc import IXMLRPCPublisher
 from zope.publisher.xmlrpc import TestRequest
+from zope.app.tests import ztapi
 
 
 class SimpleObject(object):
@@ -99,6 +100,14 @@ class XMLRPCPublicationTests(BasePublicationTests):
                 pass
             implements(IXMLRPCPresentation)
 
+
+        # Register the simple traverser so we can traverse without @@
+        from zope.publisher.interfaces.xmlrpc import IXMLRPCPublisher
+        from zope.publisher.interfaces.xmlrpc import IXMLRPCRequest
+        from zope.app.publication.traversers import SimpleComponentTraverser
+        ztapi.provideView(Interface, IXMLRPCRequest, IXMLRPCPublisher, '',
+                          SimpleComponentTraverser)
+
         r = self._createRequest('/@@spam', pub)
         provideView = getService(Presentation).provideView
         provideView(I, 'spam', IXMLRPCRequest, V)
@@ -108,39 +117,6 @@ class XMLRPCPublicationTests(BasePublicationTests):
         ob2 = pub.traverseName(r, ob, 'spam')
         self.assertEqual(removeAllProxies(ob2).__class__, V)
         
-
-    def testTraverseNameDefaultView(self):
-        pub = self.klass(self.db)
-
-        class I(Interface):
-            pass
-
-        class C(object):
-            implements(I)
-
-        ob = C()
-
-        class V(object):
-            implements(IXMLRPCPresentation)
-
-            def __init__(self, context, request):
-                pass
-
-            def spam(self):
-                return 'foo'
-
-        r = self._createRequest('/spam', pub)
-        provideView = getService(Presentation).provideView
-        setDefaultViewName = getService(Presentation).setDefaultViewName
-        provideView(I, 'view', IXMLRPCRequest, V)
-        setDefaultViewName(I, IXMLRPCRequest, 'view')
-
-        ob2 = pub.traverseName(r, ob, '@@spam')
-        self.assertEqual(removeAllProxies(ob2).__name__, V.spam.__name__)
-
-        ob2 = pub.traverseName(r, ob, 'spam')
-        self.assertEqual(removeAllProxies(ob2).__name__, V.spam.__name__)
-
 
     def testTraverseNameServices(self):
         pub = self.klass(self.db)
