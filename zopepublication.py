@@ -179,25 +179,42 @@ class ZopePublication(object, PublicationTraverse):
 
         response = request.response
         exception = None
-        try:
-            # Set the request body, and abort the current transaction.
-            try:
-                exception = ContextWrapper(exc_info[1], object)
-                name = getDefaultViewName(exception, request)
-                view = getView(exception, name, request)
-                response.setBody(self.callObject(request, view))
-            except ComponentLookupError:
-                # No view available for this exception, so let the response
-                # handle it.
-                response.handleException(exc_info)
-            except:
-                # Problem getting a view for this exception. Log an error.
-                tryToLogException('Exception while getting view on exception')
-                # So, let the response handle it.
-                response.handleException(exc_info)
-        finally:
-            # Definitely abort the transaction that raised the exception.
+        legacy_exception = not isinstance(exc_info[1], Exception)
+        if legacy_exception:
+            response.handleException(exc_info)
             get_transaction().abort()
+            if isinstance(exc_info[1], str):
+                tryToLogWarning(
+                    'Publisher received a legacy string exception: %s.'
+                    ' This will be handled by the request.' %
+                    exc_info[1])
+            else:
+                tryToLogWarning(
+                    'Publisher received a legacy classic class exception: %s.'
+                    ' This will be handled by the request.' %
+                    exc_info[1].__class__)
+        else:
+            # We definitely have an Exception
+            try:
+                # Set the request body, and abort the current transaction.
+                try:
+                    exception = ContextWrapper(exc_info[1], object)
+                    name = getDefaultViewName(exception, request)
+                    view = getView(exception, name, request)
+                    response.setBody(self.callObject(request, view))
+                except ComponentLookupError:
+                    # No view available for this exception, so let the
+                    # response handle it.
+                    response.handleException(exc_info)
+                except:
+                    # Problem getting a view for this exception. Log an error.
+                    tryToLogException(
+                        'Exception while getting view on exception')
+                    # So, let the response handle it.
+                    response.handleException(exc_info)
+            finally:
+                # Definitely abort the transaction that raised the exception.
+                get_transaction().abort()
 
         # New transaction for side-effects
         beginErrorHandlingTransaction(request)
@@ -223,22 +240,29 @@ class ZopePublication(object, PublicationTraverse):
 
         except:
             tryToLogException(
-                'Error while reporting an error to the ' + 
+                'Error while reporting an error to the %s service' %
                 ErrorReports)
             get_transaction().abort()
             beginErrorHandlingTransaction(request)
 
-        # See if there's an IExceptionSideEffects adapter for the exception
-        try:
-            adapter = getAdapter(exception, IExceptionSideEffects)
-            # view_presented is None if no view was presented, or the name
-            # of the view, if it was.
-            # Although request is passed in here, it should be considered
-            # read-only.
-            adapter(object, request, exc_info)
+        if legacy_exception:
+            # There should be nothing of consequence done in this transaction,
+            # but this allows the error reporting service to save things
+            # persistently when we get a legacy exception.
             get_transaction().commit()
-        except:
-            get_transaction().abort()
+        else:
+            # See if there's an IExceptionSideEffects adapter for the
+            # exception
+            try:
+                adapter = getAdapter(exception, IExceptionSideEffects)
+                # view_presented is None if no view was presented, or the name
+                # of the view, if it was.
+                # Although request is passed in here, it should be considered
+                # read-only.
+                adapter(object, request, exc_info)
+                get_transaction().commit()
+            except:
+                get_transaction().abort()
 
         return
 

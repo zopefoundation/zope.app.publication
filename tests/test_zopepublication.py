@@ -123,10 +123,16 @@ class ServiceManager:
 
     __implements__ = IServiceService # a dirty lie
 
-    def __init__(self, auth):   self.auth = auth
-    def get(self, key, d=None):      return self.auth
+    def __init__(self, auth):
+        self.auth = auth
+
+    def get(self, key, d=None):
+        return self.auth
+
     __getitem__ = get
-    def __contains__(self, key): return 1
+
+    def __contains__(self, key):
+        return 1
 
     def getService(self, name):
         # I just wanna get the test to pass. Waaaaa
@@ -192,6 +198,32 @@ class ZopePublicationErrorHandling(BasePublicationTests):
             self.object, self.request, sys.exc_info(), retry_allowed=False)
         self.request.response.outputBody()
         self.assertEqual(self.out.getvalue(), view_text)
+
+    def testNoViewOnClassicClassException(self):
+        from zodb.interfaces import ConflictError
+        from zope.interface import Interface
+        from zope.interface.implements import implements
+        from types import ClassType
+        class ClassicError:
+            __metaclass__ = ClassType
+        class IClassicError(Interface):
+            pass
+        implements(ClassicError, IClassicError)
+        setDefaultViewName(IClassicError, self.presentation_type, 'name')
+        view_text = 'You made a classic error ;-)'
+        provideView(IClassicError, 'name', self.presentation_type,
+                    [lambda obj,request: lambda: view_text])
+        try:
+            raise ClassicError
+        except:
+            pass
+        self.publication.handleException(
+            self.object, self.request, sys.exc_info(), retry_allowed=False)
+        self.request.response.outputBody()
+        # check we don't get the view we registered
+        self.failIf(self.out.getvalue() == view_text)
+        # check we do actually get something
+        self.failIf(self.out.getvalue() == '')
 
     def testExceptionSideEffects(self):
         from zope.publisher.interfaces import IExceptionSideEffects
