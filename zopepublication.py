@@ -21,34 +21,31 @@ from new import instancemethod
 
 from ZODB.POSException import ConflictError
 
-from zope.interface import implements, providedBy
-from zope.component import getService
-from zope.app.servicenames import ErrorLogging
+from zope.event import notify
+from zope.exceptions import Unauthorized
 from zope.component.exceptions import ComponentLookupError
+from zope.interface import implements, providedBy
+from zope.proxy import removeAllProxies
 from zope.publisher.publish import mapply
 from zope.publisher.interfaces import Retry, IExceptionSideEffects
 from zope.publisher.interfaces import IRequest, IPublication
-
 from zope.security.management import newInteraction, endInteraction
 from zope.security.checker import ProxyFactory
 from zope.security.proxy import trustedRemoveSecurityProxy
-from zope.proxy import removeAllProxies
-from zope.exceptions import Unauthorized
 
 from zope.app import zapi
-from zope.app.site.interfaces import ISite
 from zope.app.applicationcontrol.applicationcontrol \
      import applicationControllerRoot
-
-from zope.app.servicenames import ErrorLogging, Authentication
-from zope.app.security.principalregistry import principalRegistry as prin_reg
-from zope.app.security.interfaces import IUnauthenticatedPrincipal
-from zope.app.publication.publicationtraverse import PublicationTraverse
-from zope.app.traversing.interfaces import IPhysicallyLocatable
+from zope.app.component.hooks import getSite
+from zope.app.errorservice import RootErrorReportingService
 from zope.app.location import LocationProxy
-from zope.event import notify
 from zope.app.publication.interfaces import BeforeTraverseEvent
 from zope.app.publication.interfaces import EndRequestEvent
+from zope.app.publication.publicationtraverse import PublicationTraverse
+from zope.app.security.principalregistry import principalRegistry as prin_reg
+from zope.app.security.interfaces import IUnauthenticatedPrincipal
+from zope.app.site.interfaces import ISite
+from zope.app.traversing.interfaces import IPhysicallyLocatable
 
 class Cleanup(object):
 
@@ -94,7 +91,7 @@ class ZopePublication(PublicationTraverse):
         sm = removeAllProxies(ob).getSiteManager()
 
         try:
-            auth_service = sm.getService(Authentication)
+            auth_service = sm.getService(zapi.servicenames.Authentication)
         except ComponentLookupError:
             # No auth service here
             return
@@ -208,12 +205,38 @@ class ZopePublication(PublicationTraverse):
                                            'error reporting service')
         try:
             try:
-                errService = getService(ErrorLogging)
-                errService.raising(exc_info, request)
+                errService = zapi.getService(zapi.servicenames.ErrorLogging)
+                # We only want to get the global error reporting service, if
+                # we are not in a site. If we are, we want a local error
+                # reporting service.
+                # The global error reporting service does not have a
+                # __parent__
+                if getSite() is not None and \
+                       getattr(errService, '__parent__', None) is None:
+                    raise ComponentLookupError
+
             except ComponentLookupError:
-                # There is no local error reporting service.
-                # XXX We need to build a local error reporting service.
-                pass
+                # There is no error reporting service. This is extremely
+                # unlikely, since such a service is created when the ZODB is
+                # first generated. So someone must have deliberately deleted
+                # it.
+                #
+                # We need to go to the root folder and add a root error
+                # reporting service there. And just in case the object passed
+                # is not a contained object or a method, we use the local site
+                # to find the root folder.
+
+                # Import here to avoid circular imports. This is okay, since
+                # this is a very special case.
+                # This is the same code used in the bootstrap mechanism.
+                from zope.app.appsetup.bootstrap import addConfigureService
+                addConfigureService(zapi.getRoot(getSite()),
+                                    zapi.servicenames.ErrorLogging,
+                                    RootErrorReportingService,
+                                    copy_to_zlog=True)
+
+                errService = zapi.getService(zapi.servicenames.ErrorLogging)
+
             # It is important that an error in errService.raising
             # does not propagate outside of here. Otherwise, nothing
             # meaningful will be returned to the user.
@@ -227,11 +250,12 @@ class ZopePublication(PublicationTraverse):
             # the ErrorReportingService, and that it will be in
             # the zope log.
 
+            errService.raising(exc_info, request)
             get_transaction().commit()
         except:
             tryToLogException(
                 'Error while reporting an error to the %s service' %
-                ErrorLogging)
+                zapi.servicenames.ErrorLogging)
             get_transaction().abort()
 
     def handleException(self, object, request, exc_info, retry_allowed=True):
@@ -276,22 +300,26 @@ class ZopePublication(PublicationTraverse):
                 request, object, 'application error-handling')
             view = None
             try:
-                # XXX we need to get a location. The object might not
-                # have one, because it might be a method. If we don't
-                # have a parent attr but have an im_self or an
-                # __self__, use that:
-
-                # XXX The following block of code is silly.
+                # We need to get a location, because some template content of
+                # the exception view might require one. 
+                # 
+                # The object might not have a parent, because it might be a
+                # method. If we don't have a `__parent__` attribute but have
+                # an im_self or a __self__, use it. 
                 loc = object
-                if hasattr(object, '__parent__'):
-                    loc = object # XXX That was done two lines above.
-                else:
+                if not hasattr(object, '__parent__'):
                     loc = removeAllProxies(object)
+                    # Try to get an object, since we apparently have a method
+                    # Note: We are guaranteed that an object has a location,
+                    # so just getting the instance the method belongs to is
+                    # sufficient.
                     loc = getattr(loc, 'im_self', loc)
-                    if loc is loc:  # XXX if True:
-                        loc = getattr(loc, '__self__', loc)
+                    loc = getattr(loc, '__self__', loc)
+                    # Protect the location with a security proxy
                     loc = ProxyFactory(loc)
 
+                # Give the exception instance its location and look up the
+                # view.
                 exception = LocationProxy(exc_info[1], loc, '')
                 name = zapi.queryDefaultViewName(exception, request)
                 if name is not None:
