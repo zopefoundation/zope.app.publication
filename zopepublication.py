@@ -280,13 +280,15 @@ class ZopePublication(PublicationTraverse):
                 # have one, because it might be a method. If we don't
                 # have a parent attr but have an im_self or an
                 # __self__, use that:
+
+                # XXX The following block of code is silly.
                 loc = object
                 if hasattr(object, '__parent__'):
-                    loc = object
+                    loc = object # XXX That was done two lines above.
                 else:
                     loc = removeAllProxies(object)
                     loc = getattr(loc, 'im_self', loc)
-                    if loc is loc:
+                    if loc is loc:  # XXX if True:
                         loc = getattr(loc, '__self__', loc)
                     loc = ProxyFactory(loc)
 
