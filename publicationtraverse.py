@@ -13,7 +13,7 @@
 ##############################################################################
 """
 
-$Id: publicationtraverse.py,v 1.7 2003/05/27 14:18:21 jim Exp $
+$Id: publicationtraverse.py,v 1.8 2003/05/28 15:46:10 jim Exp $
 """
 
 from zope.component import queryView
@@ -22,7 +22,7 @@ from types import StringTypes
 from zope.context import ContextWrapper
 from zope.security.checker import ProxyFactory
 
-from zope.proxy.introspection import removeAllProxies
+from zope.proxy import removeAllProxies
 from zope.app.traversing.namespace import namespaceLookup
 from zope.app.traversing.namespace import parameterizedNameParse
 from zope.publisher.interfaces import IPublishTraverse

@@ -28,7 +28,7 @@ from zope.security.checker import ProxyFactory
 
 from zope.context import ContextWrapper
 
-from zope.proxy.introspection import removeAllProxies
+from zope.proxy import removeAllProxies
 
 from zope.app.interfaces.services.service import IServiceManagerContainer
 

@@ -13,10 +13,10 @@
 ##############################################################################
 """
 
-$Id: xmlrpc.py,v 1.5 2003/02/11 15:59:52 sidnei Exp $
+$Id: xmlrpc.py,v 1.6 2003/05/28 15:46:10 jim Exp $
 """
 
-from zope.proxy.introspection import removeAllProxies
+from zope.proxy import removeAllProxies
 from zope.app.publication.zopepublication import ZopePublication
 from zope.component import queryView
 
