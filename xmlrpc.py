@@ -13,11 +13,11 @@
 ##############################################################################
 """
 
-$Id: xmlrpc.py,v 1.2 2002/12/25 14:13:08 jim Exp $
+$Id: xmlrpc.py,v 1.3 2003/01/14 20:26:05 srichter Exp $
 """
-
 from zope.proxy.introspection import removeAllProxies
 from zope.app.publication.http import ZopeHTTPPublication
+from zope.component import queryView
 
 class XMLRPCPublication(ZopeHTTPPublication):
     """XML-RPC publication handling.
@@ -28,12 +28,15 @@ class XMLRPCPublication(ZopeHTTPPublication):
     def traverseName(self, request, ob, name):
 
         naked_ob = removeAllProxies(ob)
+        view = queryView(ob, 'methods', request, self)
+
         if hasattr(ob, name):
             return getattr(ob, name)
+        if view is not self and hasattr(view, name):
+            return getattr(view, name)
         else:
             return super(XMLRPCPublication, self).traverseName(request,
                                                                ob, name)
-
 
 # For now, have a factory that returns a singleton
 class XMLRPCPublicationFactory:
