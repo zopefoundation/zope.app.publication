@@ -11,10 +11,10 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""
+"""Tests for the HTTP Publication Request Factory.
+
 $Id$
 """
-
 from unittest import TestCase, TestSuite, main, makeSuite
 from zope.app.publication.httpfactory import HTTPPublicationRequestFactory
 from zope.publisher.browser import BrowserRequest
@@ -50,7 +50,7 @@ class Test(TestCase):
 
     def test_http(self):
 
-        for method in ('PUT', 'put', 'XXX'):
+        for method in ('PUT', 'put', 'ZZZ'):
             self.__env['REQUEST_METHOD'] = method
             r = self.__factory(StringIO(''), StringIO(), self.__env)
             self.assertEqual(r.__class__, HTTPRequest)
@@ -72,7 +72,7 @@ class Test(TestCase):
             self.assertEqual(r.__class__, BrowserRequest)
             self.assertEqual(r.publication.__class__, BrowserPublication)
 
-        for method in ('PUT', 'put', 'XXX'):
+        for method in ('PUT', 'put', 'ZZZ'):
             self.__env['REQUEST_METHOD'] = method
             r = self.__factory(StringIO(''), StringIO(), self.__env)
             self.assertEqual(r.__class__, HTTPRequest)
