@@ -48,9 +48,12 @@ from zope.proxy.context import ContextWrapper
 # XXX Should this be imported here?
 from transaction import get_transaction
 
-class Cleanup:
+class Cleanup(object):
     def __init__(self, f):
-        self.__del__ = f
+        self._f = f
+
+    def __del__(self):
+        self._f()
 
 
 class ZopePublication(object, PublicationTraverse):
