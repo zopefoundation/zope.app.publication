@@ -21,6 +21,7 @@ from zodb.interfaces import ConflictError
 from zope.publisher.base import DefaultPublication
 from zope.publisher.publish import mapply
 from zope.publisher.interfaces import Retry
+from zope.publisher.interfaces.http import IHTTPRequest
 
 from zope.security.management import getSecurityManager, newSecurityManager
 from zope.security.checker import ProxyFactory
@@ -157,9 +158,10 @@ class ZopePublication(object, PublicationTraverse, DefaultPublication):
 
     def afterCall(self, request):
         txn = get_transaction()
-        # XXX: Commented out this line, since it is HTTP-specific. 
-        # txn.note(request["PATH_INFO"])
-        txn.setUser(getSecurityManager().getPrincipal())
+        if IHTTPRequest.isImplementedBy(request):
+            txn.note(request["PATH_INFO"])
+        # XXX not sure why you would use id vs title or description
+        txn.setUser(request.user.getId())
         get_transaction().commit()
 
     def handleException(self, object, request, exc_info, retry_allowed=1):
