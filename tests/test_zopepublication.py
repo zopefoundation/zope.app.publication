@@ -191,11 +191,11 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         class IConflictError(Interface):
             pass
         classImplements(ConflictError, IConflictError)
-        s = zapi.getService(None, zapi.servicenames.Presentation)
+        s = zapi.getGlobalService(zapi.servicenames.Presentation)
         s.setDefaultViewName(IConflictError,
                              self.presentation_type, 'name')
         view_text = 'You had a conflict error'
-        s = zapi.getService(None, zapi.servicenames.Presentation) 
+        s = zapi.getGlobalService(zapi.servicenames.Presentation) 
         s.provideView(IConflictError, 'name', self.presentation_type,
                       lambda obj, request: lambda: view_text)
         try:
@@ -215,7 +215,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         class IClassicError(Interface):
             pass
         classImplements(ClassicError, IClassicError)
-        s = zapi.getService(None, zapi.servicenames.Presentation)
+        s = zapi.getGlobalService(zapi.servicenames.Presentation)
         s.setDefaultViewName(IClassicError, self.presentation_type, 'name')
         view_text = 'You made a classic error ;-)'
         s.provideView(IClassicError, 'name', self.presentation_type,
@@ -365,7 +365,7 @@ class ZopePublicationTests(BasePublicationTests):
         from zope.app.container.interfaces import ISimpleReadContainer
         from zope.app.container.traversal import ContainerTraverser
 
-        s = zapi.getService(None, zapi.servicenames.Presentation) 
+        s = zapi.getGlobalService(zapi.servicenames.Presentation) 
         s.provideView(ISimpleReadContainer, '', IRequest,
                       ContainerTraverser, providing=IPublishTraverse)
 

@@ -46,7 +46,7 @@ class Test(PlacelessSetup, TestCase):
         request = HTTPRequest(StringIO(''), StringIO(), {})
         request.method = 'SPAM'
 
-        s = zapi.getService(None, zapi.servicenames.Presentation)
+        s = zapi.getGlobalService(zapi.servicenames.Presentation)
         s.provideView(I, 'SPAM', IHTTPRequest, V)
 
         ob = C()
