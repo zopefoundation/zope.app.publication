@@ -35,7 +35,7 @@ class SimpleComponentTraverser(object):
 
     def browserDefault(self, request):
         ob = self.context
-        view_name = getDefaultViewName(ob, request)
+        view_name = zapi.getDefaultViewName(ob, request)
         return ob, (view_name,)
 
     def publishTraverse(self, request, name):
