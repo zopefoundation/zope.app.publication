@@ -17,7 +17,7 @@ import logging
 from zope.component import getService, queryView, queryDefaultViewName
 from zope.component import queryService, queryAdapter
 from zope.component.exceptions import ComponentLookupError
-from zope.app.services.servicenames import ErrorReports, Authentication
+from zope.app.services.servicenames import ErrorLogging, Authentication
 from zodb.interfaces import ConflictError
 
 from zope.publisher.publish import mapply
@@ -169,7 +169,7 @@ class ZopePublication(object, PublicationTraverse):
         # Record the error with the ErrorReportingService
         beginErrorHandlingTransaction(request, 'error reporting service')
         try:
-            errService = queryService(object, ErrorReports)
+            errService = queryService(object, ErrorLogging)
             if errService is not None:
                 errService.raising(exc_info, request)
             # It is important that an error in errService.raising
@@ -189,7 +189,7 @@ class ZopePublication(object, PublicationTraverse):
         except:
             tryToLogException(
                 'Error while reporting an error to the %s service' %
-                ErrorReports)
+                ErrorLogging)
             get_transaction().abort()
 
 
