@@ -13,14 +13,13 @@
 ##############################################################################
 """
 
-$Id: test_simplecomponenttraverser.py,v 1.8 2003/11/21 17:10:20 jim Exp $
+$Id: test_simplecomponenttraverser.py,v 1.9 2004/03/13 23:55:15 srichter Exp $
 """
-
 import unittest
 from zope.component.tests.request import Request
 from zope.app.publication.traversers import SimpleComponentTraverser
 from zope.component import getService
-from zope.app.services.servicenames import Presentation
+from zope.app.servicenames import Presentation
 from zope.interface import Interface
 from zope.exceptions import NotFoundError
 from zope.app.tests.placelesssetup import PlacelessSetup

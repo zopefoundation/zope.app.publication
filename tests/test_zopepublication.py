@@ -13,7 +13,7 @@
 ##############################################################################
 """Zope Publication Tests
 
-$Id: test_zopepublication.py,v 1.25 2004/03/08 12:05:59 srichter Exp $
+$Id: test_zopepublication.py,v 1.26 2004/03/13 23:55:20 srichter Exp $
 """
 import unittest
 import sys
@@ -35,7 +35,7 @@ from zope.app import zapi
 from zope.app.tests.placelesssetup import PlacelessSetup
 from zope.app.tests import ztapi
 
-from zope.app.services.servicenames import Authentication
+from zope.app.servicenames import Authentication
 from zope.app.security.principalregistry import principalRegistry
 from zope.app.security.interfaces import IUnauthenticatedPrincipal, IPrincipal
 from zope.app.publication.zopepublication import ZopePublication

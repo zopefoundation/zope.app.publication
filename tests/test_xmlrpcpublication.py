@@ -13,7 +13,7 @@
 ##############################################################################
 """XML-RPC Publication Tests
 
-$Id: test_xmlrpcpublication.py,v 1.4 2003/11/21 17:10:20 jim Exp $
+$Id: test_xmlrpcpublication.py,v 1.5 2004/03/13 23:55:20 srichter Exp $
 """
 import unittest
 
@@ -21,7 +21,7 @@ from zope.app.publication.tests.test_zopepublication import \
      BasePublicationTests
 from zope.app.publication.traversers import TestTraverser
 from zope.app.publication.xmlrpc import XMLRPCPublication
-from zope.app.services.servicenames import Presentation
+from zope.app.servicenames import Presentation
 from zope.component import getService
 from zope.interface import Interface, implements
 from zope.proxy import removeAllProxies

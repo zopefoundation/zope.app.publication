@@ -16,7 +16,7 @@ import logging
 
 from zope.component import queryView, queryDefaultViewName
 from zope.component import queryService
-from zope.app.services.servicenames import ErrorLogging, Authentication
+from zope.app.servicenames import ErrorLogging, Authentication
 from ZODB.POSException import ConflictError
 
 from zope.publisher.publish import mapply
