@@ -22,8 +22,8 @@ from zope.publisher.base import DefaultPublication
 from zope.publisher.publish import mapply
 from zope.publisher.interfaces import Retry
 
-from zope.security.securitymanagement import getSecurityManager
-from zope.security.securitymanagement import newSecurityManager
+from zope.security.securitymanagement \
+     import getSecurityManager, newSecurityManager
 from zope.security.checker import ProxyFactory
 
 from zope.proxy.introspection import removeAllProxies
@@ -65,7 +65,6 @@ class ZopePublication(object, PublicationTraverse, DefaultPublication):
         self.db = db
 
     def beforeTraversal(self, request):
-
         # Try to authenticate against the default global registry.
         p = prin_reg.authenticate(request)
         if p is None:
@@ -160,6 +159,10 @@ class ZopePublication(object, PublicationTraverse, DefaultPublication):
         return mapply(ob, request.getPositionalArguments(), request)
 
     def afterCall(self, request):
+        T = get_transaction()
+        T.note(request["PATH_INFO"])
+        # XXX should also call T.setUser(), but I don't know how to
+        # find out who the user is
         get_transaction().commit()
 
     def handleException(self, object, request, exc_info, retry_allowed=1):
