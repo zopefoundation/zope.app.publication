@@ -71,9 +71,8 @@ class ZopePublication(object, PublicationTraverse):
             if p is None:
                 raise Unauthorized # If there's no default principal
 
-        newSecurityManager(p.getId())
-        # XXX add a test to check that request.user is context wrapped
         request.user = ContextWrapper(p, prin_reg)
+        newSecurityManager(request.user)
         get_transaction().begin()
 
     def _maybePlacefullyAuthenticate(self, request, ob):
@@ -106,9 +105,8 @@ class ZopePublication(object, PublicationTraverse):
                 # nothing to do here
                 return
 
-        newSecurityManager(principal.getId())
-        # XXX add test that request.user is context-wrapped
         request.user = ContextWrapper(principal, auth_service)
+        newSecurityManager(request.user)
 
 
     def callTraversalHooks(self, request, ob):

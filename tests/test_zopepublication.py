@@ -30,7 +30,7 @@ from zope.publisher.base import TestPublication
 from zope.publisher.http import IHTTPRequest, HTTPCharsets
 
 from zope.security import simplepolicies
-from zope.security.management import setSecurityPolicy
+from zope.security.management import setSecurityPolicy, getSecurityManager
 
 from zope.app.security.registries.principalregistry import principalRegistry
 from zope.app.interfaces.security import IUnauthenticatedPrincipal
@@ -44,6 +44,8 @@ from zope.component.interfaces import IServiceService
 from zope.publisher.base import TestRequest
 
 from zope.component.service import serviceManager
+
+from zope.proxy.context import getWrapperContext
 
 from transaction import get_transaction
 from cStringIO import StringIO
@@ -298,16 +300,27 @@ class ZopePublicationTests(BasePublicationTests):
         publication = ZopePublication(self.db)
 
         publication.beforeTraversal(request)
+        user = getSecurityManager().getPrincipal()
+        self.assertEqual(user, request.user)
+        self.assertEqual(getWrapperContext(user), principalRegistry)
         self.assertEqual(request.user.getId(), 'anonymous')
+        self.assertEqual(getWrapperContext(request.user), principalRegistry)
         root = publication.getApplication(request)
         publication.callTraversalHooks(request, root)
         self.assertEqual(request.user.getId(), 'anonymous')
         ob = publication.traverseName(request, root, 'f1')
         publication.callTraversalHooks(request, ob)
         self.assertEqual(request.user.getId(), 'test.anonymous')
+        self.assertEqual(getWrapperContext(request.user).__class__,
+                         AuthService1)
         ob = publication.traverseName(request, ob, 'f2')
         publication.afterTraversal(request, ob)
         self.assertEqual(request.user.getId(), 'test.bob')
+        self.assertEqual(getWrapperContext(request.user).__class__,
+                         AuthService2)
+        user = getSecurityManager().getPrincipal()
+        self.assertEqual(user, request.user)
+        self.assertEqual(getWrapperContext(user).__class__, AuthService2)
 
 def test_suite():
     return unittest.TestSuite((
