@@ -293,7 +293,7 @@ class ZopePublication(object, PublicationTraverse):
                     get_transaction().abort()
 
     def _parameterSetskin(self, pname, pval, request):
-        request.setViewSkin(pval)
+        request.setPresentationSkin(pval)
 
 def tryToLogException(arg1, arg2=None):
     if arg2 is None:
