@@ -293,7 +293,7 @@ class ZopePublication(PublicationTraverse):
                 # Give the exception instance its location and look up the
                 # view.
                 exception = LocationProxy(exc_info[1], loc, '')
-                name = zapi.getDefaultViewName(exception, request)
+                name = zapi.queryDefaultViewName(exception, request)
                 if name is not None:
                     view = zapi.queryMultiAdapter(
                         (exception, request), name=name)
