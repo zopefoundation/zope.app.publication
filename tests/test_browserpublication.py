@@ -286,8 +286,8 @@ class BrowserPublicationTests(BasePublicationTests):
             def getServiceManager(self):
                 return SimpleObject(1)
         ob = C()
-        r = self._createRequest('/++etc++Services',pub)
-        ob2 = pub.traverseName(r, ob, '++etc++Services')
+        r = self._createRequest('/++etc++site',pub)
+        ob2 = pub.traverseName(r, ob, '++etc++site')
         self.assertEqual(removeAllProxies(ob2).v, 1)
         self.assertEqual(getWrapperContext(ob2), ob)
 
@@ -295,12 +295,12 @@ class BrowserPublicationTests(BasePublicationTests):
         from zope.app.applicationcontrol.applicationcontrol \
              import applicationController, applicationControllerRoot
         pub = self.klass(self.db)
-        r = self._createRequest('/++etc++ApplicationController',pub)
+        r = self._createRequest('/++etc++process',pub)
         ac = pub.traverseName(r,
                               applicationControllerRoot,
-                              '++etc++ApplicationController')
+                              '++etc++process')
         self.assertEqual(ac, applicationController)
-        r = self._createRequest('/++etc++ApplicationController',pub)
+        r = self._createRequest('/++etc++process',pub)
         app = r.publication.getApplication(r)
         self.assertEqual(app, applicationControllerRoot)
 

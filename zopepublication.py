@@ -90,7 +90,7 @@ class ZopePublication(object, PublicationTraverse):
             # No service manager here, and thus no auth service
             return
 
-        sm = ContextWrapper(sm, ob, name="++etc++Services")
+        sm = ContextWrapper(sm, ob, name="++etc++site")
 
         auth_service = sm.queryService(Authentication)
         if auth_service is None:
@@ -126,11 +126,11 @@ class ZopePublication(object, PublicationTraverse):
 
     def getApplication(self, request):
 
-        # If the first name is '++etc++ApplicationControl', then we should
+        # If the first name is '++etc++process', then we should
         # get it rather than look in the database!
         stack = request.getTraversalStack()
 
-        if '++etc++ApplicationController' in stack:
+        if '++etc++process' in stack:
             return applicationControllerRoot
 
         # Open the database.
