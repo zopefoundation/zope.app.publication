@@ -13,7 +13,7 @@
 ##############################################################################
 """Browser Publication Tests
 
-$Id: test_browserpublication.py,v 1.21 2003/11/21 17:12:10 jim Exp $
+$Id: test_browserpublication.py,v 1.22 2004/01/14 22:55:23 chrism Exp $
 """
 import unittest
 
@@ -34,7 +34,6 @@ from zope.security.proxy import Proxy
 from zope.security.checker import defineChecker, NamesChecker
 
 from zope.app.security.registries.principalregistry import principalRegistry
-from zope.app.security.grants.principalrole import principalRoleManager
 
 from zope.app.publication.browser import BrowserPublication
 from zope.app.publication.traversers import TestTraverser
@@ -44,7 +43,7 @@ from zope.app.publication.tests.test_zopepublication \
 from persistence import Persistent
 
 def foo():
-    " "
+    "I am an otherwise empty docstring."
     return '<html><body>hello base fans</body></html>'
 
 class DummyPublished:
@@ -130,10 +129,6 @@ class BrowserDefaultTests(BasePublicationTests):
         ## the following is for running the tests standalone
         principalRegistry.defineDefaultPrincipal(
             'tim', 'timbot', 'ai at its best')
-
-        principalRoleManager.assignRoleToPrincipal('Manager', 'tim',
-                                                   check=False)
-
 
         # now place our object inside the application
         from transaction import get_transaction
