@@ -288,7 +288,7 @@ class BrowserPublicationTests(BasePublicationTests):
             output.getvalue(),
             'Status: 200 Ok\r\n'
             'Content-Length: 4\r\n'
-            'Content-Type: text/plain;charset=iso-8859-1\r\n'
+            'Content-Type: text/plain;charset=utf-8\r\n'
             'X-Powered-By: Zope (www.zope.org), Python (www.python.org)\r\n'
             '\r\nspam'
             )
@@ -305,10 +305,24 @@ class BrowserPublicationTests(BasePublicationTests):
             output.getvalue(),
             'Status: 200 Ok\r\n'
             'Content-Length: 0\r\n'
-            'Content-Type: text/plain;charset=iso-8859-1\r\n'
+            'Content-Type: text/plain;charset=utf-8\r\n'
             'X-Powered-By: Zope (www.zope.org), Python (www.python.org)\r\n'
             '\r\n'
             )
+
+    def testUnicode_NO_HTTP_CHARSET(self):
+        # Test so that a unicode body doesn't cause a UnicodeEncodeError
+        output = StringIO()
+        request = TestRequest(StringIO(''), output, {})
+        request.response.setBody(u"\u0442\u0435\u0441\u0442")
+        request.response.outputBody()
+        self.assertEqual(
+            output.getvalue(),
+            'Status: 200 Ok\r\n'
+            'Content-Length: 8\r\n'
+            'Content-Type: text/plain;charset=utf-8\r\n'
+            'X-Powered-By: Zope (www.zope.org), Python (www.python.org)\r\n'
+            '\r\n\xd1\x82\xd0\xb5\xd1\x81\xd1\x82')
 
 
 def test_suite():
