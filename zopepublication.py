@@ -14,8 +14,8 @@
 import sys
 import logging
 
-from zope.component import getService, getView, getDefaultViewName
-from zope.component import queryService, getAdapter
+from zope.component import getService, queryView, queryDefaultViewName
+from zope.component import queryService, queryAdapter
 from zope.component.exceptions import ComponentLookupError
 from zope.app.services.servicenames import ErrorReports, Authentication
 from zodb.interfaces import ConflictError
@@ -165,9 +165,12 @@ class ZopePublication(object, PublicationTraverse):
         get_transaction().commit()
 
     def handleException(self, object, request, exc_info, retry_allowed=True):
+        # This transaction had an exception that reached the publisher.
+        # It must definitely be aborted.
+        get_transaction().abort()
+
         # Convert ConflictErrors to Retry exceptions.
         if retry_allowed and isinstance(exc_info[1], ConflictError):
-            get_transaction().abort()
             tryToLogWarning('ZopePublication',
                 'Competing writes/reads at %s' % 
                 request.get('PATH_INFO', '???'),
@@ -177,50 +180,8 @@ class ZopePublication(object, PublicationTraverse):
         # handling determine whether a retry is allowed or not?
         # Assume not for now.
 
-        response = request.response
-        exception = None
-        legacy_exception = not isinstance(exc_info[1], Exception)
-        if legacy_exception:
-            response.handleException(exc_info)
-            get_transaction().abort()
-            if isinstance(exc_info[1], str):
-                tryToLogWarning(
-                    'Publisher received a legacy string exception: %s.'
-                    ' This will be handled by the request.' %
-                    exc_info[1])
-            else:
-                tryToLogWarning(
-                    'Publisher received a legacy classic class exception: %s.'
-                    ' This will be handled by the request.' %
-                    exc_info[1].__class__)
-        else:
-            # We definitely have an Exception
-            try:
-                # Set the request body, and abort the current transaction.
-                try:
-                    exception = ContextWrapper(exc_info[1], object)
-                    name = getDefaultViewName(exception, request)
-                    view = getView(exception, name, request)
-                    response.setBody(self.callObject(request, view))
-                except ComponentLookupError:
-                    # No view available for this exception, so let the
-                    # response handle it.
-                    response.handleException(exc_info)
-                except:
-                    # Problem getting a view for this exception. Log an error.
-                    tryToLogException(
-                        'Exception while getting view on exception')
-                    # So, let the response handle it.
-                    response.handleException(exc_info)
-            finally:
-                # Definitely abort the transaction that raised the exception.
-                get_transaction().abort()
-
-        # New transaction for side-effects
-        beginErrorHandlingTransaction(request)
-        transaction_ok = False
-
         # Record the error with the ErrorReportingService
+        beginErrorHandlingTransaction(request, 'error reporting service')
         try:
             errService = queryService(object, ErrorReports)
             if errService is not None:
@@ -238,31 +199,84 @@ class ZopePublication(object, PublicationTraverse):
             # the ErrorReportingService, and that it will be in
             # the zope log.
 
+            get_transaction().commit()
         except:
             tryToLogException(
                 'Error while reporting an error to the %s service' %
                 ErrorReports)
             get_transaction().abort()
-            beginErrorHandlingTransaction(request)
 
+        response = request.response
+        exception = None
+        legacy_exception = not isinstance(exc_info[1], Exception)
         if legacy_exception:
-            # There should be nothing of consequence done in this transaction,
-            # but this allows the error reporting service to save things
-            # persistently when we get a legacy exception.
-            get_transaction().commit()
+            response.handleException(exc_info)
+            if isinstance(exc_info[1], str):
+                tryToLogWarning(
+                    'Publisher received a legacy string exception: %s.'
+                    ' This will be handled by the request.' %
+                    exc_info[1])
+            else:
+                tryToLogWarning(
+                    'Publisher received a legacy classic class exception: %s.'
+                    ' This will be handled by the request.' %
+                    exc_info[1].__class__)
         else:
+            # We definitely have an Exception
+            # Set the request body, and abort the current transaction.
+            beginErrorHandlingTransaction(
+                request, 'application error-handling')
+            view = None
+            try:
+                exception = ContextWrapper(exc_info[1], object)
+                name = queryDefaultViewName(exception, request)
+                if name is not None:
+                    view = queryView(exception, name, request)
+            except:
+                # Problem getting a view for this exception. Log an error.
+                tryToLogException(
+                    'Exception while getting view on exception')
+
+            if view is not None:
+                try:
+                    response.setBody(self.callObject(request, view))
+                    get_transaction().commit()
+                except:
+                    # Problem rendering the view for this exception.
+                    # Log an error.
+                    tryToLogException(
+                        'Exception while rendering view on exception')
+                    view = None
+
+            if view is None:
+                # Either the view was not found, or view was set to None
+                # because the view couldn't be rendered. In either case,
+                # we let the request handle it.
+                response.handleException(exc_info)
+                get_transaction().abort()
+
             # See if there's an IExceptionSideEffects adapter for the
             # exception
             try:
-                adapter = getAdapter(exception, IExceptionSideEffects)
-                # Although request is passed in here, it should be considered
-                # read-only.
-                adapter(object, request, exc_info)
-                get_transaction().commit()
+                adapter = queryAdapter(exception, IExceptionSideEffects)
             except:
-                get_transaction().abort()
+                tryToLogException(
+                    'Exception while getting IExceptionSideEffects adapter')
+                adapter = None
 
-        return
+            if adapter is not None:
+                beginErrorHandlingTransaction(
+                    request, 'application error-handling side-effect')
+                try:
+                    # Although request is passed in here, it should be
+                    # considered read-only.
+                    adapter(object, request, exc_info)
+                    get_transaction().commit()
+                except:
+                    tryToLogException(
+                        'Exception while calling'
+                        ' IExceptionSideEffects adapter')
+                    get_transaction().abort()
 
     def _parameterSetskin(self, pname, pval, request):
         request.setViewSkin(pval)
@@ -295,11 +309,11 @@ def tryToLogWarning(arg1, arg2=None, exc_info=False):
     except:
         pass
 
-def beginErrorHandlingTransaction(request):
+def beginErrorHandlingTransaction(request, note):
     get_transaction().begin()
     if IHTTPRequest.isImplementedBy(request):
         pathnote = '%s ' % request["PATH_INFO"]
     else:
         pathnote = ''
     get_transaction().note(
-        '%s(application error handling)' % pathnote)
+        '%s(%s)' % (pathnote, note))
