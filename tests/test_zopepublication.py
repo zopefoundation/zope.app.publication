@@ -11,44 +11,37 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+"""
+$Id: test_zopepublication.py,v 1.23 2004/02/24 16:51:14 philikon Exp $
+"""
+
 import unittest
 import sys
-
-from zope.app import zapi
-from zope.interface.verify import verifyClass
-from zope.interface import implements, classImplements, implementedBy
+from cStringIO import StringIO
 
 from ZODB.tests.util import DB
 
-from zope.app.tests.placelesssetup import PlacelessSetup
-from zope.app.tests import ztapi
-
+from zope.interface.verify import verifyClass
+from zope.interface import implements, classImplements, implementedBy
 from zope.i18n.interfaces import IUserPreferredCharsets
-
+from zope.component.interfaces import IServiceService
 from zope.publisher.base import TestPublication
 from zope.publisher.http import IHTTPRequest, HTTPCharsets
-
+from zope.publisher.interfaces import IRequest
 from zope.security import simplepolicies
 from zope.security.management import setSecurityPolicy, getSecurityManager
 
-from zope.app.security.registries.principalregistry import principalRegistry
-from zope.app.interfaces.security import IUnauthenticatedPrincipal
-
-from zope.app.publication.zopepublication import ZopePublication
-
-from zope.app.content.folder import Folder, rootFolder
-
-from zope.component.interfaces import IServiceService
-
-from zope.publisher.base import TestRequest
-from zope.publisher.browser import BrowserResponse
-
-from transaction import get_transaction
-from cStringIO import StringIO
+from zope.app import zapi
+from zope.app.tests.placelesssetup import PlacelessSetup
+from zope.app.tests import ztapi
 
 from zope.app.services.servicenames import Authentication
-
-from zope.publisher.interfaces import IRequest
+from zope.app.security.registries.principalregistry import principalRegistry
+from zope.app.interfaces.security import IUnauthenticatedPrincipal
+from zope.app.publication.zopepublication import ZopePublication
+from zope.app.folder import Folder, rootFolder
+from zope.publisher.base import TestRequest
+from zope.publisher.browser import BrowserResponse
 
 class BasePublicationTests(PlacelessSetup, unittest.TestCase):
 
@@ -66,8 +59,7 @@ class BasePublicationTests(PlacelessSetup, unittest.TestCase):
         app = getattr(root, ZopePublication.root_name, None)
 
         if app is None:
-            from zope.app.content.folder import rootFolder
-
+            from zope.app.folder import rootFolder
             app = rootFolder()
             root[ZopePublication.root_name] = app
 
@@ -298,7 +290,7 @@ class ZopePublicationTests(BasePublicationTests):
         s.provideView(ISimpleReadContainer, '_traverse', IRequest,
                       ContainerTraverser)
 
-        from zope.app.interfaces.content.folder import IFolder
+        from zope.app.folder.interfaces import IFolder
         from zope.security.checker import defineChecker, InterfaceChecker
         defineChecker(Folder, InterfaceChecker(IFolder))
 
