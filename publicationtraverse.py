@@ -13,7 +13,7 @@
 ##############################################################################
 """
 
-$Id: publicationtraverse.py,v 1.9 2003/06/01 15:59:34 jim Exp $
+$Id: publicationtraverse.py,v 1.10 2003/06/20 06:45:08 stevea Exp $
 """
 
 from zope.component import queryView
@@ -75,6 +75,8 @@ class PublicationTraverse:
             adapter = queryView(ob, '_traverse', request, self) # marker
             if adapter is not self:
                 ob2 = adapter.publishTraverse(request, nm)
+                # ob2 will be security proxied here becuase the adapter
+                # was security proxied.
             else:
                 raise NotFound(ob, name, request)
 
