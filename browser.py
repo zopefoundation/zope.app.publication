@@ -18,6 +18,8 @@ for the publisher.
 
 $Id$
 """
+__docformat__ = 'restructuredtext'
+
 from zope.app.publication.publicationtraverse \
      import PublicationTraverser as PublicationTraverser_
 from zope.app.publication.http import BaseHTTPPublication

@@ -15,6 +15,8 @@
 
 $Id$
 """
+__docformat__ = 'restructuredtext'
+
 from zope.interface import implements
 from zope.publisher.http import HTTPRequest
 from zope.publisher.browser import BrowserRequest
@@ -32,13 +34,13 @@ class HTTPPublicationRequestFactory(object):
     implements(IPublicationRequestFactory)
 
     def __init__(self, db):
-        """See zope.app.publication.interfaces.IPublicationRequestFactory"""
+        """See `zope.app.publication.interfaces.IPublicationRequestFactory`"""
         self._http = HTTPPublication(db)
         self._brower = BrowserPublication(db)
         self._xmlrpc = XMLRPCPublication(db)
 
     def __call__(self, input_stream, output_steam, env):
-        """See zope.app.publication.interfaces.IPublicationRequestFactory"""
+        """See `zope.app.publication.interfaces.IPublicationRequestFactory`"""
         method = env.get('REQUEST_METHOD', 'GET').upper()
 
         if method in _browser_methods:

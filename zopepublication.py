@@ -15,6 +15,8 @@
 
 $Id$
 """
+__docformat__ = 'restructuredtext'
+
 import sys
 import logging
 from new import instancemethod
@@ -163,7 +165,7 @@ class ZopePublication(PublicationTraverse):
         """Set some useful meta-information on the transaction. This
         information is used by the undo framework, for example.
 
-        This method is not part of the IPublication interface, since
+        This method is not part of the `IPublication` interface, since
         it's specific to this particular implementation.
         """
         txn.setUser(request.principal.id)

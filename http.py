@@ -8,42 +8,36 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Test FTP Publication.
+"""HTTP Publication
 
 $Id$
 """
 __docformat__ = 'restructuredtext'
 
 from zope.app.publication.zopepublication import ZopePublication
-
-from zope.component import queryView
-from zope.publisher.interfaces import NotFound
+from zope.component import getView
 from zope.publisher.publish import mapply
+from zope.app.http.interfaces import IHTTPException
 
-
-class FTPPublication(ZopePublication):
-    """The Publication will do all the work for the FTP"""
-
-    def callObject(self, request, ob):
-        method = request['command']
-        view = queryView(ob, method, request, self)
-        if view is self:
-            raise NotFound(ob, method, request)
-
-        return mapply(getattr(view, method), (), request)
+class BaseHTTPPublication(ZopePublication):
+    """Base for HTTP-based protocol publications"""
 
     def annotateTransaction(self, txn, request, ob):
-        txn = super(FTPPublication, self).annotateTransaction(txn, request, ob)
-        request_info = [request['command']]
-        path = request.get('path', '')
-        if path:
-            request_info.append(path)
-        name = request.get('name', '')
-        if name:
-            request_info.append(name)
-        request_info = ' '.join(request_info)
+        txn = super(BaseHTTPPublication, self).annotateTransaction(
+            txn, request, ob)
+        request_info = request.method + ' ' + request.getURL()
         txn.setExtendedInfo('request_info', request_info)
         return txn
+
+class HTTPPublication(BaseHTTPPublication):
+    """HTTP-specific publication"""
+
+    def callObject(self, request, ob):
+        # Exception handling, dont try to call request.method
+        if not IHTTPException.providedBy(ob):
+            ob = getView(ob, request.method, request)
+            ob = getattr(ob, request.method)
+        return mapply(ob, request.getPositionalArguments(), request)
