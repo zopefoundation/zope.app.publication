@@ -13,7 +13,7 @@
 ##############################################################################
 """Zope Publication Tests
 
-$Id: test_zopepublication.py,v 1.30 2004/03/20 21:32:50 philikon Exp $
+$Id: test_zopepublication.py,v 1.31 2004/03/21 16:59:45 philikon Exp $
 """
 import unittest
 import sys
@@ -46,7 +46,7 @@ from zope.app.security.principalregistry import principalRegistry
 from zope.app.security.interfaces import IUnauthenticatedPrincipal, IPrincipal
 from zope.app.publication.zopepublication import ZopePublication
 from zope.app.folder import Folder, rootFolder
-from zope.app.location import Location as LocatableObject
+from zope.app.location import Location
 
 class Principal:
     implements(IPrincipal)
@@ -100,6 +100,11 @@ class ServiceManager:
             return self.auth
         else:
             return default
+
+class LocatableObject(Location):
+
+    def foo(self):
+        pass
 
 class BasePublicationTests(PlacelessSetup, unittest.TestCase):
 
@@ -411,17 +416,21 @@ class ZopePublicationTests(BasePublicationTests):
         foo.__parent__ = root
         directlyProvides(root, IContainmentRoot)
 
-        self.publication.afterCall(self.request, bar)
-
         from zope.publisher.interfaces import IRequest
         expected_path = "/foo/bar"
         expected_user = "/ " + self.user.id
         expected_request = IRequest.__module__ + '.' + IRequest.getName()
 
+        self.publication.afterCall(self.request, bar)
         txn_info = self.db.undoInfo()[0]
         self.assertEqual(txn_info['location'], expected_path)
         self.assertEqual(txn_info['user_name'], expected_user)
         self.assertEqual(txn_info['request_type'], expected_request)
+
+        # also, assert that we still get the right location when
+        # passing an instance method as object.
+        self.publication.afterCall(self.request, bar.foo)
+        self.assertEqual(txn_info['location'], expected_path)
 
 def test_suite():
     return unittest.TestSuite((

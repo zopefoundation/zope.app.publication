@@ -13,10 +13,11 @@
 ##############################################################################
 """Zope publication
 
-$Id: zopepublication.py,v 1.42 2004/03/20 13:37:45 philikon Exp $
+$Id: zopepublication.py,v 1.43 2004/03/21 16:59:44 philikon Exp $
 """
 import sys
 import logging
+from new import instancemethod
 
 from ZODB.POSException import ConflictError
 
@@ -28,6 +29,7 @@ from zope.publisher.interfaces import IRequest, IPublication
 
 from zope.security.management import newSecurityManager
 from zope.security.checker import ProxyFactory
+from zope.security.proxy import trustedRemoveSecurityProxy
 from zope.proxy import removeAllProxies
 from zope.exceptions import Unauthorized
 
@@ -134,7 +136,7 @@ class ZopePublication(PublicationTraverse):
         request.hold(cleanup)  # Close the connection on request.close()
 
         self.openedConnection(conn)
-##        conn.setDebugInfo(getattr(request, 'environ', None), request.other)
+        #conn.setDebugInfo(getattr(request, 'environ', None), request.other)
 
         root = conn.root()
         app = root.get(self.root_name, None)
@@ -161,12 +163,26 @@ class ZopePublication(PublicationTraverse):
         """
         txn.setUser(request.user.id)
 
+        # Work around methods that are usually used for views
+        bare = trustedRemoveSecurityProxy(ob)
+        if isinstance(bare, instancemethod):
+            ob = bare.im_self
+
         # set the location path
         path = None
         locatable = IPhysicallyLocatable(ob, None)
         if locatable is not None:
-            path = locatable.getPath()
-        txn.setExtendedInfo('location', path)
+            # Views are made children of their contexts, but that
+            # doesn't necessarily mean that we can fully resolve the
+            # path. E.g. the family tree of a resource cannot be
+            # resolved completely, as the presentation service is a
+            # dead end.
+            try:
+                path = locatable.getPath()
+            except AttributeError:
+                pass
+        if path is not None:
+            txn.setExtendedInfo('location', path)
 
         # set the request type
         iface = IRequest
