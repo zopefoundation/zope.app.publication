@@ -13,7 +13,7 @@
 ##############################################################################
 """
 
-$Id: publicationtraverse.py,v 1.4 2002/12/31 18:26:57 jim Exp $
+$Id: publicationtraverse.py,v 1.5 2003/04/16 17:58:11 mgedmin Exp $
 """
 
 from zope.component import queryView, getService
@@ -93,7 +93,7 @@ class PublicationTraverser(PublicationTraverse):
         else:
             path = list(path)
 
-        # Remove dingle dots
+        # Remove single dots
         path = [x for x in path if x != '.']
 
         path.reverse()
