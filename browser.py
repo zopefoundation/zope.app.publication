@@ -13,7 +13,7 @@
 ##############################################################################
 """XXX short summary goes here.
 
-$Id: browser.py,v 1.15 2004/03/20 13:37:45 philikon Exp $
+$Id: browser.py,v 1.16 2004/05/01 14:37:43 philikon Exp $
 """
 __metaclass__ = type
 
@@ -28,7 +28,6 @@ from zope.security.checker import ProxyFactory
 class PublicationTraverser(PublicationTraverser_):
 
     def traverseRelativeURL(self, request, ob, path):
-
         ob = self.traversePath(request, ob, path)
 
         while True:
