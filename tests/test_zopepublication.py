@@ -22,6 +22,7 @@ from cStringIO import StringIO
 from persistent import Persistent
 from ZODB.DB import DB
 from ZODB.DemoStorage import DemoStorage
+import transaction
 
 from zope.interface.verify import verifyClass
 from zope.interface import implements, classImplements, implementedBy
