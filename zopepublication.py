@@ -214,6 +214,7 @@ class ZopePublication(object, PublicationTraverse):
         self._logErrorWithErrorReportingService(object, request, exc_info)
 
         response = request.response
+        response.reset()
         exception = None
         legacy_exception = not isinstance(exc_info[1], Exception)
         if legacy_exception:

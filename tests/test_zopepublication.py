@@ -42,6 +42,7 @@ from zope.app.content.folder import Folder, RootFolder
 from zope.component.interfaces import IServiceService
 
 from zope.publisher.base import TestRequest
+from zope.publisher.browser import BrowserResponse
 
 from zope.component.service import serviceManager
 
@@ -261,6 +262,21 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         self.assertEqual(self.object, adapter.obj)
         self.assertEqual(self.request, adapter.request)
 
+    def testExceptionResetsResponse(self):
+        self.request._response = BrowserResponse(self.request.response._outstream)
+        self.request.response.setHeader('Content-Type', 'application/pdf')
+        self.request.response.setCookie('spam', 'eggs')
+        from zodb.interfaces import ConflictError
+        try:
+            raise ConflictError
+        except:
+            pass
+        self.publication.handleException(
+            self.object, self.request, sys.exc_info(), retry_allowed=False)
+        self.request.response.outputBody()
+        self.assertEqual(self.request.response.getHeader('Content-Type'), 'text/html')
+        self.assertEqual(self.request.response._cookies, {})
+
 
 class ZopePublicationTests(BasePublicationTests):
 
@@ -317,6 +333,7 @@ class ZopePublicationTests(BasePublicationTests):
         user = getSecurityManager().getPrincipal()
         self.assertEqual(user, request.user)
         self.assertEqual(getWrapperContext(user).__class__, AuthService2)
+
 
 def test_suite():
     return unittest.TestSuite((
