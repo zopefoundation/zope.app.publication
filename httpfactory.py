@@ -13,7 +13,7 @@
 ##############################################################################
 """
 
-$Id: httpfactory.py,v 1.4 2003/06/06 20:25:30 stevea Exp $
+$Id: httpfactory.py,v 1.5 2003/06/09 16:39:13 alga Exp $
 """
 
 from zope.interface import moduleProvides, implements
@@ -27,7 +27,6 @@ from zope.app.interfaces.startup import IPublicationRequestFactory
 from zope.app.publication.http import HTTPPublication
 from zope.app.publication.browser import BrowserPublication
 from zope.app.publication.xmlrpc import XMLRPCPublication
-
 
 moduleProvides(IPublicationRequestFactoryFactory)
 
@@ -63,7 +62,7 @@ class HTTPPublicationRequestFactory:
         else:
             request = HTTPRequest(input_stream, output_steam, env)
             request.setPublication(self._http)
-        
+
         return request
 
 realize = HTTPPublicationRequestFactory
