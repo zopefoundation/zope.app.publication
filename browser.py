@@ -13,7 +13,7 @@
 ##############################################################################
 """XXX short summary goes here.
 
-$Id: browser.py,v 1.11 2003/11/03 21:37:58 jeremy Exp $
+$Id: browser.py,v 1.12 2004/03/05 22:09:13 jim Exp $
 """
 __metaclass__ = type
 
@@ -46,7 +46,7 @@ class BrowserPublication(ZopePublication):
     """Web browser publication handling."""
 
     def getDefaultTraversal(self, request, ob):
-        if IBrowserPublisher.isImplementedBy(removeAllProxies(ob)):
+        if IBrowserPublisher.providedBy(removeAllProxies(ob)):
             # ob is already proxied, so the result of calling a method will be
             return ob.browserDefault(request)
         else:

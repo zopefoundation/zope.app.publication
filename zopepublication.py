@@ -78,12 +78,12 @@ class ZopePublication(object, PublicationTraverse):
         get_transaction().begin()
 
     def _maybePlacefullyAuthenticate(self, request, ob):
-        if not IUnauthenticatedPrincipal.isImplementedBy(request.user):
+        if not IUnauthenticatedPrincipal.providedBy(request.user):
             # We've already got an authenticated user. There's nothing to do.
             # Note that beforeTraversal guarentees that user is not None.
             return
 
-        if not ISite.isImplementedBy(ob):
+        if not ISite.providedBy(ob):
             # We won't find an authentication service here, so give up.
             return
 
@@ -153,7 +153,7 @@ class ZopePublication(object, PublicationTraverse):
 
     def afterCall(self, request):
         txn = get_transaction()
-        if IHTTPRequest.isImplementedBy(request):
+        if IHTTPRequest.providedBy(request):
             txn.note(request["PATH_INFO"])
         # XXX not sure why you would use id vs title or description
         txn.setUser(request.user.getId())
@@ -334,7 +334,7 @@ def tryToLogWarning(arg1, arg2=None, exc_info=False):
 
 def beginErrorHandlingTransaction(request, note):
     get_transaction().begin()
-    if IHTTPRequest.isImplementedBy(request):
+    if IHTTPRequest.providedBy(request):
         pathnote = '%s ' % request["PATH_INFO"]
     else:
         pathnote = ''

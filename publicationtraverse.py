@@ -13,7 +13,7 @@
 ##############################################################################
 """
 
-$Id: publicationtraverse.py,v 1.11 2003/09/21 17:31:56 jim Exp $
+$Id: publicationtraverse.py,v 1.12 2004/03/05 22:09:13 jim Exp $
 """
 
 from zope.component import queryView
@@ -68,7 +68,7 @@ class PublicationTraverse:
         if nm == '.':
             return ob
 
-        if IPublishTraverse.isImplementedBy(removeAllProxies(ob)):
+        if IPublishTraverse.providedBy(removeAllProxies(ob)):
             ob2 = ob.publishTraverse(request, nm)
         else:
             adapter = queryView(ob, '_traverse', request, self) # marker

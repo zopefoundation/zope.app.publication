@@ -13,7 +13,7 @@
 ##############################################################################
 """
 
-$Id: http.py,v 1.5 2003/03/29 17:08:08 sidnei Exp $
+$Id: http.py,v 1.6 2004/03/05 22:09:13 jim Exp $
 """
 
 from zope.app.publication.zopepublication import ZopePublication
@@ -26,7 +26,7 @@ class HTTPPublication(ZopePublication):
 
     def callObject(self, request, ob):
         # Exception handling, dont try to call request.method
-        if not IHTTPException.isImplementedBy(ob):
+        if not IHTTPException.providedBy(ob):
             ob = getView(ob, request.method, request)
             ob = getattr(ob, request.method)
         return mapply(ob, request.getPositionalArguments(), request)
