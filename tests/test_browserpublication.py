@@ -115,6 +115,7 @@ class BrowserDefaultTests(BasePublicationTests):
     def _testBaseTags(self, url, expected):
         # Make sure I1 and O1 are visible in the module namespace
         # so that the classes can be pickled.
+        import transaction
 
         pub = BrowserPublication(self.db)
 
@@ -129,12 +130,11 @@ class BrowserDefaultTests(BasePublicationTests):
             'tim', 'timbot', 'ai at its best')
 
         # now place our object inside the application
-        from transaction import get_transaction
 
         connection = self.db.open()
         app = connection.root()['Application']
         app.somepath = ob
-        get_transaction().commit()
+        transaction.commit()
         connection.close()
 
         defineChecker(app.__class__, NamesChecker(somepath='xxx'))
