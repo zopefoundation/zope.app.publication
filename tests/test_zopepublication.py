@@ -50,6 +50,8 @@ from zope.proxy.context import getWrapperContext
 from transaction import get_transaction
 from cStringIO import StringIO
 
+from zope.app.services.servicenames import Authentication
+
 class BasePublicationTests(PlacelessSetup, unittest.TestCase):
 
     def setUp(self):
@@ -129,17 +131,11 @@ class ServiceManager:
     def __init__(self, auth):
         self.auth = auth
 
-    def get(self, key, d=None):
-        return self.auth
-
-    __getitem__ = get
-
-    def __contains__(self, key):
-        return 1
-
-    def getService(self, name):
-        # I just wanna get the test to pass. Waaaaa
-        return serviceManager.getService(name)
+    def queryService(self, name, default=None):
+        if name == Authentication:
+            return self.auth
+        else:
+            return default
 
 
 class ZopePublicationErrorHandling(BasePublicationTests):

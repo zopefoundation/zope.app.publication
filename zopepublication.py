@@ -92,7 +92,7 @@ class ZopePublication(object, PublicationTraverse):
 
         sm = ContextWrapper(sm, ob, name="++etc++Services")
 
-        auth_service = sm.get(Authentication)
+        auth_service = sm.queryService(Authentication)
         if auth_service is None:
             # No auth service here
             return
