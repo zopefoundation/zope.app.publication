@@ -13,7 +13,7 @@
 ##############################################################################
 """
 
-$Id: xmlrpc.py,v 1.4 2003/02/07 15:59:41 jim Exp $
+$Id: xmlrpc.py,v 1.5 2003/02/11 15:59:52 sidnei Exp $
 """
 
 from zope.proxy.introspection import removeAllProxies

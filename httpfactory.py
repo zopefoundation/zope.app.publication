@@ -13,7 +13,7 @@
 ##############################################################################
 """
 
-$Id: httpfactory.py,v 1.1 2003/02/07 15:59:41 jim Exp $
+$Id: httpfactory.py,v 1.2 2003/02/11 15:59:52 sidnei Exp $
 """
 
 from zope.publisher.http import HTTPRequest

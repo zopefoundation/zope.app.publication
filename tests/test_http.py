@@ -12,7 +12,7 @@
 #
 ##############################################################################
 """
-$Id: test_http.py,v 1.1 2003/02/07 15:59:43 jim Exp $
+$Id: test_http.py,v 1.2 2003/02/11 15:59:53 sidnei Exp $
 """
 
 from unittest import TestCase, TestSuite, main, makeSuite
