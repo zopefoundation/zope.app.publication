@@ -18,16 +18,13 @@ from zope.interface import Interface
 from zope.component import getService, getServiceManager
 
 from zope.publisher.publish import publish
-from zope.publisher.browser import TestRequest
-from zope.publisher.browser import BrowserView
-from zope.publisher.interfaces.browser import IBrowserPublisher
-from zope.publisher.interfaces.browser import IBrowserPresentation
+from zope.publisher.browser import BrowserView, TestRequest
+from zope.publisher.interfaces.browser \
+     import IBrowserPresentation, IBrowserPublisher
 
 from zope.proxy.context import getWrapperContext, wrapperTypes
 from zope.proxy.introspection import removeAllProxies
 from zope.security.proxy import Proxy, getObject
-
-
 from zope.security.checker import defineChecker, NamesChecker
 
 from zope.app.security.registries.principalregistry import principalRegistry
@@ -38,8 +35,6 @@ from zope.app.publication.browser import BrowserPublication
 from zope.app.publication.traversers import TestTraverser
 from zope.app.publication.tests.test_zopepublication \
      import BasePublicationTests as BasePublicationTests_
-from zope.security.checker import NamesChecker
-
 
 def foo():
     " "
@@ -102,6 +97,9 @@ class BrowserDefaultTests(BasePublicationTests):
 
 
     def _testBaseTags(self, url, expected):
+        # Make sure I1 and O1 are visible in the module namespace
+        # so that the classes can be pickled.
+        global I1, O1
 
         class I1(Interface): pass
 
