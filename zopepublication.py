@@ -151,10 +151,11 @@ class ZopePublication(PublicationTraverse):
         txn = get_transaction()
         self.annotateTransaction(txn, request, ob)
 
+        txn.commit()
+
+    def endRequest(self, request, ob):
         # Make sure the interaction is ended
         endInteraction()
-
-        txn.commit()
 
     def annotateTransaction(self, txn, request, ob):
         """Set some useful meta-information on the transaction. This
@@ -228,9 +229,6 @@ class ZopePublication(PublicationTraverse):
         # This transaction had an exception that reached the publisher.
         # It must definitely be aborted.
         get_transaction().abort()
-
-        # Make sure the interaction is ended
-        endInteraction()
 
         # Convert ConflictErrors to Retry exceptions.
         if retry_allowed and isinstance(exc_info[1], ConflictError):

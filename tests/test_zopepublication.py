@@ -266,7 +266,8 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         self.assertEqual(self.request, adapter.request)
 
     def testExceptionResetsResponse(self):
-        self.request._response = BrowserResponse(self.request.response._outstream)
+        self.request._response = BrowserResponse(
+            self.request.response._outstream)
         self.request.response.setHeader('Content-Type', 'application/pdf')
         self.request.response.setCookie('spam', 'eggs')
         from ZODB.POSException import ConflictError
@@ -384,6 +385,8 @@ class ZopePublicationTests(BasePublicationTests):
         self.assertEqual(self.request.principal.id, 'test.bob')
         self.assertEqual(list(queryInteraction().participations),
                          [self.request])
+        self.publication.endRequest(self.request, ob)
+        self.assertEqual(queryInteraction(), None)        
 
     def testTransactionCommitAfterCall(self):
         root = self.db.open().root()
@@ -430,6 +433,8 @@ class ZopePublicationTests(BasePublicationTests):
         # passing an instance method as object.
         self.publication.afterCall(self.request, bar.foo)
         self.assertEqual(txn_info['location'], expected_path)
+
+        
 
 def test_suite():
     return unittest.TestSuite((
