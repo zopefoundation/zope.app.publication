@@ -192,7 +192,6 @@ class ZopePublication(object, PublicationTraverse):
                 ErrorReports)
             get_transaction().abort()
 
-        
 
     def handleException(self, object, request, exc_info, retry_allowed=True):
         # This transaction had an exception that reached the publisher.
