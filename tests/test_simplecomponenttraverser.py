@@ -52,7 +52,7 @@ class Test(PlacelessSetup, unittest.TestCase):
         # test container traver
         foo = Container()
         c   = Container(foo=foo)
-        req = Request(I, '')
+        req = Request(I)
 
         T = SimpleComponentTraverser(c, req)
 
@@ -63,12 +63,12 @@ class Test(PlacelessSetup, unittest.TestCase):
         # test getting a view
         foo = Container()
         c   = Container(foo=foo)
-        req = Request(I, '')
+        req = Request(I)
 
         T = SimpleComponentTraverser(c, req)
         ztapi.provideView(None, I, Interface, 'foo', View)
 
-        self.failUnless(T.publishTraverse(req,'foo').__class__ is View)
+        self.failUnless(T.publishTraverse(req, 'foo').__class__ is View)
 
         self.assertRaises(NotFound, T.publishTraverse, req , 'morebar')
 

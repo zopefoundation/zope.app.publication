@@ -16,18 +16,26 @@
 $Id$
 """
 from unittest import TestCase, TestSuite, main, makeSuite
-from zope.app.publication.httpfactory import HTTPPublicationRequestFactory
-from zope.publisher.browser import BrowserRequest
-from zope.app.publication.browser import BrowserPublication
-from zope.publisher.http import HTTPRequest
-from zope.app.publication.http import HTTPPublication
-from zope.publisher.xmlrpc import XMLRPCRequest
-from zope.app.publication.xmlrpc import XMLRPCPublication
+
 from StringIO import StringIO
 
-class Test(TestCase):
+from zope.publisher.browser import BrowserRequest
+from zope.publisher.http import HTTPRequest
+from zope.publisher.xmlrpc import XMLRPCRequest
+from zope.component.interfaces import IAdapterService
+from zope.component.adapter import GlobalAdapterService
+from zope.component.tests.placelesssetup import PlacelessSetup
+
+from zope.app.publication.httpfactory import HTTPPublicationRequestFactory
+from zope.app.publication.browser import BrowserPublication
+from zope.app.publication.http import HTTPPublication
+from zope.app.publication.xmlrpc import XMLRPCPublication
+from zope.app.tests import ztapi
+
+class Test(PlacelessSetup, TestCase):
 
     def setUp(self):
+        super(Test, self).setUp()
         self.__factory = HTTPPublicationRequestFactory(None)
         self.__env =  {
             'SERVER_URL':         'http://127.0.0.1',

@@ -28,11 +28,9 @@ from zope.event import notify
 from zope.security.interfaces import Unauthorized
 from zope.component.exceptions import ComponentLookupError
 from zope.interface import implements, providedBy
-from zope.interface import directlyProvides, directlyProvidedBy
 from zope.publisher.publish import mapply
 from zope.publisher.interfaces import Retry, IExceptionSideEffects
 from zope.publisher.interfaces import IRequest, IPublication
-from zope.publisher.interfaces.browser import IDefaultSkin
 from zope.security.management import newInteraction, endInteraction
 from zope.security.checker import ProxyFactory
 from zope.security.proxy import removeSecurityProxy
@@ -78,12 +76,6 @@ class ZopePublication(PublicationTraverse):
             p = prin_reg.unauthenticatedPrincipal()
             if p is None:
                 raise Unauthorized # If there's no default principal
-
-        # Set the default skin
-        adapters = zapi.getService(zapi.servicenames.Adapters)
-        skin = adapters.lookup((providedBy(request),), IDefaultSkin, '')
-        if skin is not None:
-            directlyProvides(request, directlyProvidedBy(request)+skin)
 
         request.setPrincipal(p)
         newInteraction(request)

@@ -196,6 +196,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
             pass
 
         ztapi.setDefaultViewName(E1, 'name',
+                                 layer=None,
                                  type=self.presentation_type)
         view_text = 'You had a conflict error'
         ztapi.provideView(E1, self.presentation_type, Interface,
@@ -240,6 +241,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
             pass
 
         ztapi.setDefaultViewName(E2, 'name',
+                                 layer=self.presentation_type,
                                  type=self.presentation_type)
         view_text = 'You had a conflict error'
 
