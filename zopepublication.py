@@ -255,8 +255,6 @@ class ZopePublication(object, PublicationTraverse):
             # exception
             try:
                 adapter = getAdapter(exception, IExceptionSideEffects)
-                # view_presented is None if no view was presented, or the name
-                # of the view, if it was.
                 # Although request is passed in here, it should be considered
                 # read-only.
                 adapter(object, request, exc_info)
