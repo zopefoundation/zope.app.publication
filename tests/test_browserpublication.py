@@ -287,6 +287,7 @@ class BrowserPublicationTests(BasePublicationTests):
             'Status: 200 Ok\r\n'
             'Content-Length: 4\r\n'
             'Content-Type: text/plain;charset=utf-8\r\n'
+            'X-Content-Type-Warning: guessed from content\r\n'
             'X-Powered-By: Zope (www.zope.org), Python (www.python.org)\r\n'
             '\r\nspam'
             )
@@ -304,6 +305,7 @@ class BrowserPublicationTests(BasePublicationTests):
             'Status: 200 Ok\r\n'
             'Content-Length: 0\r\n'
             'Content-Type: text/plain;charset=utf-8\r\n'
+            'X-Content-Type-Warning: guessed from content\r\n'
             'X-Powered-By: Zope (www.zope.org), Python (www.python.org)\r\n'
             '\r\n'
             )
@@ -319,6 +321,7 @@ class BrowserPublicationTests(BasePublicationTests):
             'Status: 200 Ok\r\n'
             'Content-Length: 8\r\n'
             'Content-Type: text/plain;charset=utf-8\r\n'
+            'X-Content-Type-Warning: guessed from content\r\n'
             'X-Powered-By: Zope (www.zope.org), Python (www.python.org)\r\n'
             '\r\n\xd1\x82\xd0\xb5\xd1\x81\xd1\x82')
 
