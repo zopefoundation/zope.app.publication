@@ -12,7 +12,7 @@
 #
 ##############################################################################
 """
-$Id: test_zopepublication.py,v 1.23 2004/02/24 16:51:14 philikon Exp $
+$Id: test_zopepublication.py,v 1.24 2004/03/03 10:38:48 philikon Exp $
 """
 
 import unittest
@@ -283,7 +283,7 @@ class ZopePublicationTests(BasePublicationTests):
 
         request = TestRequest('/f1/f2')
 
-        from zope.app.interfaces.container import ISimpleReadContainer
+        from zope.app.container.interfaces import ISimpleReadContainer
         from zope.app.container.traversal import ContainerTraverser
 
         s = zapi.getService(None, zapi.servicenames.Presentation) 
