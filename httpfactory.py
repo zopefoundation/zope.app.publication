@@ -30,6 +30,8 @@ from zope.app.publication.interfaces import IPublicationRequestFactory
 from zope.app.publication.http import HTTPPublication
 from zope.app.publication.browser import BrowserPublication
 from zope.app.publication.xmlrpc import XMLRPCPublication
+from zope.app.publication.soap import SOAPPublication
+from zope.app.publication.interfaces import ISOAPRequestFactory
 
 _browser_methods = 'GET', 'POST', 'HEAD'
 
@@ -41,15 +43,22 @@ class HTTPPublicationRequestFactory(object):
         self._http = HTTPPublication(db)
         self._brower = BrowserPublication(db)
         self._xmlrpc = XMLRPCPublication(db)
+        self._soappub = SOAPPublication(db)
+        self._soapreq = zapi.queryUtility(ISOAPRequestFactory)
 
     def __call__(self, input_stream, output_steam, env):
         """See `zope.app.publication.interfaces.IPublicationRequestFactory`"""
         method = env.get('REQUEST_METHOD', 'GET').upper()
 
         if method in _browser_methods:
-            if (method == 'POST' and
-                env.get('CONTENT_TYPE', '').startswith('text/xml')
-                ):
+            content_type = env.get('CONTENT_TYPE', '')
+            is_xml = content_type.startswith('text/xml')
+
+            if (method == 'POST' and is_xml and env.get('SOAPAction', None)
+                and self._soapreq is not None):
+                request = self._soapreq(input_stream, output_steam, env)
+                request.setPublication(self._soappub)
+            elif (method == 'POST' and is_xml):
                 request = XMLRPCRequest(input_stream, output_steam, env)
                 request.setPublication(self._xmlrpc)
             else:

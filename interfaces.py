@@ -50,3 +50,12 @@ class EndRequestEvent(object):
     def __init__(self, ob, request):
         self.object = ob
         self.request = request
+
+
+class ISOAPRequestFactory(Interface):
+    """SOAP request factory"""
+
+    def __call__(input_stream, output_steam, env):
+        """Create a request object to handle SOAP input."""
+
+
