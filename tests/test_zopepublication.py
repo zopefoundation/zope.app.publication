@@ -18,8 +18,7 @@ from zope.app import zapi
 from zope.interface.verify import verifyClass
 from zope.interface import implements, classImplements, implementedBy
 
-from zodb.db import DB
-from zodb.storage.mapping import MappingStorage
+from ZODB.tests.util import DB
 
 from zope.app.tests.placelesssetup import PlacelessSetup
 from zope.app.tests import ztapi
@@ -55,11 +54,12 @@ class BasePublicationTests(PlacelessSetup, unittest.TestCase):
 
     def setUp(self):
         super(BasePublicationTests, self).setUp()
-        ztapi.provideAdapter(IHTTPRequest, IUserPreferredCharsets, HTTPCharsets)
+        ztapi.provideAdapter(IHTTPRequest, IUserPreferredCharsets,
+                             HTTPCharsets)
         self.policy = setSecurityPolicy(
             simplepolicies.PermissiveSecurityPolicy()
             )
-        self.db = DB(MappingStorage("foo"))
+        self.db = DB()
 
         connection = self.db.open()
         root = connection.root()

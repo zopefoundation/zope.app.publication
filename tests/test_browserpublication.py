@@ -13,7 +13,7 @@
 ##############################################################################
 """Browser Publication Tests
 
-$Id: test_browserpublication.py,v 1.22 2004/01/14 22:55:23 chrism Exp $
+$Id: test_browserpublication.py,v 1.23 2004/02/20 16:57:27 fdrake Exp $
 """
 import unittest
 
@@ -40,7 +40,7 @@ from zope.app.publication.traversers import TestTraverser
 from zope.app.publication.tests.test_zopepublication \
      import BasePublicationTests as BasePublicationTests_
 
-from persistence import Persistent
+from persistent import Persistent
 
 def foo():
     "I am an otherwise empty docstring."
