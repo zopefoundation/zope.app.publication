@@ -18,7 +18,7 @@ from StringIO import StringIO
 from zope.interface import Interface
 
 from zope.component import getService, getServiceManager
-from zope.component.servicenames import Views
+from zope.app.services.servicenames import Views
 
 from zope.publisher.publish import publish
 from zope.publisher.browser import BrowserView, TestRequest

@@ -17,7 +17,7 @@ import logging
 from zope.component import getService, getView, getDefaultViewName
 from zope.component import queryService, getAdapter
 from zope.component.exceptions import ComponentLookupError
-from zope.component.servicenames import ErrorReports, Authentication
+from zope.app.services.servicenames import ErrorReports, Authentication
 from zodb.interfaces import ConflictError
 
 from zope.publisher.publish import mapply
