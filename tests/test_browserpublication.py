@@ -175,7 +175,7 @@ class BrowserPublicationTests(BasePublicationTests):
     def testNativeTraverseNameWrapping(self):
         pub = self.klass(self.db)
         ob = DummyPublished()
-        ob2 = pub.traverseName(self._createRequest('/bruce',pub), ob, 'bruce')
+        ob2 = pub.traverseName(self._createRequest('/bruce', pub), ob, 'bruce')
         self.failUnless(ob2 is not ob)
         self.failUnless(type(ob2) is Proxy)
         ob2 = getObject(ob2)
@@ -191,16 +191,16 @@ class BrowserPublicationTests(BasePublicationTests):
                 self.counter = 0
 
             def publishTraverse(self, request, name):
-                self.counter+=1
+                self.counter += 1
                 return self.context[name]
 
-        provideView=getService(None, Views).provideView
+        provideView = getService(None, Views).provideView
         provideView(I1, '_traverse', IBrowserPresentation, [Adapter])
         ob = mydict()
-        ob['bruce'] =  SimpleObject('bruce')
-        ob['bruce2'] =  SimpleObject('bruce2')
+        ob['bruce'] = SimpleObject('bruce')
+        ob['bruce2'] = SimpleObject('bruce2')
         pub = self.klass(self.db)
-        ob2 = pub.traverseName(self._createRequest('/bruce',pub), ob, 'bruce')
+        ob2 = pub.traverseName(self._createRequest('/bruce', pub), ob, 'bruce')
         self.failUnless(type(ob2) is Proxy)
         ob2 = getObject(ob2)
         self.failUnless(type(ob2) in wrapperTypes)
@@ -230,7 +230,6 @@ class BrowserPublicationTests(BasePublicationTests):
         self.failUnless(type(ob2) in wrapperTypes)
         unw = removeAllProxies(ob2)
         self.assertEqual(unw.v, 'bruce')
-
 
     # XXX we no longer support path parameters! (At least for now)
     def XXXtestTraverseSkinExtraction(self):
@@ -305,7 +304,6 @@ class BrowserPublicationTests(BasePublicationTests):
         app = r.publication.getApplication(r)
         self.assertEqual(app, applicationControllerRoot)
 
-
     def testHEADFuxup(self):
         pub = self.klass(None)
 
@@ -346,9 +344,6 @@ class BrowserPublicationTests(BasePublicationTests):
             '\r\n'
             )
 
-        
-        
-        
 
 def test_suite():
     t2 = unittest.makeSuite(BrowserPublicationTests, 'test')
@@ -357,4 +352,4 @@ def test_suite():
 
 
 if __name__ == '__main__':
-    unittest.TextTestRunner().run( test_suite() )
+    unittest.TextTestRunner().run(test_suite())

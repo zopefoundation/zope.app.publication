@@ -13,7 +13,7 @@
 ##############################################################################
 """
 
-$Id: test_simplecomponenttraverser.py,v 1.5 2003/02/12 02:17:26 seanb Exp $
+$Id: test_simplecomponenttraverser.py,v 1.6 2003/03/13 18:49:08 alga Exp $
 """
 
 import unittest, sys
@@ -52,8 +52,8 @@ class Test(PlacelessSetup, unittest.TestCase):
     def testAttr(self):
         # test container traver
         foo = Container()
-        c   = Container( foo=foo )
-        req = Request( I, '')
+        c   = Container(foo=foo)
+        req = Request(I, '')
 
         T = SimpleComponentTraverser(c, req)
 
@@ -63,8 +63,8 @@ class Test(PlacelessSetup, unittest.TestCase):
     def testView(self):
         # test getting a view
         foo = Container()
-        c   = Container( foo=foo )
-        req = Request( I, '')
+        c   = Container(foo=foo)
+        req = Request(I, '')
 
         T = SimpleComponentTraverser(c, req)
         getService(None,Views).provideView(None , 'foo', I, [View])
