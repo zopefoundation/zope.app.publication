@@ -112,10 +112,12 @@ class BasePublicationTests(PlacelessSetup, unittest.TestCase):
 
     def setUp(self):
         super(BasePublicationTests, self).setUp()
+        from zope.security.management import endInteraction
+        endInteraction()
         ztapi.provideAdapter(IHTTPRequest, IUserPreferredCharsets,
                              HTTPCharsets)
         self.policy = setSecurityPolicy(
-            simplepolicies.PermissiveSecurityPolicy()
+            simplepolicies.PermissiveSecurityPolicy
             )
         self.storage = DemoStorage('test_storage')
         self.db = db = DB(self.storage)
