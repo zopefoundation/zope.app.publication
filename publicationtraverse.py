@@ -11,7 +11,8 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""
+"""Publication Traverser
+
 $Id$
 """
 from zope.component import queryViewProviding
