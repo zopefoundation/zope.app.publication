@@ -13,22 +13,21 @@
 ##############################################################################
 """Browser Publication Tests
 
-$Id: test_browserpublication.py,v 1.20 2003/09/23 19:12:31 jim Exp $
+$Id: test_browserpublication.py,v 1.21 2003/11/21 17:12:10 jim Exp $
 """
 import unittest
 
+from zope.app.tests import ztapi
 from StringIO import StringIO
 
 from zope.exceptions import ForbiddenAttribute
 from zope.interface import Interface, implements
 
 from zope.component import getService
-from zope.app.services.servicenames import Views
 
 from zope.publisher.publish import publish
 from zope.publisher.browser import BrowserView, TestRequest
-from zope.publisher.interfaces.browser \
-     import IBrowserPresentation, IBrowserPublisher
+from zope.publisher.interfaces.browser import IBrowserPublisher
 
 from zope.proxy import removeAllProxies, getProxiedObject
 from zope.security.proxy import Proxy
@@ -122,12 +121,9 @@ class BrowserDefaultTests(BasePublicationTests):
 
         pub = BrowserPublication(self.db)
 
-        getService(None,'Views').provideView(I1, 'view',
-                           IBrowserPresentation, [DummyView])
-        getService(None,'Views').setDefaultViewName(I1,
-                             IBrowserPresentation, 'view')
-        getService(None, 'Views').provideView(None,
-                    '_traverse', IBrowserPresentation, [TestTraverser])
+        ztapi.browserView(I1, 'view', [DummyView])
+        ztapi.setDefaultViewName(I1, 'view')
+        ztapi.browserView(None, '_traverse', [TestTraverser])
 
         ob = O1()
 
@@ -182,8 +178,7 @@ class BrowserPublicationTests(BasePublicationTests):
                 self.counter += 1
                 return self.context[name]
 
-        provideView = getService(None, Views).provideView
-        provideView(I1, '_traverse', IBrowserPresentation, [Adapter])
+        ztapi.browserView(I1, '_traverse', [Adapter])
         ob = mydict()
         ob['bruce'] = SimpleObject('bruce')
         ob['bruce2'] = SimpleObject('bruce2')
@@ -202,8 +197,7 @@ class BrowserPublicationTests(BasePublicationTests):
             def browserDefault(self, request):
                 return (self.context['bruce'], 'dummy')
 
-        provideView=getService(None, Views).provideView
-        provideView(I1, '_traverse', IBrowserPresentation, [Adapter])
+        ztapi.browserView(I1, '_traverse', [Adapter])
         ob = mydict()
         ob['bruce'] =  SimpleObject('bruce')
         ob['bruce2'] =  SimpleObject('bruce2')
@@ -222,8 +216,7 @@ class BrowserPublicationTests(BasePublicationTests):
 
         pub = self.klass(self.db)
         ob = C()
-        provideView=getService(None, Views).provideView
-        provideView(I1, 'edit', IBrowserPresentation, [BobView])
+        ztapi.browserView(I1, 'edit', [BobView])
 
         r = self._createRequest('/@@edit;skin=zmi',pub)
         ob2 = pub.traverseName(r , ob, '@@edit;skin=zmi')
@@ -241,8 +234,7 @@ class BrowserPublicationTests(BasePublicationTests):
             x = SimpleObject(1)
         ob = C()
         r = self._createRequest('/x',pub)
-        provideView=getService(None, Views).provideView
-        provideView(None, '_traverse', IBrowserPresentation, [TestTraverser])
+        ztapi.browserView(None, '_traverse', [TestTraverser])
         ob2 = pub.traverseName(r, ob, 'x')
         self.assertRaises(ForbiddenAttribute, getattr, ob2, 'v')
         self.assertEqual(removeAllProxies(ob2).v, 1)
@@ -255,10 +247,8 @@ class BrowserPublicationTests(BasePublicationTests):
         ob = C()
         class V:
             def __init__(self, context, request): pass
-            implements(IBrowserPresentation)
         r = self._createRequest('/@@spam',pub)
-        provideView=getService(None, Views).provideView
-        provideView(I, 'spam', IBrowserPresentation, [V])
+        ztapi.browserView(I, 'spam', [V])
         ob2 = pub.traverseName(r, ob, '@@spam')
         self.assertEqual(ob2.__class__, V)
 
