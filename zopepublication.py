@@ -26,6 +26,8 @@ from zope.publisher.interfaces.http import IHTTPRequest
 from zope.security.management import newSecurityManager
 from zope.security.checker import ProxyFactory
 
+from zope.proxy.context import ContextWrapper
+
 from zope.proxy.introspection import removeAllProxies
 
 from zope.app.interfaces.services.service import IServiceManagerContainer
@@ -151,7 +153,7 @@ class ZopePublication(object, PublicationTraverse):
         if app is None:
             raise SystemError, "Zope Application Not Found"
 
-        return ProxyFactory(app)
+        return ProxyFactory(ContextWrapper(app, None))
 
     def callObject(self, request, ob):
         return mapply(ob, request.getPositionalArguments(), request)
