@@ -164,22 +164,8 @@ class ZopePublication(object, PublicationTraverse):
         txn.setUser(request.user.getId())
         get_transaction().commit()
 
-    def handleException(self, object, request, exc_info, retry_allowed=True):
-        # This transaction had an exception that reached the publisher.
-        # It must definitely be aborted.
-        get_transaction().abort()
 
-        # Convert ConflictErrors to Retry exceptions.
-        if retry_allowed and isinstance(exc_info[1], ConflictError):
-            tryToLogWarning('ZopePublication',
-                'Competing writes/reads at %s' % 
-                request.get('PATH_INFO', '???'),
-                exc_info=True)
-            raise Retry
-        # Are there any reasons why we'd want to let application-level error
-        # handling determine whether a retry is allowed or not?
-        # Assume not for now.
-
+    def _logErrorWithErrorReportingService(self, object, request, exc_info):
         # Record the error with the ErrorReportingService
         beginErrorHandlingTransaction(request, 'error reporting service')
         try:
@@ -205,6 +191,27 @@ class ZopePublication(object, PublicationTraverse):
                 'Error while reporting an error to the %s service' %
                 ErrorReports)
             get_transaction().abort()
+
+        
+
+    def handleException(self, object, request, exc_info, retry_allowed=True):
+        # This transaction had an exception that reached the publisher.
+        # It must definitely be aborted.
+        get_transaction().abort()
+
+        # Convert ConflictErrors to Retry exceptions.
+        if retry_allowed and isinstance(exc_info[1], ConflictError):
+            tryToLogWarning('ZopePublication',
+                'Competing writes/reads at %s' % 
+                request.get('PATH_INFO', '???'),
+                exc_info=True)
+            raise Retry
+        # Are there any reasons why we'd want to let application-level error
+        # handling determine whether a retry is allowed or not?
+        # Assume not for now.
+
+        # Record the error with the ErrorReportingService
+        self._logErrorWithErrorReportingService(object, request, exc_info)
 
         response = request.response
         exception = None
@@ -246,6 +253,11 @@ class ZopePublication(object, PublicationTraverse):
                     # Log an error.
                     tryToLogException(
                         'Exception while rendering view on exception')
+
+                    # Record the error with the ErrorReportingService
+                    self._logErrorWithErrorReportingService(
+                        object, request, sys.exc_info())
+
                     view = None
 
             if view is None:
