@@ -108,6 +108,9 @@ class LocatableObject(Location):
     def foo(self):
         pass
 
+class TestRequest(TestRequest):
+    URL='http://test.url'
+
 class BasePublicationTests(PlacelessSetup, unittest.TestCase):
 
     def setUp(self):
@@ -188,24 +191,91 @@ class ZopePublicationErrorHandling(BasePublicationTests):
                          ' ConflictError: database conflict error')
 
     def testViewOnException(self):
-        from ZODB.POSException import ConflictError
         from zope.interface import Interface
-        class IConflictError(Interface):
+        class E1(Exception):
             pass
-        classImplements(ConflictError, IConflictError)
-        ztapi.setDefaultViewName(IConflictError, 'name',
+
+        ztapi.setDefaultViewName(E1, 'name',
                                  type=self.presentation_type)
         view_text = 'You had a conflict error'
-        ztapi.provideView(IConflictError, self.presentation_type, Interface,
+        ztapi.provideView(E1, self.presentation_type, Interface,
                           'name', lambda obj, request: lambda: view_text)
         try:
-            raise ConflictError
+            raise E1
         except:
             pass
         self.publication.handleException(
             self.object, self.request, sys.exc_info(), retry_allowed=False)
         self.request.response.outputBody()
         self.assertEqual(self.out.getvalue(), view_text)
+
+    def testHandlingSystemErrors(self):
+
+        # Generally, when there is a view for an excepton, we assume
+        # it is a user error, not a system error and we don't log it.
+
+        from zope.testing import loggingsupport
+        handler = loggingsupport.InstalledHandler('SiteError')
+        
+        self.testViewOnException()
+
+        self.assertEqual(
+            str(handler),
+            'SiteError ERROR\n'
+            '  Error while reporting an error to the ErrorLogging service')
+
+        # Here we got a single log record, because we havdn't
+        # installed an error reporting service.  That's OK.
+
+        handler.uninstall()
+        self.out.seek(0)
+        self.out.truncate(0)
+        handler = loggingsupport.InstalledHandler('SiteError')
+
+        # Now, we'll register an exception view that indicates that we
+        # have a system error.
+        
+        from zope.interface import Interface, implements
+        class E2(Exception):
+            pass
+
+        ztapi.setDefaultViewName(E2, 'name',
+                                 type=self.presentation_type)
+        view_text = 'You had a conflict error'
+
+        from zope.app.exception.interfaces import ISystemErrorView
+        class MyView:
+            implements(ISystemErrorView)
+            def __init__(self, context, request):
+                pass
+
+            def isSystemError(self):
+                return True
+            
+            def __call__(self):
+                return view_text
+        
+        ztapi.provideView(E2, self.presentation_type, Interface,
+                          'name', MyView)
+        try:
+            raise E2
+        except:
+            self.publication.handleException(
+                self.object, self.request, sys.exc_info(), retry_allowed=False)
+        self.request.response.outputBody()
+
+        # Now, since the view was a system error view, we should have
+        # a log entry for the E2 error (as well as the missing
+        # error reporting service).
+        self.assertEqual(
+            str(handler),
+            'SiteError ERROR\n'
+            '  Error while reporting an error to the ErrorLogging service\n'
+            'SiteError ERROR\n'
+            '  http://test.url'
+            )
+    
+        handler.uninstall()
 
     def testNoViewOnClassicClassException(self):
         from zope.interface import Interface

@@ -42,6 +42,7 @@ from zope.app.applicationcontrol.applicationcontrol \
      import applicationControllerRoot
 from zope.app.component.hooks import getSite
 from zope.app.errorservice import RootErrorReportingService
+from zope.app.exception.interfaces import ISystemErrorView
 from zope.app.location import LocationProxy
 from zope.app.publication.interfaces import BeforeTraverseEvent
 from zope.app.publication.interfaces import EndRequestEvent
@@ -308,10 +309,24 @@ class ZopePublication(PublicationTraverse):
                 tryToLogException(
                     'Exception while getting view on exception')
 
+
             if view is not None:
                 try:
                     response.setBody(self.callObject(request, view))
                     get_transaction().commit()
+                    if (ISystemErrorView.providedBy(view)
+                        and view.isSystemError()):
+                        # Got a system error, want to log the error
+
+                        # Lame hack to get around logging missfeature
+                        # that is fixed in Python 2.4
+                        try:
+                            raise exc_info[0], exc_info[1], exc_info[2]
+                        except:
+                            logging.getLogger('SiteError').exception(
+                                str(request.URL),
+                                )
+                            
                 except:
                     # Problem rendering the view for this exception.
                     # Log an error.
