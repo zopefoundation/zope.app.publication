@@ -13,7 +13,7 @@
 ##############################################################################
 """Browser Publication Tests
 
-$Id: test_browserpublication.py,v 1.19 2003/09/21 17:31:57 jim Exp $
+$Id: test_browserpublication.py,v 1.20 2003/09/23 19:12:31 jim Exp $
 """
 import unittest
 
@@ -41,6 +41,8 @@ from zope.app.publication.browser import BrowserPublication
 from zope.app.publication.traversers import TestTraverser
 from zope.app.publication.tests.test_zopepublication \
      import BasePublicationTests as BasePublicationTests_
+
+from persistence import Persistent
 
 def foo():
     " "
@@ -71,6 +73,20 @@ class BasePublicationTests(BasePublicationTests_):
         request = TestRequest(PATH_INFO=path, **kw)
         request.setPublication(publication)
         return request
+
+class SimpleObject:
+    def __init__(self, v):
+        self.v = v
+
+class I1(Interface):
+    pass
+
+class mydict(dict):
+    implements(I1)
+
+
+class O1(Persistent):
+    implements(I1)
 
 
 class BrowserDefaultTests(BasePublicationTests):
@@ -103,14 +119,6 @@ class BrowserDefaultTests(BasePublicationTests):
     def _testBaseTags(self, url, expected):
         # Make sure I1 and O1 are visible in the module namespace
         # so that the classes can be pickled.
-        global I1, O1
-
-        class I1(Interface): pass
-
-        from persistence import Persistent
-
-        class O1(Persistent):
-            implements(I1)
 
         pub = BrowserPublication(self.db)
 
@@ -155,17 +163,6 @@ class BrowserDefaultTests(BasePublicationTests):
         request.setPublication(publication)
         return request
 
-
-
-class SimpleObject:
-    def __init__(self, v):
-        self.v = v
-
-class I1(Interface):
-    pass
-
-class mydict(dict):
-    implements(I1)
 
 
 class BrowserPublicationTests(BasePublicationTests):
