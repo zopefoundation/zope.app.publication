@@ -11,11 +11,10 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""
+"""Test FTP Publication.
 
 $Id$
 """
-
 from zope.app.publication.zopepublication import ZopePublication
 
 from zope.component import queryView
@@ -25,9 +24,6 @@ from zope.publisher.publish import mapply
 
 class FTPPublication(ZopePublication):
     """The Publication will do all the work for the FTP"""
-
-    # XXX we will need to adjust traverseName to avoid traversing
-    # to views.
 
     def callObject(self, request, ob):
         method = request['command']
