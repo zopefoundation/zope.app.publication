@@ -11,15 +11,14 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""
+"""HTTP Publication
 
-$Id: http.py,v 1.6 2004/03/05 22:09:13 jim Exp $
+$Id: http.py,v 1.7 2004/03/13 23:34:30 srichter Exp $
 """
-
 from zope.app.publication.zopepublication import ZopePublication
 from zope.component import getView
 from zope.publisher.publish import mapply
-from zope.app.interfaces.http import IHTTPException
+from zope.app.http.interfaces import IHTTPException
 
 class HTTPPublication(ZopePublication):
     "HTTP-specific support"
