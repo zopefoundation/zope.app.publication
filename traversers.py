@@ -18,7 +18,6 @@ $Id$
 __docformat__ = 'restructuredtext'
 
 from zope.app import zapi
-from zope.component.interfaces import IDefaultViewName
 from zope.interface import providedBy, implements
 from zope.publisher.interfaces import Unauthorized, NotFound
 from zope.publisher.interfaces.browser import IBrowserPublisher
@@ -56,8 +55,7 @@ class FileContentTraverser(SimpleComponentTraverser):
     def browserDefault(self, request):
         ob = self.context
 
-        view_name = zapi.getSiteManager().adapters.lookup(
-            map(providedBy, (ob, request)), IDefaultViewName)
+        view_name = zapi.getDefaultViewName(ob, request)
         view = self.publishTraverse(request, view_name)
         if hasattr(view, 'browserDefault'):
             view, path = view.browserDefault(request)
@@ -80,8 +78,7 @@ class TestTraverser(object):
         ob = self.context
 
         if providedBy(ob):
-            view_name = zapi.getSiteManager().adapters.lookup(
-                map(providedBy, (ob, request)), IDefaultViewName)
+            view_name = zapi.getDefaultViewName(ob, request)
             return ob, (("@@%s" % view_name),)
 
         return ob, ()
