@@ -11,6 +11,10 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+"""Browser Publication Tests
+
+$Id: test_browserpublication.py,v 1.17 2003/08/04 23:13:15 srichter Exp $
+"""
 import unittest
 
 from StringIO import StringIO
