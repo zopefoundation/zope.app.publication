@@ -52,7 +52,6 @@ class PublicationTraverse(object):
             ob2 = ob.publishTraverse(request, nm)
         else:
             # self is marker
-            import pdb; pdb.set_trace()
             adapter = queryViewProviding(ob, IPublishTraverse, request, self)
             if adapter is not self:
                 ob2 = adapter.publishTraverse(request, nm)
