@@ -15,7 +15,7 @@ import sys
 import logging
 
 from zope.component import queryView, queryDefaultViewName
-from zope.component import queryService, queryAdapter
+from zope.component import queryService
 from zope.app.services.servicenames import ErrorLogging, Authentication
 from ZODB.POSException import ConflictError
 
@@ -281,7 +281,7 @@ class ZopePublication(object, PublicationTraverse):
             # See if there's an IExceptionSideEffects adapter for the
             # exception
             try:
-                adapter = queryAdapter(exception, IExceptionSideEffects)
+                adapter = IExceptionSideEffects(exception, None)
             except:
                 tryToLogException(
                     'Exception while getting IExceptionSideEffects adapter')
