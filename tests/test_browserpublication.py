@@ -23,8 +23,6 @@ from StringIO import StringIO
 from zope.exceptions import ForbiddenAttribute
 from zope.interface import Interface, implements
 
-from zope.component import getService
-
 from zope.publisher.publish import publish
 from zope.publisher.browser import TestRequest
 from zope.app.publisher.browser import BrowserView

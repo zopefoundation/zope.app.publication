@@ -66,7 +66,7 @@ class Test(PlacelessSetup, unittest.TestCase):
         req = Request(I, '')
 
         T = SimpleComponentTraverser(c, req)
-        getService(None, Presentation).provideView(None , 'foo', I, View)
+        getService(Presentation).provideView(None , 'foo', I, View)
 
         self.failUnless(T.publishTraverse(req,'foo').__class__ is View )
 

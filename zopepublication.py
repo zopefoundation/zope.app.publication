@@ -93,8 +93,9 @@ class ZopePublication(PublicationTraverse):
 
         sm = removeAllProxies(ob).getSiteManager()
 
-        auth_service = sm.queryService(Authentication)
-        if auth_service is None:
+        try:
+            auth_service = sm.getService(Authentication)
+        except ComponentLookupError:
             # No auth service here
             return
 

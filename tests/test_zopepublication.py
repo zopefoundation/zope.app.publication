@@ -28,6 +28,7 @@ from zope.interface import implements, classImplements, implementedBy
 from zope.i18n.interfaces import IUserPreferredCharsets
 from zope.component import getGlobalServices
 from zope.component.interfaces import IServiceService
+from zope.component.exceptions import ComponentLookupError
 from zope.publisher.base import TestPublication, TestRequest
 from zope.publisher.http import IHTTPRequest, HTTPCharsets
 from zope.publisher.interfaces import IRequest, IPublishTraverse
@@ -97,11 +98,10 @@ class ServiceManager:
     def __init__(self, auth):
         self.auth = auth
 
-    def queryService(self, name, default=None):
+    def getService(self, name):
         if name == Authentication:
             return self.auth
-        else:
-            return default
+        raise ComponentLookupError(name)
 
 class LocatableObject(Location):
 
