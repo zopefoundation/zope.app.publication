@@ -13,7 +13,7 @@
 ##############################################################################
 """Browser Publication Tests
 
-$Id: test_browserpublication.py,v 1.28 2004/03/20 13:38:14 philikon Exp $
+$Id$
 """
 import unittest
 

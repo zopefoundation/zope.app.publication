@@ -12,7 +12,7 @@
 #
 ##############################################################################
 """
-$Id: publicationtraverse.py,v 1.15 2004/04/17 17:15:33 jim Exp $
+$Id$
 """
 from zope.component import queryViewProviding
 from zope.publisher.interfaces import NotFound

@@ -13,7 +13,7 @@
 ##############################################################################
 """Zope publication
 
-$Id: zopepublication.py,v 1.45 2004/05/06 10:15:56 philikon Exp $
+$Id$
 """
 import sys
 import logging

@@ -13,7 +13,7 @@
 ##############################################################################
 """
 
-$Id: test_simplecomponenttraverser.py,v 1.10 2004/03/15 20:42:09 jim Exp $
+$Id$
 """
 import unittest
 from zope.component.tests.request import Request

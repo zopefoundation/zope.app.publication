@@ -13,7 +13,7 @@
 ##############################################################################
 """HTTP Factory
 
-$Id: httpfactory.py,v 1.7 2004/03/20 13:37:02 philikon Exp $
+$Id$
 """
 from zope.interface import moduleProvides, implements
 from zope.publisher.http import HTTPRequest

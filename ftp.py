@@ -13,7 +13,7 @@
 ##############################################################################
 """
 
-$Id: ftp.py,v 1.2 2004/03/21 17:20:24 philikon Exp $
+$Id$
 """
 
 from zope.app.publication.zopepublication import ZopePublication

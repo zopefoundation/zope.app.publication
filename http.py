@@ -13,7 +13,7 @@
 ##############################################################################
 """HTTP Publication
 
-$Id: http.py,v 1.9 2004/03/21 17:20:24 philikon Exp $
+$Id$
 """
 from zope.app.publication.zopepublication import ZopePublication
 from zope.component import getView

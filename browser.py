@@ -13,7 +13,7 @@
 ##############################################################################
 """XXX short summary goes here.
 
-$Id: browser.py,v 1.16 2004/05/01 14:37:43 philikon Exp $
+$Id$
 """
 __metaclass__ = type
 

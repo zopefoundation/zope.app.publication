@@ -13,7 +13,7 @@
 ##############################################################################
 """XML-RPC Publication Tests
 
-$Id: test_xmlrpcpublication.py,v 1.8 2004/03/19 20:26:30 srichter Exp $
+$Id$
 """
 import unittest
 

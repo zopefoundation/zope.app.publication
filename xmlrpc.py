@@ -15,7 +15,7 @@
 
 This module specifically implements a custom nameTraverse() method.
 
-$Id: xmlrpc.py,v 1.11 2004/03/20 13:37:45 philikon Exp $
+$Id$
 """
 from zope.component import queryView, queryDefaultViewName
 from zope.proxy import removeAllProxies

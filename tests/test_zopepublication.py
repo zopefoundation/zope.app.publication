@@ -13,7 +13,7 @@
 ##############################################################################
 """Zope Publication Tests
 
-$Id: test_zopepublication.py,v 1.33 2004/04/18 16:00:32 jim Exp $
+$Id$
 """
 import unittest
 import sys

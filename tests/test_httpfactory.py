@@ -12,7 +12,7 @@
 #
 ##############################################################################
 """
-$Id: test_httpfactory.py,v 1.2 2003/02/11 15:59:53 sidnei Exp $
+$Id$
 """
 
 from unittest import TestCase, TestSuite, main, makeSuite
