@@ -170,7 +170,8 @@ class ZopePublication(PublicationTraverse):
         This method is not part of the `IPublication` interface, since
         it's specific to this particular implementation.
         """
-        txn.setUser(request.principal.id)
+        if request.principal is not None:
+            txn.setUser(request.principal.id)
 
         # Work around methods that are usually used for views
         bare = removeSecurityProxy(ob)
