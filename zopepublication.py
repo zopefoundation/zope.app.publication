@@ -204,38 +204,7 @@ class ZopePublication(PublicationTraverse):
         self.beginErrorHandlingTransaction(request, object,
                                            'error reporting service')
         try:
-            try:
-                errService = zapi.getService(zapi.servicenames.ErrorLogging)
-                # We only want to get the global error reporting service, if
-                # we are not in a site. If we are, we want a local error
-                # reporting service.
-                # The global error reporting service does not have a
-                # __parent__
-                if getSite() is not None and \
-                       getattr(errService, '__parent__', None) is None:
-                    raise ComponentLookupError
-
-            except ComponentLookupError:
-                # There is no error reporting service. This is extremely
-                # unlikely, since such a service is created when the ZODB is
-                # first generated. So someone must have deliberately deleted
-                # it.
-                #
-                # We need to go to the root folder and add a root error
-                # reporting service there. And just in case the object passed
-                # is not a contained object or a method, we use the local site
-                # to find the root folder.
-
-                # Import here to avoid circular imports. This is okay, since
-                # this is a very special case.
-                # This is the same code used in the bootstrap mechanism.
-                from zope.app.appsetup.bootstrap import addConfigureService
-                addConfigureService(zapi.getRoot(getSite()),
-                                    zapi.servicenames.ErrorLogging,
-                                    RootErrorReportingService,
-                                    copy_to_zlog=True)
-
-                errService = zapi.getService(zapi.servicenames.ErrorLogging)
+            errService = zapi.getService(zapi.servicenames.ErrorLogging)
 
             # It is important that an error in errService.raising
             # does not propagate outside of here. Otherwise, nothing
