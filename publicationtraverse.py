@@ -20,7 +20,6 @@ from zope.publisher.interfaces import NotFound
 from types import StringTypes
 from zope.security.checker import ProxyFactory
 
-from zope.proxy import removeAllProxies
 from zope.app.traversing.namespace import namespaceLookup
 from zope.app.traversing.namespace import nsParse
 from zope.publisher.interfaces import IPublishTraverse
@@ -46,7 +45,7 @@ class PublicationTraverse(object):
         if nm == '.':
             return ob
 
-        if IPublishTraverse.providedBy(removeAllProxies(ob)):
+        if IPublishTraverse.providedBy(ob):
             ob2 = ob.publishTraverse(request, nm)
         else:
             # self is marker
