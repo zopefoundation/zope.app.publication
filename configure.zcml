@@ -4,16 +4,24 @@
    xmlns:xmlrpc='http://namespaces.zope.org/xmlrpc'
 >
 
-<browser:view name="_traverse" 
- for="zope.interface.Interface"
- factory="zope.app.publication.traversers.SimpleComponentTraverser" />
+<browser:page 
+    name="_traverse" 
+    for="zope.interface.Interface"
+    class="zope.app.publication.traversers.SimpleComponentTraverser" 
+    permission="zope.Public"
+    />
 
-<browser:view name="_traverse" 
- for="zope.app.interfaces.content.file.IFileContent"
- factory="zope.app.publication.traversers.FileContentTraverser" />
+<browser:view 
+    name="_traverse" 
+    for="zope.app.interfaces.content.file.IFileContent"
+    factory="zope.app.publication.traversers.FileContentTraverser" 
+    permission="zope.Public"
+    />
 
-  <xmlrpc:view name="_traverse" 
-   for="zope.interface.Interface"
-   factory="zope.app.publication.traversers.SimpleComponentTraverser" />
+<xmlrpc:view 
+    name="_traverse" 
+    for="zope.interface.Interface"
+    factory="zope.app.publication.traversers.SimpleComponentTraverser" 
+    />
 
 </zopeConfigure>
