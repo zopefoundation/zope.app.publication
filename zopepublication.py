@@ -35,10 +35,9 @@ from zope.exceptions import Unauthorized
 from zope.app.applicationcontrol.applicationcontrol \
      import applicationControllerRoot
 
-from zope.app.security.registries.principalregistry \
-     import principalRegistry as prin_reg
+from zope.app.security.principalregistry import principalRegistry as prin_reg
 
-from zope.app.interfaces.security import IUnauthenticatedPrincipal
+from zope.app.security.interfaces import IUnauthenticatedPrincipal
 
 from zope.app.publication.publicationtraverse import PublicationTraverse
 
@@ -156,7 +155,7 @@ class ZopePublication(object, PublicationTraverse):
         if IHTTPRequest.providedBy(request):
             txn.note(request["PATH_INFO"])
         # XXX not sure why you would use id vs title or description
-        txn.setUser(request.user.getId())
+        txn.setUser(request.user.id)
         get_transaction().commit()
 
 

@@ -11,10 +11,10 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""
-$Id: test_zopepublication.py,v 1.24 2004/03/03 10:38:48 philikon Exp $
-"""
+"""Zope Publication Tests
 
+$Id: test_zopepublication.py,v 1.25 2004/03/08 12:05:59 srichter Exp $
+"""
 import unittest
 import sys
 from cStringIO import StringIO
@@ -36,8 +36,8 @@ from zope.app.tests.placelesssetup import PlacelessSetup
 from zope.app.tests import ztapi
 
 from zope.app.services.servicenames import Authentication
-from zope.app.security.registries.principalregistry import principalRegistry
-from zope.app.interfaces.security import IUnauthenticatedPrincipal
+from zope.app.security.principalregistry import principalRegistry
+from zope.app.security.interfaces import IUnauthenticatedPrincipal, IPrincipal
 from zope.app.publication.zopepublication import ZopePublication
 from zope.app.folder import Folder, rootFolder
 from zope.publisher.base import TestRequest
@@ -82,10 +82,11 @@ class BasePublicationTests(PlacelessSetup, unittest.TestCase):
             verifyClass(interface, TestPublication)
 
 class Principal:
-    def __init__(self, id): self._id = id
-    def getId(self): return self._id
-    def getTitle(self): return ''
-    def getDescription(self): return ''
+    implements(IPrincipal)
+    def __init__(self, id):
+        self.id = id
+        self.title = ''
+        self.description = ''
 
 class UnauthenticatedPrincipal(Principal):
     implements(IUnauthenticatedPrincipal)
@@ -299,16 +300,16 @@ class ZopePublicationTests(BasePublicationTests):
         publication.beforeTraversal(request)
         user = getSecurityManager().getPrincipal()
         self.assertEqual(user, request.user)
-        self.assertEqual(request.user.getId(), 'anonymous')
+        self.assertEqual(request.user.id, 'anonymous')
         root = publication.getApplication(request)
         publication.callTraversalHooks(request, root)
-        self.assertEqual(request.user.getId(), 'anonymous')
+        self.assertEqual(request.user.id, 'anonymous')
         ob = publication.traverseName(request, root, 'f1')
         publication.callTraversalHooks(request, ob)
-        self.assertEqual(request.user.getId(), 'test.anonymous')
+        self.assertEqual(request.user.id, 'test.anonymous')
         ob = publication.traverseName(request, ob, 'f2')
         publication.afterTraversal(request, ob)
-        self.assertEqual(request.user.getId(), 'test.bob')
+        self.assertEqual(request.user.id, 'test.bob')
         user = getSecurityManager().getPrincipal()
         self.assertEqual(user, request.user)
         

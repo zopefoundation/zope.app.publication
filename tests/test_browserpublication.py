@@ -13,7 +13,7 @@
 ##############################################################################
 """Browser Publication Tests
 
-$Id: test_browserpublication.py,v 1.23 2004/02/20 16:57:27 fdrake Exp $
+$Id: test_browserpublication.py,v 1.24 2004/03/08 12:05:59 srichter Exp $
 """
 import unittest
 
@@ -33,7 +33,7 @@ from zope.proxy import removeAllProxies, getProxiedObject
 from zope.security.proxy import Proxy
 from zope.security.checker import defineChecker, NamesChecker
 
-from zope.app.security.registries.principalregistry import principalRegistry
+from zope.app.security.principalregistry import principalRegistry
 
 from zope.app.publication.browser import BrowserPublication
 from zope.app.publication.traversers import TestTraverser
@@ -275,8 +275,7 @@ class BrowserPublicationTests(BasePublicationTests):
         pub = self.klass(None)
 
         class User:
-            def getId(self):
-                return 'bob'
+            id = 'bob'
 
         # With a normal request, we should get a body:
         output = StringIO()
