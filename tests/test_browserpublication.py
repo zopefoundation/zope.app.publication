@@ -29,8 +29,7 @@ from zope.proxy.introspection import removeAllProxies
 from zope.security.checker import defineChecker, NamesChecker
 
 from zope.app.security.registries.principalregistry import principalRegistry
-from zope.app.security.grants.principalrolemanager \
-     import principalRoleManager
+from zope.app.security.grants.principalrole import principalRoleManager
 
 from zope.app.publication.zopepublication import ZopePublication
 from zope.app.publication.browser import BrowserPublication
@@ -120,7 +119,8 @@ class BrowserDefaultTests(BasePublicationTests):
         principalRegistry.defineDefaultPrincipal(
             'tim', 'timbot', 'ai at its best')
 
-        principalRoleManager.assignRoleToPrincipal('Manager', 'tim')
+        principalRoleManager.assignRoleToPrincipal('Manager', 'tim',
+                                                   check=False)
 
 
         # now place our object inside the application
