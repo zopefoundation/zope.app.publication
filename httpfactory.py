@@ -13,9 +13,10 @@
 ##############################################################################
 """
 
-$Id: httpfactory.py,v 1.2 2003/02/11 15:59:52 sidnei Exp $
+$Id: httpfactory.py,v 1.3 2003/04/18 22:12:27 jim Exp $
 """
 
+from zope.interface import moduleProvides
 from zope.publisher.http import HTTPRequest
 from zope.publisher.browser import BrowserRequest
 from zope.publisher.xmlrpc import XMLRPCRequest
@@ -28,7 +29,7 @@ from zope.app.publication.browser import BrowserPublication
 from zope.app.publication.xmlrpc import XMLRPCPublication
 
 
-__implements__ = IPublicationRequestFactoryFactory
+moduleProvides(IPublicationRequestFactoryFactory)
 
 __metaclass__ = type
 
