@@ -13,7 +13,7 @@
 ##############################################################################
 """Zope Publication Tests
 
-$Id: test_zopepublication.py,v 1.29 2004/03/20 13:37:27 philikon Exp $
+$Id: test_zopepublication.py,v 1.30 2004/03/20 21:32:50 philikon Exp $
 """
 import unittest
 import sys
@@ -46,6 +46,7 @@ from zope.app.security.principalregistry import principalRegistry
 from zope.app.security.interfaces import IUnauthenticatedPrincipal, IPrincipal
 from zope.app.publication.zopepublication import ZopePublication
 from zope.app.folder import Folder, rootFolder
+from zope.app.location import Location as LocatableObject
 
 class Principal:
     implements(IPrincipal)
@@ -99,11 +100,6 @@ class ServiceManager:
             return self.auth
         else:
             return default
-
-class LocatableObject(Persistent):
-    implements(ILocation)
-    __parent__ = None
-    __name__ = None
 
 class BasePublicationTests(PlacelessSetup, unittest.TestCase):
 
