@@ -218,7 +218,8 @@ class ZopePublication(object, PublicationTraverse, DefaultPublication):
 
             # Convert ConflictErrors to Retry exceptions.
             if retry_allowed and isinstance(exc_info[1], ConflictError):
-                logger.getLogger('ZopePublication').warn(
+                #XXX this code path needs a unit test
+                logging.getLogger('ZopePublication').warn(
                     'Competing writes/reads at %s',
                     request.get('PATH_INFO', '???'),
                     exc_info=True)
