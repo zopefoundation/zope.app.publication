@@ -15,12 +15,12 @@
 
 This module specifically implements a custom nameTraverse() method.
 
-$Id: xmlrpc.py,v 1.9 2004/03/05 22:09:13 jim Exp $
+$Id: xmlrpc.py,v 1.10 2004/03/19 20:26:29 srichter Exp $
 """
 from zope.app.publication.zopepublication import ZopePublication
 from zope.component import queryView, queryDefaultViewName
 from zope.proxy import removeAllProxies
-from zope.publisher.interfaces.xmlrpc import IXMLRPCPresentation
+from zope.app.publisher.interfaces.xmlrpc import IXMLRPCPresentation
 from zope.security.checker import ProxyFactory
 
 class XMLRPCPublication(ZopePublication):

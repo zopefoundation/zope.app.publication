@@ -13,7 +13,7 @@
 ##############################################################################
 """Browser Publication Tests
 
-$Id: test_browserpublication.py,v 1.26 2004/03/17 18:24:26 philikon Exp $
+$Id: test_browserpublication.py,v 1.27 2004/03/19 20:26:30 srichter Exp $
 """
 import unittest
 
@@ -26,7 +26,8 @@ from zope.interface import Interface, implements
 from zope.component import getService
 
 from zope.publisher.publish import publish
-from zope.publisher.browser import BrowserView, TestRequest
+from zope.publisher.browser import TestRequest
+from zope.app.publisher.browser import BrowserView
 from zope.publisher.interfaces.browser import IBrowserPublisher
 
 from zope.proxy import removeAllProxies, getProxiedObject

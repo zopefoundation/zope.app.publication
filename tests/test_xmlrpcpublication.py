@@ -13,7 +13,7 @@
 ##############################################################################
 """XML-RPC Publication Tests
 
-$Id: test_xmlrpcpublication.py,v 1.7 2004/03/17 18:24:26 philikon Exp $
+$Id: test_xmlrpcpublication.py,v 1.8 2004/03/19 20:26:30 srichter Exp $
 """
 import unittest
 
@@ -26,7 +26,7 @@ from zope.component import getService
 from zope.interface import Interface, implements
 from zope.proxy import removeAllProxies
 from zope.publisher.interfaces import NotFound
-from zope.publisher.interfaces.xmlrpc import IXMLRPCPresentation
+from zope.app.publisher.interfaces.xmlrpc import IXMLRPCPresentation
 from zope.publisher.interfaces.xmlrpc import IXMLRPCRequest
 from zope.publisher.interfaces.xmlrpc import IXMLRPCPublisher
 from zope.publisher.xmlrpc import TestRequest
