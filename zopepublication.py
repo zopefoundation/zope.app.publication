@@ -161,75 +161,69 @@ class ZopePublication(object, PublicationTraverse):
         get_transaction().commit()
 
     def handleException(self, object, request, exc_info, retry_allowed=1):
+        # Abort the transaction.
+        get_transaction().abort()
+
         try:
-            # Abort the transaction.
-            get_transaction().abort()
-
+            errService = getService(object, 'ErrorReportingService')
+        except ComponentLookupError:
+            pass
+        else:
             try:
-                errService = getService(object,'ErrorReportingService')
-            except ComponentLookupError:
-                pass
-            else:
-                try:
-                    errService.raising(exc_info, request)
-                # It is important that an error in errService.raising
-                # does not propagate outside of here. Otherwise, nothing
-                # meaningful will be returned to the user.
-                #
-                # The error reporting service should not be doing database
-                # stuff, so we shouldn't get a conflict error.
-                # Even if we do, it is more important that we log this
-                # error, and proceed with the normal course of events.
-                # We should probably (somehow!) append to the standard
-                # error handling that this error occurred while using
-                # the ErrorReportingService, and that it will be in
-                # the zope log.
-                except:
-                    logging.getLogger('SiteError').exception(
-                        'Error while reporting an error to the '
-                        'ErrorReportingService')
-
-            # Delegate Unauthorized errors to the authentication service
-            # XXX Is this the right way to handle Unauthorized?  We need
-            # to understand this better.
-            if isinstance(exc_info[1], Unauthorized):
-                sm = getSecurityManager()
-                id = sm.getPrincipal()
-                prin_reg.unauthorized(id, request) # May issue challenge
-                request.response.handleException(exc_info)
-                return
-
-            # XXX This is wrong. Should use getRequstView:
+                errService.raising(exc_info, request)
+            # It is important that an error in errService.raising
+            # does not propagate outside of here. Otherwise, nothing
+            # meaningful will be returned to the user.
             #
-            #
-            # # Look for a component to handle the exception.
-            # traversed = request.traversed
-            # if traversed:
-            #     context = traversed[-1]
-            #     #handler = getExceptionHandler(context, t, IBrowserPublisher)
-            #     handler = None  # no getExceptionHandler() exists yet.
-            #     if handler is not None:
-            #         handler(request, exc_info)
-            #         return
+            # The error reporting service should not be doing database
+            # stuff, so we shouldn't get a conflict error.
+            # Even if we do, it is more important that we log this
+            # error, and proceed with the normal course of events.
+            # We should probably (somehow!) append to the standard
+            # error handling that this error occurred while using
+            # the ErrorReportingService, and that it will be in
+            # the zope log.
+            except:
+                logging.getLogger('SiteError').exception(
+                    'Error while reporting an error to the '
+                    'ErrorReportingService')
 
-            # Convert ConflictErrors to Retry exceptions.
-            if retry_allowed and isinstance(exc_info[1], ConflictError):
-                #XXX this code path needs a unit test
-                logging.getLogger('ZopePublication').warn(
-                    'Competing writes/reads at %s',
-                    request.get('PATH_INFO', '???'),
-                    exc_info=True)
-                raise Retry
-
-            # Let the response handle it as best it can.
-            # XXX Is this what we want in the long term?
-            response = request.response
-            response.handleException(exc_info)
+        # Delegate Unauthorized errors to the authentication service
+        # XXX Is this the right way to handle Unauthorized?  We need
+        # to understand this better.
+        if isinstance(exc_info[1], Unauthorized):
+            sm = getSecurityManager()
+            id = sm.getPrincipal()
+            prin_reg.unauthorized(id, request) # May issue challenge
+            request.response.handleException(exc_info)
             return
-        finally:
-            # Avoid leaking
-            exc_info = 0
 
+        # XXX This is wrong. Should use getRequstView:
+        #
+        #
+        # # Look for a component to handle the exception.
+        # traversed = request.traversed
+        # if traversed:
+        #     context = traversed[-1]
+        #     #handler = getExceptionHandler(context, t, IBrowserPublisher)
+        #     handler = None  # no getExceptionHandler() exists yet.
+        #     if handler is not None:
+        #         handler(request, exc_info)
+        #         return
+
+        # Convert ConflictErrors to Retry exceptions.
+        if retry_allowed and isinstance(exc_info[1], ConflictError):
+            #XXX this code path needs a unit test
+            logging.getLogger('ZopePublication').warn(
+                'Competing writes/reads at %s',
+                request.get('PATH_INFO', '???'),
+                exc_info=True)
+            raise Retry
+
+        # Let the response handle it as best it can.
+        # XXX Is this what we want in the long term?
+        request.response.handleException(exc_info)
+        return
 
     def _parameterSetskin(self, pname, pval, request):
         request.setViewSkin(pval)
