@@ -11,19 +11,17 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""
+"""Generic object traversers
+
 $Id$
 """
-
-__metaclass__ = type
-
 from zope.interface import providedBy, implements
 from zope.publisher.interfaces import Unauthorized, NotFound
 from zope.publisher.interfaces.browser import IBrowserPublisher
 from zope.publisher.interfaces.xmlrpc import IXMLRPCPublisher
 from zope.component import queryView, getView, getDefaultViewName
 
-class SimpleComponentTraverser:
+class SimpleComponentTraverser(object):
     """Browser traverser for simple components that can only traverse to views
     """
     implements(IBrowserPublisher, IXMLRPCPublisher)
@@ -67,7 +65,7 @@ class FileContentTraverser(SimpleComponentTraverser):
 
         return view, path
 
-class TestTraverser:
+class TestTraverser(object):
     """Bobo-style traverser, mostly useful for testing"""
     implements(IBrowserPublisher)
 

@@ -26,11 +26,9 @@ from zope.app.publication.http import HTTPPublication
 from zope.app.publication.browser import BrowserPublication
 from zope.app.publication.xmlrpc import XMLRPCPublication
 
-__metaclass__ = type
-
 _browser_methods = 'GET', 'POST', 'HEAD'
 
-class HTTPPublicationRequestFactory:
+class HTTPPublicationRequestFactory(object):
     implements(IPublicationRequestFactory)
 
     def __init__(self, db):

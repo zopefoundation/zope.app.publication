@@ -11,7 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""
+"""Sample Component Traverser Test
 
 $Id$
 """
@@ -28,7 +28,7 @@ class I(Interface):
     pass
 
 
-class Container:
+class Container(object):
     def __init__(self, **kw):
         for k in kw:
             setattr(self, k , kw[k])
@@ -42,7 +42,7 @@ class Request(Request):
         return ''
 
 
-class View:
+class View(object):
     def __init__(self, comp, request):
         self._comp = comp
 

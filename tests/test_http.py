@@ -11,10 +11,10 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""
+"""Test HTTP Publication
+
 $Id$
 """
-
 from unittest import TestCase, TestSuite, main, makeSuite
 from zope.app import zapi
 import zope.app.publication.http
@@ -25,11 +25,11 @@ from zope.interface import Interface, implements
 from zope.publisher.interfaces.http import IHTTPRequest
 
 class I(Interface): pass
-class C:
+class C(object):
     spammed = 0
     implements(I)
 
-class V:
+class V(object):
 
     def __init__(self, context, request):
         self.context = context

@@ -45,7 +45,7 @@ def foo():
     "I am an otherwise empty docstring."
     return '<html><body>hello base fans</body></html>'
 
-class DummyPublished:
+class DummyPublished(object):
     implements(IBrowserPublisher)
 
     def publishTraverse(self, request, name):
@@ -70,7 +70,7 @@ class BasePublicationTests(BasePublicationTests_):
         request.setPublication(publication)
         return request
 
-class SimpleObject:
+class SimpleObject(object):
     def __init__(self, v):
         self.v = v
 
@@ -160,7 +160,7 @@ class BrowserPublicationTests(BasePublicationTests):
 
     def testAdaptedTraverseNameWrapping(self):
 
-        class Adapter:
+        class Adapter(object):
             " "
             implements(IBrowserPublisher)
             def __init__(self, context, request):
@@ -182,7 +182,7 @@ class BrowserPublicationTests(BasePublicationTests):
 
     def testAdaptedTraverseDefaultWrapping(self):
         # Test default content and make sure that it's wrapped.
-        class Adapter:
+        class Adapter(object):
             implements(IBrowserPublisher)
             def __init__(self, context, request):
                 self.context = context
@@ -200,30 +200,9 @@ class BrowserPublicationTests(BasePublicationTests):
         self.assertRaises(ForbiddenAttribute, getattr, ob2, 'v')
         self.assertEqual(removeAllProxies(ob2).v, 'bruce')
 
-    # XXX we no longer support path parameters! (At least for now)
-    def XXXtestTraverseSkinExtraction(self):
-        class I1(Interface): pass
-        class C:
-            implements(I1)
-        class BobView(DummyView): pass
-
-        pub = self.klass(self.db)
-        ob = C()
-        ztapi.browserView(I1, 'edit', BobView)
-
-        r = self._createRequest('/@@edit;skin=zmi',pub)
-        ob2 = pub.traverseName(r , ob, '@@edit;skin=zmi')
-        self.assertEqual(r.getPresentationSkin(), 'zmi')
-        self.assertEqual(ob2.__class__ , BobView)
-
-        r = self._createRequest('/@@edit;skin=zmi',pub)
-        ob2 = pub.traverseName(r , ob, '@@edit;skin=zmi')
-        self.assertEqual(r.getPresentationSkin(), 'zmi')
-        self.assertEqual(ob2.__class__ , BobView)
-
     def testTraverseName(self):
         pub = self.klass(self.db)
-        class C:
+        class C(object):
             x = SimpleObject(1)
         ob = C()
         r = self._createRequest('/x',pub)
@@ -235,10 +214,10 @@ class BrowserPublicationTests(BasePublicationTests):
     def testTraverseNameView(self):
         pub = self.klass(self.db)
         class I(Interface): pass
-        class C:
+        class C(object):
             implements(I)
         ob = C()
-        class V:
+        class V(object):
             def __init__(self, context, request): pass
         r = self._createRequest('/@@spam',pub)
         ztapi.browserView(I, 'spam', V)
@@ -247,7 +226,7 @@ class BrowserPublicationTests(BasePublicationTests):
 
     def testTraverseNameServices(self):
         pub = self.klass(self.db)
-        class C:
+        class C(object):
             def getSiteManager(self):
                 return SimpleObject(1)
         ob = C()
@@ -272,7 +251,7 @@ class BrowserPublicationTests(BasePublicationTests):
     def testHEADFuxup(self):
         pub = self.klass(None)
 
-        class User:
+        class User(object):
             id = 'bob'
 
         # With a normal request, we should get a body:
