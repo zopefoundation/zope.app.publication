@@ -13,7 +13,7 @@
 ##############################################################################
 """HTTP Publication
 
-$Id: http.py,v 1.8 2004/03/20 13:37:45 philikon Exp $
+$Id: http.py,v 1.9 2004/03/21 17:20:24 philikon Exp $
 """
 from zope.app.publication.zopepublication import ZopePublication
 from zope.component import getView
@@ -26,11 +26,8 @@ class BaseHTTPPublication(ZopePublication):
     def annotateTransaction(self, txn, request, ob):
         txn = super(BaseHTTPPublication, self).annotateTransaction(
             txn, request, ob)
-        txn.setExtendedInfo('url', request.getURL())
-        txn.setExtendedInfo('method', request.method)
-        # XXX note the URL path for now until we have a new UI for the
-        # undo machinery
-        txn.note(request["PATH_INFO"])
+        request_info = request.method + ' ' + request.getURL()
+        txn.setExtendedInfo('request_info', request_info)
         return txn
 
 class HTTPPublication(BaseHTTPPublication):

@@ -13,7 +13,7 @@
 ##############################################################################
 """
 
-$Id: ftp.py,v 1.1 2003/02/03 15:08:42 jim Exp $
+$Id: ftp.py,v 1.2 2004/03/21 17:20:24 philikon Exp $
 """
 
 from zope.app.publication.zopepublication import ZopePublication
@@ -36,3 +36,16 @@ class FTPPublication(ZopePublication):
             raise NotFound(ob, method, request)
 
         return mapply(getattr(view, method), (), request)
+
+    def annotateTransaction(self, txn, request, ob):
+        txn = super(FTPPublication, self).annotateTransaction(txn, request, ob)
+        request_info = [request['command']]
+        path = request.get('path', '')
+        if path:
+            request_info.append(path)
+        name = request.get('name', '')
+        if name:
+            request_info.append(name)
+        request_info = ' '.join(request_info)
+        txn.setExtendedInfo('request_info', request_info)
+        return txn
