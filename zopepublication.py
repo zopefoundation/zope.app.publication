@@ -27,6 +27,7 @@ import transaction
 from zope.event import notify
 from zope.security.interfaces import Unauthorized
 from zope.component.exceptions import ComponentLookupError
+from zope.component.interfaces import IDefaultViewName
 from zope.interface import implements, providedBy
 from zope.publisher.publish import mapply
 from zope.publisher.interfaces import Retry, IExceptionSideEffects
@@ -95,10 +96,8 @@ class ZopePublication(PublicationTraverse):
 
         sm = removeSecurityProxy(ob).getSiteManager()
 
-        try:
-            utils = sm.getService(zapi.servicenames.Utilities)
-            auth = utils.getUtility(IAuthenticationUtility)
-        except ComponentLookupError:
+        auth = sm.queryUtility(IAuthenticationUtility)
+        if auth is None:
             # No auth utility here
             return
 
@@ -296,9 +295,11 @@ class ZopePublication(PublicationTraverse):
                 # Give the exception instance its location and look up the
                 # view.
                 exception = LocationProxy(exc_info[1], loc, '')
-                name = zapi.queryDefaultViewName(exception, request)
+                name = zapi.getSiteManager().adapters.lookup(
+                    map(providedBy, (exception, request)), IDefaultViewName)
                 if name is not None:
-                    view = zapi.queryView(exception, name, request)
+                    view = zapi.queryMultiAdapter(
+                        (exception, request), name=name)
             except:
                 # Problem getting a view for this exception. Log an error.
                 tryToLogException(
