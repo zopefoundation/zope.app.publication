@@ -54,7 +54,7 @@ from zope.publisher.interfaces import IRequest
 class BasePublicationTests(PlacelessSetup, unittest.TestCase):
 
     def setUp(self):
-        PlacelessSetup.setUp(self)
+        super(BasePublicationTests, self).setUp()
         ztapi.provideAdapter(IHTTPRequest, IUserPreferredCharsets, HTTPCharsets)
         self.policy = setSecurityPolicy(
             simplepolicies.PermissiveSecurityPolicy()
