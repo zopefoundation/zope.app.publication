@@ -13,7 +13,7 @@
 ##############################################################################
 """XML-RPC Publication Tests
 
-$Id: test_xmlrpcpublication.py,v 1.2 2003/09/02 20:46:49 jim Exp $
+$Id: test_xmlrpcpublication.py,v 1.3 2003/09/21 17:31:57 jim Exp $
 """
 import unittest
 
@@ -23,7 +23,6 @@ from zope.app.publication.traversers import TestTraverser
 from zope.app.publication.xmlrpc import XMLRPCPublication
 from zope.app.services.servicenames import Views
 from zope.component import getService
-from zope.context import getWrapperContext
 from zope.interface import Interface, implements
 from zope.proxy import removeAllProxies
 from zope.publisher.interfaces import NotFound
@@ -55,7 +54,6 @@ class XMLRPCPublicationTests(BasePublicationTests):
         provideView(None, '_traverse', IXMLRPCPresentation, [TestTraverser])
         ob2 = pub.traverseName(r, ob, 'x')
         self.assertEqual(removeAllProxies(ob2).v, 1)
-        self.assertEqual(getWrapperContext(ob2), ob)
 
     def testDenyDirectMethodAccess(self):
         pub = self.klass(self.db)
@@ -103,12 +101,10 @@ class XMLRPCPublicationTests(BasePublicationTests):
         provideView(I, 'spam', IXMLRPCPresentation, [V])
         ob2 = pub.traverseName(r, ob, '@@spam')
         self.assertEqual(removeAllProxies(ob2).__class__, V)
-        self.assertEqual(getWrapperContext(ob2), ob)
-
+        
         ob2 = pub.traverseName(r, ob, 'spam')
         self.assertEqual(removeAllProxies(ob2).__class__, V)
-        self.assertEqual(getWrapperContext(ob2), ob)
-
+        
 
     def testTraverseNameDefaultView(self):
         pub = self.klass(self.db)
@@ -138,11 +134,9 @@ class XMLRPCPublicationTests(BasePublicationTests):
 
         ob2 = pub.traverseName(r, ob, '@@spam')
         self.assertEqual(removeAllProxies(ob2).__name__, V.spam.__name__)
-        self.assertEqual(getWrapperContext(ob2), ob)
 
         ob2 = pub.traverseName(r, ob, 'spam')
         self.assertEqual(removeAllProxies(ob2).__name__, V.spam.__name__)
-        self.assertEqual(getWrapperContext(ob2), ob)
 
 
     def testTraverseNameServices(self):
@@ -154,7 +148,6 @@ class XMLRPCPublicationTests(BasePublicationTests):
         r = self._createRequest('/++etc++site',pub)
         ob2 = pub.traverseName(r, ob, '++etc++site')
         self.assertEqual(removeAllProxies(ob2).v, 1)
-        self.assertEqual(getWrapperContext(ob2), ob)
 
 
 def test_suite():

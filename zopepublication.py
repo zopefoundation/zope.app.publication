@@ -26,8 +26,6 @@ from zope.publisher.interfaces.http import IHTTPRequest
 from zope.security.management import newSecurityManager
 from zope.security.checker import ProxyFactory
 
-from zope.app.context import ContextWrapper
-
 from zope.proxy import removeAllProxies
 
 from zope.app.interfaces.services.service import ISite
@@ -44,10 +42,10 @@ from zope.app.interfaces.security import IUnauthenticatedPrincipal
 
 from zope.app.publication.publicationtraverse import PublicationTraverse
 
-from zope.app.context import ContextWrapper
-
 # XXX Should this be imported here?
 from transaction import get_transaction
+
+from zope.app.location import LocationProxy
 
 class Cleanup(object):
     def __init__(self, f):
@@ -75,7 +73,7 @@ class ZopePublication(object, PublicationTraverse):
             if p is None:
                 raise Unauthorized # If there's no default principal
 
-        request.setUser(ContextWrapper(p, prin_reg))
+        request.setUser(p)
         newSecurityManager(request.user)
         get_transaction().begin()
 
@@ -90,8 +88,7 @@ class ZopePublication(object, PublicationTraverse):
             return
 
         sm = removeAllProxies(ob).getSiteManager()
-        sm = ContextWrapper(sm, ob, name="++etc++site")
-
+        
         auth_service = sm.queryService(Authentication)
         if auth_service is None:
             # No auth service here
@@ -105,7 +102,7 @@ class ZopePublication(object, PublicationTraverse):
                 # nothing to do here
                 return
 
-        request.setUser(ContextWrapper(principal, auth_service))
+        request.setUser(principal)
         newSecurityManager(request.user)
 
 
@@ -149,7 +146,7 @@ class ZopePublication(object, PublicationTraverse):
         if app is None:
             raise SystemError, "Zope Application Not Found"
 
-        return ProxyFactory(ContextWrapper(app, None))
+        return ProxyFactory(app)
 
     def callObject(self, request, ob):
         return mapply(ob, request.getPositionalArguments(), request)
@@ -233,10 +230,26 @@ class ZopePublication(object, PublicationTraverse):
                 request, 'application error-handling')
             view = None
             try:
-                exception = ContextWrapper(exc_info[1], object)
-                name = queryDefaultViewName(exception, request)
+
+                # XXX we need to get a location. The object might not
+                # have one, because it might be a method. If we don't
+                # have a parent attr but to have an im_self or an
+                # __self__, use that:
+
+                loc = object
+                if hasattr(object, '__parent__'):
+                    loc = object
+                else:
+                    loc = removeAllProxies(object)
+                    loc = getattr(loc, 'im_self', loc)
+                    if loc is loc:
+                        loc = getattr(loc, '__self__', loc)
+                    loc = ProxyFactory(loc)
+                
+                exception = LocationProxy(exc_info[1], loc)
+                name = queryDefaultViewName(exception, request, context=object)
                 if name is not None:
-                    view = queryView(exception, name, request)
+                    view = queryView(exception, name, request, context=object)
             except:
                 # Problem getting a view for this exception. Log an error.
                 tryToLogException(

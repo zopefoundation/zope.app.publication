@@ -13,13 +13,12 @@
 ##############################################################################
 """
 
-$Id: publicationtraverse.py,v 1.10 2003/06/20 06:45:08 stevea Exp $
+$Id: publicationtraverse.py,v 1.11 2003/09/21 17:31:56 jim Exp $
 """
 
 from zope.component import queryView
 from zope.publisher.interfaces import NotFound
 from types import StringTypes
-from zope.app.context import ContextWrapper
 from zope.security.checker import ProxyFactory
 
 from zope.proxy import removeAllProxies
@@ -80,7 +79,7 @@ class PublicationTraverse:
             else:
                 raise NotFound(ob, name, request)
 
-        return ProxyFactory(ContextWrapper(ob2, ob, name=name))
+        return ProxyFactory(ob2)
 
 class PublicationTraverser(PublicationTraverse):
 

@@ -15,9 +15,8 @@
 
 This module specifically implements a custom nameTraverse() method.
 
-$Id: xmlrpc.py,v 1.7 2003/08/04 23:19:04 srichter Exp $
+$Id: xmlrpc.py,v 1.8 2003/09/21 17:31:56 jim Exp $
 """
-from zope.app.context import ContextWrapper
 from zope.app.publication.zopepublication import ZopePublication
 from zope.component import queryView, queryDefaultViewName
 from zope.proxy import removeAllProxies
@@ -55,15 +54,15 @@ class XMLRPCPublication(ZopePublication):
             view_name = view_name[2:]
 
         # If ob is a presentation object, then we just get the method
-        if IXMLRPCPresentation.isImplementedBy(naked_ob) and \
-               hasattr(ob, view_name):
-            return ProxyFactory(
-                ContextWrapper(getattr(ob, view_name), ob, name=view_name))
+        if (IXMLRPCPresentation.isImplementedBy(naked_ob) and 
+            hasattr(ob, view_name)
+            ):
+            return ProxyFactory(getattr(ob, view_name))
 
         # Let's check whether name could be a view 
         view = queryView(ob, view_name, request)
         if view is not None:
-            return ProxyFactory(ContextWrapper(view, ob, name=view_name))
+            return ProxyFactory(view)
 
         # Now let's see whether we have a default view with a matching method
         # name
@@ -72,8 +71,7 @@ class XMLRPCPublication(ZopePublication):
         if defaultName is not None:
             view = queryView(ob, defaultName, request, object)
             if hasattr(view, view_name):
-                return ProxyFactory(ContextWrapper(getattr(view, view_name), ob,
-                                                   name=view_name))
+                return ProxyFactory(getattr(view, view_name))
 
         # See whether we have a subobject
         return super(XMLRPCPublication, self).traverseName(request, ob, name)

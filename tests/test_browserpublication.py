@@ -13,12 +13,13 @@
 ##############################################################################
 """Browser Publication Tests
 
-$Id: test_browserpublication.py,v 1.18 2003/09/02 20:46:49 jim Exp $
+$Id: test_browserpublication.py,v 1.19 2003/09/21 17:31:57 jim Exp $
 """
 import unittest
 
 from StringIO import StringIO
 
+from zope.exceptions import ForbiddenAttribute
 from zope.interface import Interface, implements
 
 from zope.component import getService
@@ -29,7 +30,6 @@ from zope.publisher.browser import BrowserView, TestRequest
 from zope.publisher.interfaces.browser \
      import IBrowserPresentation, IBrowserPublisher
 
-from zope.context import getWrapperContext, isWrapper
 from zope.proxy import removeAllProxies, getProxiedObject
 from zope.security.proxy import Proxy
 from zope.security.checker import defineChecker, NamesChecker
@@ -172,15 +172,6 @@ class BrowserPublicationTests(BasePublicationTests):
 
     klass = BrowserPublication
 
-    def testNativeTraverseNameWrapping(self):
-        pub = self.klass(self.db)
-        ob = DummyPublished()
-        ob2 = pub.traverseName(self._createRequest('/bruce', pub), ob, 'bruce')
-        self.failUnless(ob2 is not ob)
-        self.failUnless(type(ob2) is Proxy)
-        ob2 = getProxiedObject(ob2)
-        self.failUnless(isWrapper(ob2))
-
     def testAdaptedTraverseNameWrapping(self):
 
         class Adapter:
@@ -201,11 +192,8 @@ class BrowserPublicationTests(BasePublicationTests):
         ob['bruce2'] = SimpleObject('bruce2')
         pub = self.klass(self.db)
         ob2 = pub.traverseName(self._createRequest('/bruce', pub), ob, 'bruce')
-        self.failUnless(type(ob2) is Proxy)
-        ob2 = getProxiedObject(ob2)
-        self.failUnless(isWrapper(ob2))
-        unw = removeAllProxies(ob2)
-        self.assertEqual(unw.v, 'bruce')
+        self.assertRaises(ForbiddenAttribute, getattr, ob2, 'v')
+        self.assertEqual(removeAllProxies(ob2).v, 'bruce')
 
     def testAdaptedTraverseDefaultWrapping(self):
         # Test default content and make sure that it's wrapped.
@@ -225,11 +213,8 @@ class BrowserPublicationTests(BasePublicationTests):
         pub = self.klass(self.db)
         ob2, x = pub.getDefaultTraversal(self._createRequest('/bruce',pub), ob)
         self.assertEqual(x, 'dummy')
-        self.failUnless(type(ob2) is Proxy)
-        ob2 = getProxiedObject(ob2)
-        self.failUnless(isWrapper(ob2))
-        unw = removeAllProxies(ob2)
-        self.assertEqual(unw.v, 'bruce')
+        self.assertRaises(ForbiddenAttribute, getattr, ob2, 'v')
+        self.assertEqual(removeAllProxies(ob2).v, 'bruce')
 
     # XXX we no longer support path parameters! (At least for now)
     def XXXtestTraverseSkinExtraction(self):
@@ -262,8 +247,8 @@ class BrowserPublicationTests(BasePublicationTests):
         provideView=getService(None, Views).provideView
         provideView(None, '_traverse', IBrowserPresentation, [TestTraverser])
         ob2 = pub.traverseName(r, ob, 'x')
+        self.assertRaises(ForbiddenAttribute, getattr, ob2, 'v')
         self.assertEqual(removeAllProxies(ob2).v, 1)
-        self.assertEqual(getWrapperContext(ob2), ob)
 
     def testTraverseNameView(self):
         pub = self.klass(self.db)
@@ -278,8 +263,7 @@ class BrowserPublicationTests(BasePublicationTests):
         provideView=getService(None, Views).provideView
         provideView(I, 'spam', IBrowserPresentation, [V])
         ob2 = pub.traverseName(r, ob, '@@spam')
-        self.assertEqual(removeAllProxies(ob2).__class__, V)
-        self.assertEqual(getWrapperContext(ob2), ob)
+        self.assertEqual(ob2.__class__, V)
 
     def testTraverseNameServices(self):
         pub = self.klass(self.db)
@@ -289,8 +273,8 @@ class BrowserPublicationTests(BasePublicationTests):
         ob = C()
         r = self._createRequest('/++etc++site',pub)
         ob2 = pub.traverseName(r, ob, '++etc++site')
+        self.assertRaises(ForbiddenAttribute, getattr, ob2, 'v')
         self.assertEqual(removeAllProxies(ob2).v, 1)
-        self.assertEqual(getWrapperContext(ob2), ob)
 
     def testTraverseNameApplicationControl(self):
         from zope.app.applicationcontrol.applicationcontrol \
