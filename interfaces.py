@@ -11,7 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""
+"""Publication Interfaces
 
 $Id$
 """
@@ -31,7 +31,7 @@ class IBeforeTraverseEvent(Interface):
     """An event which gets sent on publication traverse"""
 
 
-class BeforeTraverseEvent:
+class BeforeTraverseEvent(object):
     """An event which gets sent on publication traverse"""
     implements(IBeforeTraverseEvent)
     def __init__(self, ob, request):
@@ -43,7 +43,7 @@ class IEndRequestEvent(Interface):
     """An event which gets sent when the publication is ended"""
 
 
-class EndRequestEvent:
+class EndRequestEvent(object):
     """An event which gets sent when the publication is ended"""
     implements(IEndRequestEvent)
     def __init__(self, ob, request):

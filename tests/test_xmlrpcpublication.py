@@ -32,7 +32,7 @@ from zope.publisher.interfaces.xmlrpc import IXMLRPCPublisher
 from zope.publisher.xmlrpc import TestRequest
 
 
-class SimpleObject:
+class SimpleObject(object):
     def __init__(self, v):
         self.v = v
 
@@ -48,7 +48,7 @@ class XMLRPCPublicationTests(BasePublicationTests):
 
     def testTraverseName(self):
         pub = self.klass(self.db)
-        class C:
+        class C(object):
             x = SimpleObject(1)
         ob = C()
         r = self._createRequest('/x', pub)
@@ -63,13 +63,13 @@ class XMLRPCPublicationTests(BasePublicationTests):
         class I(Interface):
             pass
 
-        class C:
+        class C(object):
             implements(I)
 
             def foo(self):
                 return 'bar'
 
-        class V:
+        class V(object):
             def __init__(self, context, request):
                 pass
             implements(IXMLRPCPresentation)
@@ -89,12 +89,12 @@ class XMLRPCPublicationTests(BasePublicationTests):
         class I(Interface):
             pass
 
-        class C:
+        class C(object):
             implements(I)
 
         ob = C()
 
-        class V:
+        class V(object):
             def __init__(self, context, request):
                 pass
             implements(IXMLRPCPresentation)
@@ -115,12 +115,12 @@ class XMLRPCPublicationTests(BasePublicationTests):
         class I(Interface):
             pass
 
-        class C:
+        class C(object):
             implements(I)
 
         ob = C()
 
-        class V:
+        class V(object):
             implements(IXMLRPCPresentation)
 
             def __init__(self, context, request):
@@ -144,7 +144,7 @@ class XMLRPCPublicationTests(BasePublicationTests):
 
     def testTraverseNameServices(self):
         pub = self.klass(self.db)
-        class C:
+        class C(object):
             def getSiteManager(self):
                 return SimpleObject(1)
         ob = C()

@@ -77,7 +77,7 @@ class XMLRPCPublication(BaseHTTPPublication):
         return super(XMLRPCPublication, self).traverseName(request, ob, name)
 
 # For now, have a factory that returns a singleton
-class XMLRPCPublicationFactory:
+class XMLRPCPublicationFactory(object):
 
     def __init__(self, db):
         self.__pub = XMLRPCPublication(db)

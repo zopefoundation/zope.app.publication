@@ -51,7 +51,7 @@ from zope.app.publication.zopepublication import ZopePublication
 from zope.app.folder import Folder, rootFolder
 from zope.app.location import Location
 
-class Principal:
+class Principal(object):
     implements(IPrincipal)
     def __init__(self, id):
         self.id = id
@@ -61,7 +61,7 @@ class Principal:
 class UnauthenticatedPrincipal(Principal):
     implements(IUnauthenticatedPrincipal)
 
-class AuthService1:
+class AuthService1(object):
 
     def authenticate(self, request):
         return None
@@ -83,7 +83,7 @@ class AuthService2(AuthService1):
     def getPrincipal(self, id):
         return Principal(id)
 
-class ErrorLoggingService:
+class ErrorLoggingService(object):
     implements(IErrorReportingService)
 
     def __init__(self):
@@ -92,7 +92,7 @@ class ErrorLoggingService:
     def raising(self, info, request=None):
         self.exceptions.append([info, request])
 
-class ServiceManager:
+class ServiceManager(object):
     implements(IServiceService) # a dirty lie
 
     def __init__(self, auth):
@@ -234,7 +234,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
 
     def testExceptionSideEffects(self):
         from zope.publisher.interfaces import IExceptionSideEffects
-        class SideEffects:
+        class SideEffects(object):
             implements(IExceptionSideEffects)
             def __init__(self, exception):
                 self.exception = exception
