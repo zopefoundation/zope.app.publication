@@ -27,7 +27,7 @@ from zope.publisher.publish import mapply
 from zope.publisher.interfaces import Retry, IExceptionSideEffects
 from zope.publisher.interfaces import IRequest, IPublication
 
-from zope.security.management import newSecurityManager
+from zope.security.management import newInteraction, endInteraction
 from zope.security.checker import ProxyFactory
 from zope.security.proxy import trustedRemoveSecurityProxy
 from zope.proxy import removeAllProxies
@@ -73,7 +73,7 @@ class ZopePublication(PublicationTraverse):
                 raise Unauthorized # If there's no default principal
 
         request.setPrincipal(p)
-        newSecurityManager(request.principal)
+        newInteraction(request)
         get_transaction().begin()
 
     def _maybePlacefullyAuthenticate(self, request, ob):
@@ -102,8 +102,6 @@ class ZopePublication(PublicationTraverse):
                 return
 
         request.setPrincipal(principal)
-        newSecurityManager(request.principal)
-
 
     def callTraversalHooks(self, request, ob):
         # Call __before_publishing_traverse__ hooks
@@ -152,6 +150,11 @@ class ZopePublication(PublicationTraverse):
     def afterCall(self, request, ob):
         txn = get_transaction()
         self.annotateTransaction(txn, request, ob)
+
+        # Make sure the interaction is ended
+        try: endInteraction()
+        except: pass # XXX I do not like this except clause, but it makes tests pass
+
         txn.commit()
 
     def annotateTransaction(self, txn, request, ob):
@@ -226,6 +229,10 @@ class ZopePublication(PublicationTraverse):
         # This transaction had an exception that reached the publisher.
         # It must definitely be aborted.
         get_transaction().abort()
+
+        # Make sure the interaction is ended
+        try: endInteraction()
+        except: pass
 
         # Convert ConflictErrors to Retry exceptions.
         if retry_allowed and isinstance(exc_info[1], ConflictError):

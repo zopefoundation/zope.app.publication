@@ -33,7 +33,7 @@ from zope.publisher.http import IHTTPRequest, HTTPCharsets
 from zope.publisher.interfaces import IRequest, IPublishTraverse
 from zope.publisher.browser import BrowserResponse
 from zope.security import simplepolicies
-from zope.security.management import setSecurityPolicy, getSecurityManager
+from zope.security.management import setSecurityPolicy, getInteraction
 
 from zope.app import zapi
 from zope.app.tests.placelesssetup import PlacelessSetup
@@ -370,8 +370,8 @@ class ZopePublicationTests(BasePublicationTests):
         defineChecker(Folder, InterfaceChecker(IFolder))
 
         self.publication.beforeTraversal(self.request)
-        user = getSecurityManager().getPrincipal()
-        self.assertEqual(user, self.request.principal)
+        self.assertEqual(list(getInteraction().participations),
+                         [self.request])
         self.assertEqual(self.request.principal.id, 'anonymous')
         root = self.publication.getApplication(self.request)
         self.publication.callTraversalHooks(self.request, root)
@@ -382,8 +382,8 @@ class ZopePublicationTests(BasePublicationTests):
         ob = self.publication.traverseName(self.request, ob, 'f2')
         self.publication.afterTraversal(self.request, ob)
         self.assertEqual(self.request.principal.id, 'test.bob')
-        user = getSecurityManager().getPrincipal()
-        self.assertEqual(user, self.request.principal)
+        self.assertEqual(list(getInteraction().participations),
+                         [self.request])
 
     def testTransactionCommitAfterCall(self):
         root = self.db.open().root()
