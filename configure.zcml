@@ -14,7 +14,7 @@
 <browser:view 
     name="_traverse" 
     for="zope.app.interfaces.content.file.IFileContent"
-    factory="zope.app.publication.traversers.FileContentTraverser" 
+    class="zope.app.publication.traversers.FileContentTraverser" 
     permission="zope.Public"
     />
 

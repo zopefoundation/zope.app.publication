@@ -13,13 +13,14 @@
 ##############################################################################
 """
 
-$Id: publicationtraverse.py,v 1.3 2002/12/28 17:49:29 stevea Exp $
+$Id: publicationtraverse.py,v 1.4 2002/12/31 18:26:57 jim Exp $
 """
 
 from zope.component import queryView, getService
 from zope.publisher.interfaces import NotFound
 from types import StringTypes
 from zope.proxy.context import ContextWrapper
+from zope.security.checker import ProxyFactory
 
 from zope.app.interfaces.container import IWriteContainer
 from zope.proxy.introspection import removeAllProxies
@@ -53,7 +54,7 @@ class PublicationTraverse:
 
             if ns:
                 ob2 = namespaceLookup(name, ns, nm, unknown_parms, ob, request)
-                return ob2
+                return ProxyFactory(ob2)
 
             if unknown_parms:
                 nm = "%s;%s" % (
@@ -78,7 +79,7 @@ class PublicationTraverse:
             else:
                 raise NotFound(ob, name, request)
 
-        return ContextWrapper(ob2, ob, name=name)
+        return ProxyFactory(ContextWrapper(ob2, ob, name=name))
 
 class PublicationTraverser(PublicationTraverse):
 

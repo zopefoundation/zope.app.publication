@@ -13,7 +13,7 @@
 ##############################################################################
 """XXX short summary goes here.
 
-$Id: browser.py,v 1.3 2002/12/30 21:44:45 jeremy Exp $
+$Id: browser.py,v 1.4 2002/12/31 18:26:57 jim Exp $
 """
 __metaclass__ = type
 
@@ -24,6 +24,7 @@ from zope.component import queryAdapter, queryView
 from zope.proxy.context import ContextWrapper
 from zope.proxy.introspection import removeAllProxies
 from zope.publisher.interfaces.browser import IBrowserPublisher
+from zope.security.checker import ProxyFactory
 
 class PublicationTraverser(PublicationTraverser_):
 
@@ -36,6 +37,7 @@ class PublicationTraverser(PublicationTraverser_):
             if adapter is None:
                 return ob
             ob, path = adapter.browserDefault(request)
+            ob = ProxyFactory(ob)
             if not path:
                 return ob
 
@@ -57,9 +59,10 @@ class BrowserPublication(ZopeHTTPPublication):
             else:
                 return (ob, None)
 
-        if r[0] is ob: return r
+        if r[0] is ob:
+            return r
 
-        wrapped = ContextWrapper(r[0], ob, name=None)
+        wrapped = ContextWrapper(ProxyFactory(r[0]), ob, name=None)
         return (wrapped, r[1])
 
 # For now, have a factory that returns a singleton

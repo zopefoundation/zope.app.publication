@@ -25,6 +25,8 @@ from zope.publisher.interfaces.browser import IBrowserPresentation
 
 from zope.proxy.context import getWrapperContext, wrapperTypes
 from zope.proxy.introspection import removeAllProxies
+from zope.security.proxy import Proxy, getObject
+
 
 from zope.security.checker import defineChecker, NamesChecker
 
@@ -36,6 +38,7 @@ from zope.app.publication.browser import BrowserPublication
 from zope.app.publication.traversers import TestTraverser
 from zope.app.publication.tests.test_zopepublication \
      import BasePublicationTests as BasePublicationTests_
+from zope.security.checker import NamesChecker
 
 
 def foo():
@@ -54,7 +57,11 @@ class DummyPublished:
     def browserDefault(self, request):
         return self, ['bruce']
 
+
+
 class DummyView(DummyPublished, BrowserView):
+
+    __Security_checker__ = NamesChecker(["browserDefault", "publishTraverse"])
 
     __implements__ = DummyPublished.__implements__, BrowserView.__implements__
 
@@ -169,6 +176,8 @@ class BrowserPublicationTests(BasePublicationTests):
         ob = DummyPublished()
         ob2 = pub.traverseName(self._createRequest('/bruce',pub), ob, 'bruce')
         self.failUnless(ob2 is not ob)
+        self.failUnless(type(ob2) is Proxy)
+        ob2 = getObject(ob2)
         self.failUnless(type(ob2) in wrapperTypes)
 
     def testAdaptedTraverseNameWrapping(self):
@@ -191,6 +200,8 @@ class BrowserPublicationTests(BasePublicationTests):
         ob['bruce2'] =  SimpleObject('bruce2')
         pub = self.klass(self.db)
         ob2 = pub.traverseName(self._createRequest('/bruce',pub), ob, 'bruce')
+        self.failUnless(type(ob2) is Proxy)
+        ob2 = getObject(ob2)
         self.failUnless(type(ob2) in wrapperTypes)
         unw = removeAllProxies(ob2)
         self.assertEqual(unw.v, 'bruce')
@@ -213,6 +224,8 @@ class BrowserPublicationTests(BasePublicationTests):
         pub = self.klass(self.db)
         ob2, x = pub.getDefaultTraversal(self._createRequest('/bruce',pub), ob)
         self.assertEqual(x, 'dummy')
+        self.failUnless(type(ob2) is Proxy)
+        ob2 = getObject(ob2)
         self.failUnless(type(ob2) in wrapperTypes)
         unw = removeAllProxies(ob2)
         self.assertEqual(unw.v, 'bruce')
