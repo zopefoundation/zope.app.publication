@@ -152,8 +152,7 @@ class ZopePublication(PublicationTraverse):
         self.annotateTransaction(txn, request, ob)
 
         # Make sure the interaction is ended
-        try: endInteraction()
-        except: pass # XXX I do not like this except clause, but it makes tests pass
+        endInteraction()
 
         txn.commit()
 
@@ -231,8 +230,7 @@ class ZopePublication(PublicationTraverse):
         get_transaction().abort()
 
         # Make sure the interaction is ended
-        try: endInteraction()
-        except: pass
+        endInteraction()
 
         # Convert ConflictErrors to Retry exceptions.
         if retry_allowed and isinstance(exc_info[1], ConflictError):
