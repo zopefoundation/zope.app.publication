@@ -157,7 +157,8 @@ class ZopePublication(object, PublicationTraverse, DefaultPublication):
 
     def afterCall(self, request):
         txn = get_transaction()
-        txn.note(request["PATH_INFO"])
+        # XXX: Commented out this line, since it is HTTP-specific. 
+        # txn.note(request["PATH_INFO"])
         txn.setUser(getSecurityManager().getPrincipal())
         get_transaction().commit()
 
