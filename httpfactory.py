@@ -54,7 +54,8 @@ class HTTPPublicationRequestFactory(object):
             content_type = env.get('CONTENT_TYPE', '')
             is_xml = content_type.startswith('text/xml')
 
-            if (method == 'POST' and is_xml and env.get('SOAPAction', None)
+            if (method == 'POST' and is_xml and
+                env.get('HTTP_SOAPACTION', None)
                 and self._soapreq is not None):
                 request = self._soapreq(input_stream, output_steam, env)
                 request.setPublication(self._soappub)
