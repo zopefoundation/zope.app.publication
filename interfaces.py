@@ -18,16 +18,6 @@ $Id$
 
 from zope.interface import implements, Interface
 
-class IPublicationRequestFactoryFactory(Interface):
-    """Publication request factory factory"""
-
-    def realize(db):
-        """Create a publication and request factory for a given database
-
-        Return a IPublicationRequestFactory for the given database.
-        """
-
-
 class IPublicationRequestFactory(Interface):
     """Publication request factory"""
 
@@ -36,14 +26,6 @@ class IPublicationRequestFactory(Interface):
 
         A request is created and configured with a publication object.
         """
-
-
-class IRequestFactory(IPublicationRequestFactory,
-                      IPublicationRequestFactoryFactory):
-    """This is a pure read-only interface, since the values are set through
-       a ZCML directive and we shouldn't be able to change them.
-    """
-
 
 class IBeforeTraverseEvent(Interface):
     """An event which gets sent on publication traverse"""

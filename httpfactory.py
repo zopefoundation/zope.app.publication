@@ -15,19 +15,16 @@
 
 $Id$
 """
-from zope.interface import moduleProvides, implements
+from zope.interface import implements
 from zope.publisher.http import HTTPRequest
 from zope.publisher.browser import BrowserRequest
 from zope.publisher.xmlrpc import XMLRPCRequest
 
-from zope.app.publication.interfaces import IPublicationRequestFactoryFactory
 from zope.app.publication.interfaces import IPublicationRequestFactory
 
 from zope.app.publication.http import HTTPPublication
 from zope.app.publication.browser import BrowserPublication
 from zope.app.publication.xmlrpc import XMLRPCPublication
-
-moduleProvides(IPublicationRequestFactoryFactory)
 
 __metaclass__ = type
 
@@ -60,5 +57,3 @@ class HTTPPublicationRequestFactory:
             request.setPublication(self._http)
 
         return request
-
-realize = HTTPPublicationRequestFactory
