@@ -13,7 +13,7 @@
 ##############################################################################
 """
 
-$Id: test_simplecomponenttraverser.py,v 1.9 2004/03/13 23:55:15 srichter Exp $
+$Id: test_simplecomponenttraverser.py,v 1.10 2004/03/15 20:42:09 jim Exp $
 """
 import unittest
 from zope.component.tests.request import Request
@@ -66,7 +66,7 @@ class Test(PlacelessSetup, unittest.TestCase):
         req = Request(I, '')
 
         T = SimpleComponentTraverser(c, req)
-        getService(None, Presentation).provideView(None , 'foo', I, [View])
+        getService(None, Presentation).provideView(None , 'foo', I, View)
 
         self.failUnless(T.publishTraverse(req,'foo').__class__ is View )
 

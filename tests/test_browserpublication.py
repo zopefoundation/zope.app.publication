@@ -13,7 +13,7 @@
 ##############################################################################
 """Browser Publication Tests
 
-$Id: test_browserpublication.py,v 1.24 2004/03/08 12:05:59 srichter Exp $
+$Id: test_browserpublication.py,v 1.25 2004/03/15 20:42:09 jim Exp $
 """
 import unittest
 
@@ -120,9 +120,9 @@ class BrowserDefaultTests(BasePublicationTests):
 
         pub = BrowserPublication(self.db)
 
-        ztapi.browserView(I1, 'view', [DummyView])
+        ztapi.browserView(I1, 'view', DummyView)
         ztapi.setDefaultViewName(I1, 'view')
-        ztapi.browserView(None, '_traverse', [TestTraverser])
+        ztapi.browserView(None, '_traverse', TestTraverser)
 
         ob = O1()
 
@@ -173,7 +173,7 @@ class BrowserPublicationTests(BasePublicationTests):
                 self.counter += 1
                 return self.context[name]
 
-        ztapi.browserView(I1, '_traverse', [Adapter])
+        ztapi.browserView(I1, '_traverse', Adapter)
         ob = mydict()
         ob['bruce'] = SimpleObject('bruce')
         ob['bruce2'] = SimpleObject('bruce2')
@@ -192,7 +192,7 @@ class BrowserPublicationTests(BasePublicationTests):
             def browserDefault(self, request):
                 return (self.context['bruce'], 'dummy')
 
-        ztapi.browserView(I1, '_traverse', [Adapter])
+        ztapi.browserView(I1, '_traverse', Adapter)
         ob = mydict()
         ob['bruce'] =  SimpleObject('bruce')
         ob['bruce2'] =  SimpleObject('bruce2')
@@ -211,7 +211,7 @@ class BrowserPublicationTests(BasePublicationTests):
 
         pub = self.klass(self.db)
         ob = C()
-        ztapi.browserView(I1, 'edit', [BobView])
+        ztapi.browserView(I1, 'edit', BobView)
 
         r = self._createRequest('/@@edit;skin=zmi',pub)
         ob2 = pub.traverseName(r , ob, '@@edit;skin=zmi')
@@ -229,7 +229,7 @@ class BrowserPublicationTests(BasePublicationTests):
             x = SimpleObject(1)
         ob = C()
         r = self._createRequest('/x',pub)
-        ztapi.browserView(None, '_traverse', [TestTraverser])
+        ztapi.browserView(None, '_traverse', TestTraverser)
         ob2 = pub.traverseName(r, ob, 'x')
         self.assertRaises(ForbiddenAttribute, getattr, ob2, 'v')
         self.assertEqual(removeAllProxies(ob2).v, 1)
@@ -243,7 +243,7 @@ class BrowserPublicationTests(BasePublicationTests):
         class V:
             def __init__(self, context, request): pass
         r = self._createRequest('/@@spam',pub)
-        ztapi.browserView(I, 'spam', [V])
+        ztapi.browserView(I, 'spam', V)
         ob2 = pub.traverseName(r, ob, '@@spam')
         self.assertEqual(ob2.__class__, V)
 

@@ -13,7 +13,7 @@
 ##############################################################################
 """Zope Publication Tests
 
-$Id: test_zopepublication.py,v 1.26 2004/03/13 23:55:20 srichter Exp $
+$Id: test_zopepublication.py,v 1.27 2004/03/15 20:42:09 jim Exp $
 """
 import unittest
 import sys
@@ -180,7 +180,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         view_text = 'You had a conflict error'
         s = zapi.getService(None, zapi.servicenames.Presentation) 
         s.provideView(IConflictError, 'name', self.presentation_type,
-                      [lambda obj,request: lambda: view_text])
+                      lambda obj, request: lambda: view_text)
         try:
             raise ConflictError
         except:

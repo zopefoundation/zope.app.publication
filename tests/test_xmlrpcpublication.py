@@ -13,7 +13,7 @@
 ##############################################################################
 """XML-RPC Publication Tests
 
-$Id: test_xmlrpcpublication.py,v 1.5 2004/03/13 23:55:20 srichter Exp $
+$Id: test_xmlrpcpublication.py,v 1.6 2004/03/15 20:42:09 jim Exp $
 """
 import unittest
 
@@ -52,7 +52,7 @@ class XMLRPCPublicationTests(BasePublicationTests):
         ob = C()
         r = self._createRequest('/x', pub)
         provideView=getService(None, Presentation).provideView
-        provideView(None, '_traverse', IXMLRPCRequest, [TestTraverser])
+        provideView(None, '_traverse', IXMLRPCRequest, TestTraverser)
         ob2 = pub.traverseName(r, ob, 'x')
         self.assertEqual(removeAllProxies(ob2).v, 1)
 
@@ -76,7 +76,7 @@ class XMLRPCPublicationTests(BasePublicationTests):
         r = self._createRequest('/foo', pub)
         provideView=getService(None, Presentation).provideView
         setDefaultViewName=getService(None, Presentation).setDefaultViewName
-        provideView(I, 'view', IXMLRPCPresentation, [V])
+        provideView(I, 'view', IXMLRPCPresentation, V)
         setDefaultViewName(I, IXMLRPCPresentation, 'view')
         self.assertRaises(NotFound, pub.traverseName, r, ob, 'foo')
 
@@ -99,7 +99,7 @@ class XMLRPCPublicationTests(BasePublicationTests):
 
         r = self._createRequest('/@@spam', pub)
         provideView=getService(None, Presentation).provideView
-        provideView(I, 'spam', IXMLRPCRequest, [V])
+        provideView(I, 'spam', IXMLRPCRequest, V)
         ob2 = pub.traverseName(r, ob, '@@spam')
         self.assertEqual(removeAllProxies(ob2).__class__, V)
         
@@ -130,7 +130,7 @@ class XMLRPCPublicationTests(BasePublicationTests):
         r = self._createRequest('/spam', pub)
         provideView=getService(None, Presentation).provideView
         setDefaultViewName=getService(None, Presentation).setDefaultViewName
-        provideView(I, 'view', IXMLRPCRequest, [V])
+        provideView(I, 'view', IXMLRPCRequest, V)
         setDefaultViewName(I, IXMLRPCRequest, 'view')
 
         ob2 = pub.traverseName(r, ob, '@@spam')
