@@ -22,8 +22,7 @@ from zope.publisher.base import DefaultPublication
 from zope.publisher.publish import mapply
 from zope.publisher.interfaces import Retry
 
-from zope.security.securitymanagement \
-     import getSecurityManager, newSecurityManager
+from zope.security.management import getSecurityManager, newSecurityManager
 from zope.security.checker import ProxyFactory
 
 from zope.proxy.introspection import removeAllProxies

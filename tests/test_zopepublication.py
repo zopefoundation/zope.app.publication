@@ -26,8 +26,8 @@ from zope.i18n.interfaces import IUserPreferredCharsets
 from zope.publisher.base import TestPublication
 from zope.publisher.http import IHTTPRequest, HTTPCharsets
 
-from zope.security import simplesecuritypolicies
-from zope.security.securitymanagement import setSecurityPolicy
+from zope.security import simplepolicies
+from zope.security.management import setSecurityPolicy
 
 from zope.app.security.registries.principalregistry import principalRegistry
 from zope.app.interfaces.security import IUnauthenticatedPrincipal
@@ -51,7 +51,7 @@ class BasePublicationTests(PlacelessSetup, unittest.TestCase):
         PlacelessSetup.setUp(self)
         provideAdapter(IHTTPRequest, IUserPreferredCharsets, HTTPCharsets)
         self.policy = setSecurityPolicy(
-            simplesecuritypolicies.PermissiveSecurityPolicy()
+            simplepolicies.PermissiveSecurityPolicy()
             )
         self.db = DB("foo")
 
