@@ -48,7 +48,7 @@ from zope.app.publication.interfaces import EndRequestEvent
 from zope.app.publication.publicationtraverse import PublicationTraverse
 from zope.app.security.principalregistry import principalRegistry as prin_reg
 from zope.app.security.interfaces import IUnauthenticatedPrincipal
-from zope.app.security.interfaces import IAuthentication2
+from zope.app.security.interfaces import IAuthentication
 from zope.app.component.interfaces import ISite
 from zope.app.traversing.interfaces import IPhysicallyLocatable
 
@@ -95,7 +95,7 @@ class ZopePublication(PublicationTraverse):
 
         sm = removeSecurityProxy(ob).getSiteManager()
 
-        auth = sm.queryUtility(IAuthentication2)
+        auth = sm.queryUtility(IAuthentication)
         if auth is None:
             # No auth utility here
             return
@@ -273,11 +273,11 @@ class ZopePublication(PublicationTraverse):
             view = None
             try:
                 # We need to get a location, because some template content of
-                # the exception view might require one. 
-                # 
+                # the exception view might require one.
+                #
                 # The object might not have a parent, because it might be a
                 # method. If we don't have a `__parent__` attribute but have
-                # an im_self or a __self__, use it. 
+                # an im_self or a __self__, use it.
                 loc = object
                 if not hasattr(object, '__parent__'):
                     loc = removeSecurityProxy(object)
@@ -324,7 +324,7 @@ class ZopePublication(PublicationTraverse):
                             logging.getLogger('SiteError').exception(
                                 str(request.URL),
                                 )
-                            
+
                 except:
                     # Problem rendering the view for this exception.
                     # Log an error.
