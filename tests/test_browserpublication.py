@@ -13,7 +13,7 @@
 ##############################################################################
 """Browser Publication Tests
 
-$Id: test_browserpublication.py,v 1.27 2004/03/19 20:26:30 srichter Exp $
+$Id: test_browserpublication.py,v 1.28 2004/03/20 13:38:14 philikon Exp $
 """
 import unittest
 
@@ -282,7 +282,7 @@ class BrowserPublicationTests(BasePublicationTests):
         request = TestRequest(StringIO(''), output, {'PATH_INFO': '/'})
         request.setUser(User())
         request.response.setBody("spam")
-        pub.afterCall(request)
+        pub.afterCall(request, None)
         request.response.outputBody()
         self.assertEqual(
             output.getvalue(),
@@ -299,7 +299,7 @@ class BrowserPublicationTests(BasePublicationTests):
         request.setUser(User())
         request.method = 'HEAD'
         request.response.setBody("spam")
-        pub.afterCall(request)
+        pub.afterCall(request, None)
         request.response.outputBody()
         self.assertEqual(
             output.getvalue(),
