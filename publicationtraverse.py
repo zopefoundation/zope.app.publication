@@ -12,7 +12,7 @@
 #
 ##############################################################################
 """
-$Id: publicationtraverse.py,v 1.14 2004/03/20 13:37:13 philikon Exp $
+$Id: publicationtraverse.py,v 1.15 2004/04/17 17:15:33 jim Exp $
 """
 from zope.component import queryViewProviding
 from zope.publisher.interfaces import NotFound
@@ -21,7 +21,7 @@ from zope.security.checker import ProxyFactory
 
 from zope.proxy import removeAllProxies
 from zope.app.traversing.namespace import namespaceLookup
-from zope.app.traversing.namespace import parameterizedNameParse
+from zope.app.traversing.namespace import nsParse
 from zope.publisher.interfaces import IPublishTraverse
 
 class DuplicateNamespaces(Exception):
@@ -37,31 +37,10 @@ class PublicationTraverse(object):
 
         if name and name[:1] in '@+':
             # Process URI segment parameters.
-            ns, nm, parms = parameterizedNameParse(name)
-
-            unknown_parms = ()
-            for pname, pval in parms:
-                pset = getattr(self, "_parameterSet%s" % pname, self) # marker
-                if pset is self:
-                    # We don't know about this one
-                    unknown_parms += ((pname, pval),)
-                else:
-                    pset(pname, pval, request)
-
+            ns, nm = nsParse(name)
             if ns:
-                ob2 = namespaceLookup(name, ns, nm, unknown_parms, ob, request)
+                ob2 = namespaceLookup(ns, nm, ob, request)
                 return ProxyFactory(ob2)
-
-            if unknown_parms:
-                nm = "%s;%s" % (
-                    nm,
-                    ';'.join(["%s=%s" % (parm[0], parm[1])
-                              for parm in unknown_parms])
-                    )
-
-            if not nm:
-                # Just set params, so skip
-                return ob
 
         if nm == '.':
             return ob

@@ -13,7 +13,7 @@
 ##############################################################################
 """Zope publication
 
-$Id: zopepublication.py,v 1.43 2004/03/21 16:59:44 philikon Exp $
+$Id: zopepublication.py,v 1.44 2004/04/17 17:15:33 jim Exp $
 """
 import sys
 import logging
@@ -341,9 +341,6 @@ class ZopePublication(PublicationTraverse):
         txn.note(note)
         self.annotateTransaction(txn, request, ob)
         return txn
-
-    def _parameterSetskin(self, pname, pval, request):
-        request.setPresentationSkin(pval)
 
 def tryToLogException(arg1, arg2=None):
     if arg2 is None:
