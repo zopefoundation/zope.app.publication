@@ -28,7 +28,7 @@ from zope.security.checker import ProxyFactory
 
 from zope.proxy import removeAllProxies
 
-from zope.app.interfaces.services.service import ISite
+from zope.app.site.interfaces import ISite
 
 from zope.exceptions import Unauthorized
 
