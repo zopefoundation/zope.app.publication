@@ -19,8 +19,7 @@ __metaclass__ = type
 from zope.publisher.interfaces import Unauthorized, NotFound, DebugError
 from zope.publisher.interfaces.browser import IBrowserPublisher
 from zope.publisher.interfaces.xmlrpc import IXMLRPCPublisher
-from zope.component \
-     import queryView, getView, getDefaultViewName
+from zope.component import queryView, getView, getDefaultViewName
 from zope.component.exceptions import ComponentLookupError
 
 class SimpleComponentTraverser:
@@ -41,7 +40,6 @@ class SimpleComponentTraverser:
 
     def publishTraverse(self, request, name):
         ob = self.context
-        from zope.component.view import viewService
         view = queryView(ob, name, request)
         if view is None:
             raise NotFound(ob, name)
