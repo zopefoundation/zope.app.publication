@@ -280,7 +280,7 @@ class BrowserPublicationTests(BasePublicationTests):
         # With a normal request, we should get a body:
         output = StringIO()
         request = TestRequest(StringIO(''), output, {'PATH_INFO': '/'})
-        request.setUser(User())
+        request.setPrincipal(User())
         request.response.setBody("spam")
         pub.afterCall(request, None)
         request.response.outputBody()
@@ -296,7 +296,7 @@ class BrowserPublicationTests(BasePublicationTests):
         # But with a HEAD request, the body should be empty
         output = StringIO()
         request = TestRequest(StringIO(''), output, {'PATH_INFO': '/'})
-        request.setUser(User())
+        request.setPrincipal(User())
         request.method = 'HEAD'
         request.response.setBody("spam")
         pub.afterCall(request, None)
