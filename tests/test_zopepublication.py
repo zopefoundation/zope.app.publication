@@ -283,9 +283,9 @@ class ZopePublicationTests(BasePublicationTests):
         app.setObject('f1', Folder())
         f1 = app['f1']
         f1.setObject('f2', Folder())
-        f1.setServiceManager(ServiceManager(AuthService1()))
+        f1.setSiteManager(ServiceManager(AuthService1()))
         f2 = f1['f2']
-        f2.setServiceManager(ServiceManager(AuthService2()))
+        f2.setSiteManager(ServiceManager(AuthService2()))
         get_transaction().commit()
 
         request = TestRequest('/f1/f2')

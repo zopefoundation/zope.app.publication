@@ -30,7 +30,7 @@ from zope.app.context import ContextWrapper
 
 from zope.proxy import removeAllProxies
 
-from zope.app.interfaces.services.service import IServiceManagerContainer
+from zope.app.interfaces.services.service import ISite
 
 from zope.exceptions import Unauthorized
 
@@ -85,15 +85,11 @@ class ZopePublication(object, PublicationTraverse):
             # Note that beforeTraversal guarentees that user is not None.
             return
 
-        if not IServiceManagerContainer.isImplementedBy(ob):
+        if not ISite.isImplementedBy(ob):
             # We won't find an authentication service here, so give up.
             return
 
-        sm = removeAllProxies(ob).queryServiceManager()
-        if sm is None:
-            # No service manager here, and thus no auth service
-            return
-
+        sm = removeAllProxies(ob).getSiteManager()
         sm = ContextWrapper(sm, ob, name="++etc++site")
 
         auth_service = sm.queryService(Authentication)

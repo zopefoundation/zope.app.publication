@@ -13,7 +13,7 @@
 ##############################################################################
 """Browser Publication Tests
 
-$Id: test_browserpublication.py,v 1.17 2003/08/04 23:13:15 srichter Exp $
+$Id: test_browserpublication.py,v 1.18 2003/09/02 20:46:49 jim Exp $
 """
 import unittest
 
@@ -284,7 +284,7 @@ class BrowserPublicationTests(BasePublicationTests):
     def testTraverseNameServices(self):
         pub = self.klass(self.db)
         class C:
-            def getServiceManager(self):
+            def getSiteManager(self):
                 return SimpleObject(1)
         ob = C()
         r = self._createRequest('/++etc++site',pub)

@@ -13,7 +13,7 @@
 ##############################################################################
 """XML-RPC Publication Tests
 
-$Id: test_xmlrpcpublication.py,v 1.1 2003/08/04 23:19:07 srichter Exp $
+$Id: test_xmlrpcpublication.py,v 1.2 2003/09/02 20:46:49 jim Exp $
 """
 import unittest
 
@@ -148,7 +148,7 @@ class XMLRPCPublicationTests(BasePublicationTests):
     def testTraverseNameServices(self):
         pub = self.klass(self.db)
         class C:
-            def getServiceManager(self):
+            def getSiteManager(self):
                 return SimpleObject(1)
         ob = C()
         r = self._createRequest('/++etc++site',pub)
