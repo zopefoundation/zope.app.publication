@@ -18,11 +18,6 @@ This module specifically implements a custom nameTraverse() method.
 $Id$
 """
 
-from zope.app import zapi
-from zope.component import queryView, queryDefaultViewName
-from zope.proxy import removeAllProxies
-from zope.app.publisher.interfaces.xmlrpc import IXMLRPCPresentation
-from zope.security.checker import ProxyFactory
 from zope.app.publication.http import BaseHTTPPublication
 
 # Don't need any special handling for xml-rpc
