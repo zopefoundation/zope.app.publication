@@ -12,6 +12,7 @@
 #
 ##############################################################################
 import unittest
+import sys
 
 from zope.interface.verify import verifyClass
 from zope.interface.implements import instancesOfObjectImplements
@@ -20,6 +21,7 @@ from zodb.storage.mapping import DB
 
 from zope.app.tests.placelesssetup import PlacelessSetup
 from zope.component.adapter import provideAdapter
+from zope.component.view import provideView, setDefaultViewName
 
 from zope.i18n.interfaces import IUserPreferredCharsets
 
@@ -43,9 +45,9 @@ from zope.publisher.base import TestRequest
 from zope.component.service import serviceManager
 
 from transaction import get_transaction
+from cStringIO import StringIO
 
 class BasePublicationTests(PlacelessSetup, unittest.TestCase):
-    klass = ZopePublication
 
     def setUp(self):
         PlacelessSetup.setUp(self)
@@ -80,7 +82,7 @@ class BasePublicationTests(PlacelessSetup, unittest.TestCase):
         PlacelessSetup.tearDown(self)
 
     def testInterfacesVerify(self):
-        for interface in instancesOfObjectImplements(self.klass):
+        for interface in instancesOfObjectImplements(ZopePublication):
             verifyClass(interface, TestPublication)
 
 class Principal:
@@ -131,8 +133,105 @@ class ServiceManager:
         return serviceManager.getService(name)
 
 
+class ZopePublicationErrorHandling(BasePublicationTests):
+
+    def setUp(self):
+        BasePublicationTests.setUp(self)
+        root = self.db.open().root()
+        self.out = StringIO()
+        self.request = TestRequest('/f1/f2', outstream=self.out)
+        from zope.interface import Interface
+        self.presentation_type = Interface
+        self.request._presentation_type = self.presentation_type
+        self.publication = ZopePublication(self.db)
+        self.object = object()  # doesn't matter what it is
+
+    def testRetryAllowed(self):
+        from zodb.interfaces import ConflictError
+        from zope.publisher.interfaces import Retry
+        try:
+            raise ConflictError
+        except:
+            pass
+        self.assertRaises(Retry, self.publication.handleException,
+            self.object, self.request, sys.exc_info(), retry_allowed=True)
+
+    def testRetryNotAllowed(self):
+        from zodb.interfaces import ConflictError
+        from zope.publisher.interfaces import Retry
+        try:
+            raise ConflictError
+        except:
+            pass
+        self.publication.handleException(
+            self.object, self.request, sys.exc_info(), retry_allowed=False)
+        self.request.response.outputBody()
+        value = self.out.getvalue().split()
+        self.assertEqual(' '.join(value[:6]),
+                         'Traceback (most recent call last): File')
+        self.assertEqual(' '.join(value[9:]),
+                         'in testRetryNotAllowed raise ConflictError'
+                         ' ConflictError: database conflict error')
+
+    def testViewOnException(self):
+        from zodb.interfaces import ConflictError
+        from zope.interface import Interface
+        from zope.interface.implements import implements
+        class IConflictError(Interface):
+            pass
+        implements(ConflictError, IConflictError)
+        setDefaultViewName(IConflictError, self.presentation_type, 'name')
+        view_text = 'You had a conflict error'
+        provideView(IConflictError, 'name', self.presentation_type,
+                    [lambda obj,request: lambda: view_text])
+        try:
+            raise ConflictError
+        except:
+            pass
+        self.publication.handleException(
+            self.object, self.request, sys.exc_info(), retry_allowed=False)
+        self.request.response.outputBody()
+        self.assertEqual(self.out.getvalue(), view_text)
+
+    def testExceptionSideEffects(self):
+        from zope.publisher.interfaces import IExceptionSideEffects
+        class SideEffects:
+            __implements__ = IExceptionSideEffects
+            def __init__(self, exception):
+                self.exception = exception
+            def __call__(self, obj, request, exc_info):
+                self.obj = obj
+                self.request = request
+                self.exception_type = exc_info[0]
+                self.exception_from_info = exc_info[1]
+        class SideEffectsFactory:
+            def __call__(self, exception):
+                self.adapter = SideEffects(exception)
+                return self.adapter
+        factory = SideEffectsFactory()
+        from zodb.interfaces import ConflictError
+        from zope.interface import Interface
+        from zope.interface.implements import implements
+        class IConflictError(Interface):
+            pass
+        implements(ConflictError, IConflictError)
+        provideAdapter(IConflictError, IExceptionSideEffects, factory)
+        exception = ConflictError()
+        try:
+            raise exception
+        except:
+            pass
+        self.publication.handleException(
+            self.object, self.request, sys.exc_info(), retry_allowed=False)
+        adapter = factory.adapter
+        self.assertEqual(exception, adapter.exception)
+        self.assertEqual(exception, adapter.exception_from_info)
+        self.assertEqual(ConflictError, adapter.exception_type)
+        self.assertEqual(self.object, adapter.obj)
+        self.assertEqual(self.request, adapter.request)
+
+
 class ZopePublicationTests(BasePublicationTests):
-    klass = ZopePublication
 
     def testPlacefulAuth(self):
         principalRegistry.defineDefaultPrincipal('anonymous', '')
@@ -151,8 +250,7 @@ class ZopePublicationTests(BasePublicationTests):
 
         from zope.component.view import provideView
         from zope.app.interfaces.container import ISimpleReadContainer
-        from zope.app.container.traversal \
-             import ContainerTraverser
+        from zope.app.container.traversal import ContainerTraverser
         from zope.component.interfaces import IPresentation
         provideView(ISimpleReadContainer, '_traverse', IPresentation,
                     ContainerTraverser)
@@ -164,7 +262,7 @@ class ZopePublicationTests(BasePublicationTests):
 
         request.setViewType(IPresentation)
 
-        publication = self.klass(self.db)
+        publication = ZopePublication(self.db)
 
         publication.beforeTraversal(request)
         self.assertEqual(request.user.getId(), 'anonymous')
@@ -179,7 +277,10 @@ class ZopePublicationTests(BasePublicationTests):
         self.assertEqual(request.user.getId(), 'test.bob')
 
 def test_suite():
-    return unittest.makeSuite(ZopePublicationTests)
+    return unittest.TestSuite((
+        unittest.makeSuite(ZopePublicationTests),
+        unittest.makeSuite(ZopePublicationErrorHandling),
+        ))
 
 if __name__ == '__main__':
     unittest.TextTestRunner().run( test_suite() )

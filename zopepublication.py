@@ -14,12 +14,13 @@
 import sys
 import logging
 
-from zope.component import getService
+from zope.component import getService, getView, getDefaultViewName
+from zope.component import queryService, getAdapter
 from zope.component.exceptions import ComponentLookupError
 from zodb.interfaces import ConflictError
 
 from zope.publisher.publish import mapply
-from zope.publisher.interfaces import Retry
+from zope.publisher.interfaces import Retry, IExceptionSideEffects
 from zope.publisher.interfaces.http import IHTTPRequest
 
 from zope.security.management import getSecurityManager, newSecurityManager
@@ -70,7 +71,8 @@ class ZopePublication(object, PublicationTraverse):
                 raise Unauthorized # If there's no default principal
 
         newSecurityManager(p.getId())
-        request.user = p
+        # XXX add a test to check that request.user is context wrapped
+        request.user = ContextWrapper(p, prin_reg)
         get_transaction().begin()
 
     def _maybePlacefullyAuthenticate(self, request, ob):
@@ -104,7 +106,8 @@ class ZopePublication(object, PublicationTraverse):
                 return
 
         newSecurityManager(principal.getId())
-        request.user = principal
+        # XXX add test that request.user is context-wrapped
+        request.user = ContextWrapper(principal, auth_service)
 
 
     def callTraversalHooks(self, request, ob):
@@ -160,16 +163,49 @@ class ZopePublication(object, PublicationTraverse):
         txn.setUser(request.user.getId())
         get_transaction().commit()
 
-    def handleException(self, object, request, exc_info, retry_allowed=1):
-        # Abort the transaction.
-        get_transaction().abort()
+    def handleException(self, object, request, exc_info, retry_allowed=True):
+        # Convert ConflictErrors to Retry exceptions.
+        if retry_allowed and isinstance(exc_info[1], ConflictError):
+            get_transaction().abort()
+            tryToLogWarning('ZopePublication',
+                'Competing writes/reads at %s' % 
+                request.get('PATH_INFO', '???'),
+                exc_info=True)
+            raise Retry
+        # Are there any reasons why we'd want to let application-level error
+        # handling determine whether a retry is allowed or not?
+        # Assume not for now.
 
+        response = request.response
+        exception = None
         try:
-            errService = getService(object, 'ErrorReportingService')
-        except ComponentLookupError:
-            pass
-        else:
+            # Set the request body, and abort the current transaction.
             try:
+                exception = ContextWrapper(exc_info[1], object)
+                name = getDefaultViewName(exception, request)
+                view = getView(exception, name, request)
+                response.setBody(self.callObject(request, view))
+            except ComponentLookupError:
+                # No view available for this exception, so let the response
+                # handle it.
+                response.handleException(exc_info)
+            except:
+                # Problem getting a view for this exception. Log an error.
+                tryToLogException('Exception while getting view on exception')
+                # So, let the response handle it.
+                response.handleException(exc_info)
+        finally:
+            # Definitely abort the transaction that raised the exception.
+            get_transaction().abort()
+
+        # New transaction for side-effects
+        beginErrorHandlingTransaction(request)
+        transaction_ok = False
+
+        # Record the error with the ErrorReportingService
+        try:
+            errService = queryService(object, 'ErrorReportingService')
+            if errService is not None:
                 errService.raising(exc_info, request)
             # It is important that an error in errService.raising
             # does not propagate outside of here. Otherwise, nothing
@@ -183,46 +219,26 @@ class ZopePublication(object, PublicationTraverse):
             # error handling that this error occurred while using
             # the ErrorReportingService, and that it will be in
             # the zope log.
-            except:
-                logging.getLogger('SiteError').exception(
-                    'Error while reporting an error to the '
-                    'ErrorReportingService')
 
-        # Delegate Unauthorized errors to the authentication service
-        # XXX Is this the right way to handle Unauthorized?  We need
-        # to understand this better.
-        if isinstance(exc_info[1], Unauthorized):
-            sm = getSecurityManager()
-            id = sm.getPrincipal()
-            prin_reg.unauthorized(id, request) # May issue challenge
-            request.response.handleException(exc_info)
-            return
+        except:
+            tryToLogException(
+                'Error while reporting an error to the '
+                'ErrorReportingService')
+            get_transaction().abort()
+            beginErrorHandlingTransaction(request)
 
-        # XXX This is wrong. Should use getRequstView:
-        #
-        #
-        # # Look for a component to handle the exception.
-        # traversed = request.traversed
-        # if traversed:
-        #     context = traversed[-1]
-        #     #handler = getExceptionHandler(context, t, IBrowserPublisher)
-        #     handler = None  # no getExceptionHandler() exists yet.
-        #     if handler is not None:
-        #         handler(request, exc_info)
-        #         return
+        # See if there's an IExceptionSideEffects adapter for the exception
+        try:
+            adapter = getAdapter(exception, IExceptionSideEffects)
+            # view_presented is None if no view was presented, or the name
+            # of the view, if it was.
+            # Although request is passed in here, it should be considered
+            # read-only.
+            adapter(object, request, exc_info)
+            get_transaction().commit()
+        except:
+            get_transaction().abort()
 
-        # Convert ConflictErrors to Retry exceptions.
-        if retry_allowed and isinstance(exc_info[1], ConflictError):
-            #XXX this code path needs a unit test
-            logging.getLogger('ZopePublication').warn(
-                'Competing writes/reads at %s',
-                request.get('PATH_INFO', '???'),
-                exc_info=True)
-            raise Retry
-
-        # Let the response handle it as best it can.
-        # XXX Is this what we want in the long term?
-        request.response.handleException(exc_info)
         return
 
     def _parameterSetskin(self, pname, pval, request):
@@ -244,3 +260,40 @@ class DebugPublication(object):
     def callObject(self, request, ob):
         return mapply(self.call_wrapper(ob),
                       request.getPositionalArguments(), request)
+
+def tryToLogException(arg1, arg2=None):
+    if arg2 is None:
+        subsystem = 'SiteError'
+        message = arg1
+    else:
+        subsystem = arg1
+        message = arg2
+    try:
+        logging.getLogger(subsystem).exception(message)
+    # Bare except, because we want to swallow any exception raised while
+    # logging an exception.
+    except:
+        pass
+
+def tryToLogWarning(arg1, arg2=None, exc_info=False):
+    if arg2 is None:
+        subsystem = 'SiteError'
+        message = arg1
+    else:
+        subsystem = arg1
+        message = arg2
+    try:
+        logging.getLogger(subsystem).warn(message, exc_info=exc_info)
+    # Bare except, because we want to swallow any exception raised while
+    # logging a warning.
+    except:
+        pass
+
+def beginErrorHandlingTransaction(request):
+    get_transaction().begin()
+    if IHTTPRequest.isImplementedBy(request):
+        pathnote = '%s ' % request["PATH_INFO"]
+    else:
+        pathnote = ''
+    get_transaction().note(
+        '%s(application error handling)' % pathnote)
