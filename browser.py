@@ -11,12 +11,13 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""XXX short summary goes here.
+"""Browser Publication Code
+
+This module implements browser-specific publication and traversal components
+for the publisher.
 
 $Id$
 """
-__metaclass__ = type
-
 from zope.app.publication.publicationtraverse \
      import PublicationTraverser as PublicationTraverser_
 from zope.app.publication.http import BaseHTTPPublication
@@ -64,7 +65,7 @@ class BrowserPublication(BaseHTTPPublication):
             request.response.setBody('')
 
 # For now, have a factory that returns a singleton
-class PublicationFactory:
+class PublicationFactory(object):
 
     def __init__(self, db):
         self.__pub = BrowserPublication(db)
