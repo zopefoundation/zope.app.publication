@@ -181,7 +181,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         value = self.out.getvalue().split()
         self.assertEqual(' '.join(value[:6]),
                          'Traceback (most recent call last): File')
-        self.assertEqual(' '.join(value[9:]),
+        self.assertEqual(' '.join(value[-8:]),
                          'in testRetryNotAllowed raise ConflictError'
                          ' ConflictError: database conflict error')
 
