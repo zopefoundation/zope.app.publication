@@ -17,8 +17,6 @@ $Id$
 """
 
 from zope.interface import implements, Interface
-from zope.app.event.interfaces import IEvent
-
 
 class IPublicationRequestFactoryFactory(Interface):
     """Publication request factory factory"""
@@ -47,7 +45,7 @@ class IRequestFactory(IPublicationRequestFactory,
     """
 
 
-class IBeforeTraverseEvent(IEvent):
+class IBeforeTraverseEvent(Interface):
     """An event which gets sent on publication traverse"""
 
 
@@ -59,7 +57,7 @@ class BeforeTraverseEvent:
         self.request = request
 
 
-class IEndRequestEvent(IEvent):
+class IEndRequestEvent(Interface):
     """An event which gets sent when the publication is ended"""
 
 

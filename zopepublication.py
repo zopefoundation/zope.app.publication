@@ -46,7 +46,7 @@ from zope.app.security.interfaces import IUnauthenticatedPrincipal
 from zope.app.publication.publicationtraverse import PublicationTraverse
 from zope.app.traversing.interfaces import IPhysicallyLocatable
 from zope.app.location import LocationProxy
-from zope.app.event import publish
+from zope.event import notify
 from zope.app.publication.interfaces import BeforeTraverseEvent
 from zope.app.publication.interfaces import EndRequestEvent
 
@@ -110,7 +110,7 @@ class ZopePublication(PublicationTraverse):
 
     def callTraversalHooks(self, request, ob):
         # Call __before_publishing_traverse__ hooks
-        publish(None, BeforeTraverseEvent(ob, request))
+        notify(BeforeTraverseEvent(ob, request))
         # This is also a handy place to try and authenticate.
         self._maybePlacefullyAuthenticate(request, ob)
 
@@ -160,7 +160,7 @@ class ZopePublication(PublicationTraverse):
 
     def endRequest(self, request, ob):
         endInteraction()
-        publish(None, EndRequestEvent(ob, request))
+        notify(EndRequestEvent(ob, request))
 
     def annotateTransaction(self, txn, request, ob):
         """Set some useful meta-information on the transaction. This

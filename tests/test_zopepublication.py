@@ -440,40 +440,29 @@ class ZopePublicationTests(BasePublicationTests):
     def testSiteEvents(self):
         from zope.app.publication.interfaces import IBeforeTraverseEvent
         from zope.app.publication.interfaces import IEndRequestEvent
-        from zope.app.event.interfaces import ISubscriber
-        from zope.app.servicenames import EventPublication
-        from zope.app.event.localservice import EventService
 
-        class Subscriber:
-            implements(ISubscriber)
-            def __init__(self):
-                self.events = []
-            def notify(self, event):
-                self.events.append(event)
-
-        events = zapi.getService(EventPublication)
-        set = Subscriber()
-        clear = Subscriber()
-        events.globalSubscribe(set, IBeforeTraverseEvent)
-        events.globalSubscribe(clear, IEndRequestEvent)
+        set = []
+        clear = []
+        ztapi.handle([IBeforeTraverseEvent], set.append)
+        ztapi.handle([IEndRequestEvent], clear.append)
 
         ob = object()
 
         # This should fire the BeforeTraverseEvent
         self.publication.callTraversalHooks(self.request, ob)
 
-        self.assertEqual(len(set.events), 1)
-        self.assertEqual(len(clear.events), 0)
-        self.assertEqual(set.events[0].object, ob)
+        self.assertEqual(len(set), 1)
+        self.assertEqual(len(clear), 0)
+        self.assertEqual(set[0].object, ob)
 
         ob2 = object()
 
         # This should fire the EndRequestEvent
         self.publication.endRequest(self.request, ob2)
 
-        self.assertEqual(len(set.events), 1)
-        self.assertEqual(len(clear.events), 1)
-        self.assertEqual(clear.events[0].object, ob2)
+        self.assertEqual(len(set), 1)
+        self.assertEqual(len(clear), 1)
+        self.assertEqual(clear[0].object, ob2)
 
 
 def test_suite():
