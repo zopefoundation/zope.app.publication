@@ -294,29 +294,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         self.publication.handleException(
             self.object, self.request, sys.exc_info(), retry_allowed=False)
         # assert that we get a new transaction
-        self.assert_(txn is not get_transaction())
-
-    def testCommitTransactionNoErrorLoggingService(self):
-        # XXX This test is disabled because it would fail.
-
-        # Though the publication commits a transaction with a note in
-        # case the error logging service is absent, the transaction is
-        # not logged in the undo log because no persistent objects are
-        # modified in it.
-        return
-
-        root = self.db.open().root()
-        last_txn_info = self.db.undoInfo()[0]
-
-        try:
-            raise Exception
-        except:
-            pass
-        self.publication.handleException(
-            self.object, self.request, sys.exc_info(), retry_allowed=False)
-
-        new_txn_info = self.db.undoInfo()[0]
-        self.failIfEqual(last_txn_info, new_txn_info)
+        self.assert_(txn is not get_transaction())    
 
     def testAbortTransactionWithErrorLoggingService(self):
         # provide our fake error logging service
