@@ -13,7 +13,7 @@
 ##############################################################################
 """HTTP Factory
 
-$Id: httpfactory.py,v 1.6 2004/03/13 20:24:26 srichter Exp $
+$Id: httpfactory.py,v 1.7 2004/03/20 13:37:02 philikon Exp $
 """
 from zope.interface import moduleProvides, implements
 from zope.publisher.http import HTTPRequest
@@ -34,19 +34,16 @@ __metaclass__ = type
 _browser_methods = 'GET', 'POST', 'HEAD'
 
 class HTTPPublicationRequestFactory:
-
     implements(IPublicationRequestFactory)
 
     def __init__(self, db):
-        'See IRequestFactory'
-
+        """See zope.app.process.interfaces.IPublicationRequestFactory"""
         self._http = HTTPPublication(db)
         self._brower = BrowserPublication(db)
         self._xmlrpc = XMLRPCPublication(db)
 
     def __call__(self, input_stream, output_steam, env):
-        'See IRequestFactory'
-
+        """See zope.app.process.interfaces.IPublicationRequestFactory"""
         method = env.get('REQUEST_METHOD', 'GET').upper()
 
         if method in _browser_methods:
