@@ -13,13 +13,14 @@
 ##############################################################################
 """
 
-$Id: xmlrpc.py,v 1.3 2003/01/14 20:26:05 srichter Exp $
+$Id: xmlrpc.py,v 1.4 2003/02/07 15:59:41 jim Exp $
 """
+
 from zope.proxy.introspection import removeAllProxies
-from zope.app.publication.http import ZopeHTTPPublication
+from zope.app.publication.zopepublication import ZopePublication
 from zope.component import queryView
 
-class XMLRPCPublication(ZopeHTTPPublication):
+class XMLRPCPublication(ZopePublication):
     """XML-RPC publication handling.
 
        There is nothing special here right now.

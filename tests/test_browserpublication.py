@@ -13,6 +13,8 @@
 ##############################################################################
 import unittest
 
+from StringIO import StringIO
+
 from zope.interface import Interface
 
 from zope.component import getService, getServiceManager
@@ -303,6 +305,50 @@ class BrowserPublicationTests(BasePublicationTests):
         app = r.publication.getApplication(r)
         self.assertEqual(app, applicationControllerRoot)
 
+
+    def testHEADFuxup(self):
+        pub = self.klass(None)
+
+        class User:
+            def getId(self):
+                return 'bob'
+
+        # With a normal request, we should get a body:
+        output = StringIO()
+        request = TestRequest(StringIO(''), output, {'PATH_INFO': '/'})
+        request.user = User()
+        request.response.setBody("spam")
+        pub.afterCall(request)
+        request.response.outputBody()
+        self.assertEqual(
+            output.getvalue(),
+            'Status: 200 Ok\r\n'
+            'Content-Length: 4\r\n'
+            'Content-Type: text/plain;charset=iso-8859-1\r\n'
+            'X-Powered-By: Zope (www.zope.org), Python (www.python.org)\r\n'
+            '\r\nspam'
+            )
+
+        # But with a HEAD request, the body should be empty
+        output = StringIO()
+        request = TestRequest(StringIO(''), output, {'PATH_INFO': '/'})
+        request.user = User()
+        request.method = 'HEAD'
+        request.response.setBody("spam")
+        pub.afterCall(request)
+        request.response.outputBody()
+        self.assertEqual(
+            output.getvalue(),
+            'Status: 200 Ok\r\n'
+            'Content-Length: 0\r\n'
+            'Content-Type: text/plain;charset=iso-8859-1\r\n'
+            'X-Powered-By: Zope (www.zope.org), Python (www.python.org)\r\n'
+            '\r\n'
+            )
+
+        
+        
+        
 
 def test_suite():
     t2 = unittest.makeSuite(BrowserPublicationTests, 'test')

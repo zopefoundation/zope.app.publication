@@ -269,23 +269,6 @@ class ZopePublication(object, PublicationTraverse):
     def _parameterSetskin(self, pname, pval, request):
         request.setViewSkin(pval)
 
-class DebugPublication(object):
-
-    class call_wrapper:
-
-        def __init__(self, ob):
-            self.__ob = ob
-
-        def __getattr__(self, name):
-            return getattr(self.__ob, name)
-
-        def __call__(self, *args, **kw):
-            self.__ob(*args, **kw)
-
-    def callObject(self, request, ob):
-        return mapply(self.call_wrapper(ob),
-                      request.getPositionalArguments(), request)
-
 def tryToLogException(arg1, arg2=None):
     if arg2 is None:
         subsystem = 'SiteError'

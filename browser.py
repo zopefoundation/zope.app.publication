@@ -13,13 +13,13 @@
 ##############################################################################
 """XXX short summary goes here.
 
-$Id: browser.py,v 1.4 2002/12/31 18:26:57 jim Exp $
+$Id: browser.py,v 1.5 2003/02/07 15:59:41 jim Exp $
 """
 __metaclass__ = type
 
 from zope.app.publication.publicationtraverse \
      import PublicationTraverser as PublicationTraverser_
-from zope.app.publication.http import ZopeHTTPPublication
+from zope.app.publication.zopepublication import ZopePublication
 from zope.component import queryAdapter, queryView
 from zope.proxy.context import ContextWrapper
 from zope.proxy.introspection import removeAllProxies
@@ -43,7 +43,7 @@ class PublicationTraverser(PublicationTraverser_):
 
             ob = self.traversePath(request, ob, path)
 
-class BrowserPublication(ZopeHTTPPublication):
+class BrowserPublication(ZopePublication):
     """Web browser publication handling."""
 
     def getDefaultTraversal(self, request, ob):
@@ -64,6 +64,11 @@ class BrowserPublication(ZopeHTTPPublication):
 
         wrapped = ContextWrapper(ProxyFactory(r[0]), ob, name=None)
         return (wrapped, r[1])
+
+    def afterCall(self, request):
+        super(BrowserPublication, self).afterCall(request)
+        if request.method == 'HEAD':
+            request.response.setBody('')
 
 # For now, have a factory that returns a singleton
 class PublicationFactory:

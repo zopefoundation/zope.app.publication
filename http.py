@@ -13,11 +13,17 @@
 ##############################################################################
 """
 
-$Id: http.py,v 1.2 2002/12/25 14:13:08 jim Exp $
+$Id: http.py,v 1.3 2003/02/07 15:59:41 jim Exp $
 """
 
 from zope.app.publication.zopepublication import ZopePublication
+from zope.component import getView
+from zope.publisher.publish import mapply
 
-class ZopeHTTPPublication(ZopePublication):
+class HTTPPublication(ZopePublication):
     "HTTP-specific support"
-    # XXX do we need this?
+
+    def callObject(self, request, ob):
+        ob = getView(ob, request.method, request)
+        ob = getattr(ob, request.method)
+        return mapply(ob, request.getPositionalArguments(), request)
