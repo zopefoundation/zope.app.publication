@@ -37,14 +37,12 @@ from zope.app.interfaces.security import IUnauthenticatedPrincipal
 
 from zope.app.publication.zopepublication import ZopePublication
 
-from zope.app.content.folder import Folder, RootFolder
+from zope.app.content.folder import Folder, rootFolder
 
 from zope.component.interfaces import IServiceService
 
 from zope.publisher.base import TestRequest
 from zope.publisher.browser import BrowserResponse
-
-from zope.context import getWrapperContext
 
 from transaction import get_transaction
 from cStringIO import StringIO
@@ -66,9 +64,9 @@ class BasePublicationTests(PlacelessSetup, unittest.TestCase):
         app = getattr(root, ZopePublication.root_name, None)
 
         if app is None:
-            from zope.app.content.folder import RootFolder
+            from zope.app.content.folder import rootFolder
 
-            app = RootFolder()
+            app = rootFolder()
             root[ZopePublication.root_name] = app
 
             get_transaction().commit()
@@ -280,9 +278,9 @@ class ZopePublicationTests(BasePublicationTests):
 
         root = self.db.open().root()
         app = root[ZopePublication.root_name]
-        app.setObject('f1', Folder())
+        app['f1'] = Folder()
         f1 = app['f1']
-        f1.setObject('f2', Folder())
+        f1['f2'] = Folder()
         f1.setSiteManager(ServiceManager(AuthService1()))
         f2 = f1['f2']
         f2.setSiteManager(ServiceManager(AuthService2()))
@@ -300,8 +298,7 @@ class ZopePublicationTests(BasePublicationTests):
         from zope.app.interfaces.content.folder import IFolder
         from zope.security.checker import defineChecker, InterfaceChecker
         defineChecker(Folder, InterfaceChecker(IFolder))
-        defineChecker(RootFolder, InterfaceChecker(IFolder))
-
+        
         request.setViewType(IPresentation)
 
         publication = ZopePublication(self.db)
@@ -309,26 +306,19 @@ class ZopePublicationTests(BasePublicationTests):
         publication.beforeTraversal(request)
         user = getSecurityManager().getPrincipal()
         self.assertEqual(user, request.user)
-        self.assertEqual(getWrapperContext(user), principalRegistry)
         self.assertEqual(request.user.getId(), 'anonymous')
-        self.assertEqual(getWrapperContext(request.user), principalRegistry)
         root = publication.getApplication(request)
         publication.callTraversalHooks(request, root)
         self.assertEqual(request.user.getId(), 'anonymous')
         ob = publication.traverseName(request, root, 'f1')
         publication.callTraversalHooks(request, ob)
         self.assertEqual(request.user.getId(), 'test.anonymous')
-        self.assertEqual(getWrapperContext(request.user).__class__,
-                         AuthService1)
         ob = publication.traverseName(request, ob, 'f2')
         publication.afterTraversal(request, ob)
         self.assertEqual(request.user.getId(), 'test.bob')
-        self.assertEqual(getWrapperContext(request.user).__class__,
-                         AuthService2)
         user = getSecurityManager().getPrincipal()
         self.assertEqual(user, request.user)
-        self.assertEqual(getWrapperContext(user).__class__, AuthService2)
-
+        
 
 def test_suite():
     return unittest.TestSuite((
