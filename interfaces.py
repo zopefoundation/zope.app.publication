@@ -17,9 +17,10 @@ $Id$
 """
 __docformat__ = 'restructuredtext'
 
-from zope.interface import implements, Interface
+from zope import interface
+import zope.app.event.interfaces
 
-class IPublicationRequestFactory(Interface):
+class IPublicationRequestFactory(interface.Interface):
     """Publication request factory"""
 
     def __call__(input_stream, output_steam, env):
@@ -28,31 +29,36 @@ class IPublicationRequestFactory(Interface):
         A request is created and configured with a publication object.
         """
 
-class IBeforeTraverseEvent(Interface):
+class IBeforeTraverseEvent(zope.app.event.interfaces.IObjectEvent):
     """An event which gets sent on publication traverse"""
 
+    request = interface.Attribute("The current request")
 
 class BeforeTraverseEvent(object):
     """An event which gets sent on publication traverse"""
-    implements(IBeforeTraverseEvent)
+
+    interface.implements(IBeforeTraverseEvent)
+
     def __init__(self, ob, request):
         self.object = ob
         self.request = request
 
 
-class IEndRequestEvent(Interface):
+class IEndRequestEvent(interface.Interface):
     """An event which gets sent when the publication is ended"""
 
 
 class EndRequestEvent(object):
     """An event which gets sent when the publication is ended"""
-    implements(IEndRequestEvent)
+
+    interface.implements(IEndRequestEvent)
+
     def __init__(self, ob, request):
         self.object = ob
         self.request = request
 
 
-class ISOAPRequestFactory(Interface):
+class ISOAPRequestFactory(interface.Interface):
     """SOAP request factory"""
 
     def __call__(input_stream, output_steam, env):
