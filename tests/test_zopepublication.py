@@ -13,7 +13,7 @@
 ##############################################################################
 """Zope Publication Tests
 
-$Id: test_zopepublication.py,v 1.31 2004/03/21 16:59:45 philikon Exp $
+$Id: test_zopepublication.py,v 1.32 2004/04/05 08:16:03 hdima Exp $
 """
 import unittest
 import sys
@@ -279,7 +279,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
             self.object, self.request, sys.exc_info(), retry_allowed=False)
         self.request.response.outputBody()
         self.assertEqual(self.request.response.getHeader('Content-Type'),
-                         'text/html')
+                         'text/html;charset=utf-8')
         self.assertEqual(self.request.response._cookies, {})
 
     def testAbortOrCommitTransaction(self):
