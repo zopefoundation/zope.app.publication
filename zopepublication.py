@@ -189,7 +189,7 @@ class ZopePublication(PublicationTraverse):
             # dead end.
             try:
                 path = locatable.getPath()
-            except AttributeError:
+            except (AttributeError, TypeError):
                 pass
         if path is not None:
             txn.setExtendedInfo('location', path)
@@ -305,7 +305,12 @@ class ZopePublication(PublicationTraverse):
 
             if view is not None:
                 try:
-                    response.setBody(self.callObject(request, view))
+                    # We use mapply instead of self.callObject here
+                    # because we don't want to pass positional
+                    # arguments.  The positional arguments were meant
+                    # for the published object, not an exception view.
+                    body = mapply(view, (), request)
+                    response.setBody(body)
                     get_transaction().commit()
                     if (ISystemErrorView.providedBy(view)
                         and view.isSystemError()):
