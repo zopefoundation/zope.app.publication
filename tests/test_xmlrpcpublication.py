@@ -113,7 +113,7 @@ class XMLRPCPublicationTests(BasePublicationTests):
         self.assertEqual(removeAllProxies(ob2).__class__, V)
         
 
-    def testTraverseNameServices(self):
+    def testTraverseNameSiteManager(self):
         pub = self.klass(self.db)
         class C(object):
             def getSiteManager(self):

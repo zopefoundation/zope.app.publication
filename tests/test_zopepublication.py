@@ -212,7 +212,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
             '  Error while reporting an error to the Error Reporting utility')
 
         # Here we got a single log record, because we havdn't
-        # installed an error reporting service.  That's OK.
+        # installed an error reporting utility.  That's OK.
 
         handler.uninstall()
         self.out.seek(0)
@@ -254,7 +254,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
 
         # Now, since the view was a system error view, we should have
         # a log entry for the E2 error (as well as the missing
-        # error reporting service).
+        # error reporting utility).
         self.assertEqual(
             str(handler),
             'SiteError ERROR\n'
@@ -354,7 +354,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         self.assert_(txn is not get_transaction())    
 
     def testAbortTransactionWithErrorReportingUtility(self):
-        # provide our fake error logging service
+        # provide our fake error reporting utility
         sm = zapi.getGlobalSiteManager()
         sm.provideUtility(IErrorReportingUtility, ErrorReportingUtility())
 
@@ -373,7 +373,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         new_txn_info = self.db.undoInfo()[0]
         self.assertEqual(last_txn_info, new_txn_info)
 
-        # instead, we expect a message in our logging service
+        # instead, we expect a message in our logging utility
         error_log = zapi.getUtility(IErrorReportingUtility)
         self.assertEqual(len(error_log.exceptions), 1)
         error_info, request = error_log.exceptions[0]

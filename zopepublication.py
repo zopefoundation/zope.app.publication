@@ -90,7 +90,7 @@ class ZopePublication(PublicationTraverse):
             return
 
         if not ISite.providedBy(ob):
-            # We won't find an authentication service here, so give up.
+            # We won't find an authentication utility here, so give up.
             return
 
         sm = removeSecurityProxy(ob).getSiteManager()
@@ -100,7 +100,7 @@ class ZopePublication(PublicationTraverse):
             # No auth utility here
             return
 
-        # Try to authenticate against the auth service
+        # Try to authenticate against the auth utility
         principal = auth.authenticate(request)
         if principal is None:
             principal = auth.unauthenticatedPrincipal()
@@ -186,8 +186,7 @@ class ZopePublication(PublicationTraverse):
             # Views are made children of their contexts, but that
             # doesn't necessarily mean that we can fully resolve the
             # path. E.g. the family tree of a resource cannot be
-            # resolved completely, as the presentation service is a
-            # dead end.
+            # resolved completely, as the site manager is a dead end.
             try:
                 path = locatable.getPath()
             except (AttributeError, TypeError):
