@@ -13,7 +13,7 @@
 ##############################################################################
 """Zope publication
 
-$Id: zopepublication.py,v 1.44 2004/04/17 17:15:33 jim Exp $
+$Id: zopepublication.py,v 1.45 2004/05/06 10:15:56 philikon Exp $
 """
 import sys
 import logging
@@ -264,12 +264,10 @@ class ZopePublication(PublicationTraverse):
                 request, object, 'application error-handling')
             view = None
             try:
-
                 # XXX we need to get a location. The object might not
                 # have one, because it might be a method. If we don't
-                # have a parent attr but to have an im_self or an
+                # have a parent attr but have an im_self or an
                 # __self__, use that:
-
                 loc = object
                 if hasattr(object, '__parent__'):
                     loc = object
