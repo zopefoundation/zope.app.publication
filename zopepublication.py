@@ -48,7 +48,7 @@ from zope.app.publication.interfaces import EndRequestEvent
 from zope.app.publication.publicationtraverse import PublicationTraverse
 from zope.app.security.principalregistry import principalRegistry as prin_reg
 from zope.app.security.interfaces import IUnauthenticatedPrincipal
-from zope.app.security.interfaces import IAuthenticationUtility
+from zope.app.security.interfaces import IAuthentication
 from zope.app.site.interfaces import ISite
 from zope.app.traversing.interfaces import IPhysicallyLocatable
 
@@ -97,7 +97,7 @@ class ZopePublication(PublicationTraverse):
 
         try:
             utils = sm.getService(zapi.servicenames.Utilities)
-            auth = utils.getUtility(IAuthenticationUtility)
+            auth = utils.getUtility(IAuthentication)
         except ComponentLookupError:
             # No auth utility here
             return
