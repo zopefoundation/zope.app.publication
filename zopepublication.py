@@ -11,51 +11,49 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+"""Zope publication
+
+$Id: zopepublication.py,v 1.42 2004/03/20 13:37:45 philikon Exp $
+"""
 import sys
 import logging
 
-from zope.component import queryView, queryDefaultViewName
-from zope.component import queryService
-from zope.app.servicenames import ErrorLogging, Authentication
 from ZODB.POSException import ConflictError
 
+from zope.interface import implements, providedBy
+from zope.component import queryService
 from zope.publisher.publish import mapply
 from zope.publisher.interfaces import Retry, IExceptionSideEffects
-from zope.publisher.interfaces.http import IHTTPRequest
+from zope.publisher.interfaces import IRequest, IPublication
 
 from zope.security.management import newSecurityManager
 from zope.security.checker import ProxyFactory
-
 from zope.proxy import removeAllProxies
-
-from zope.app.site.interfaces import ISite
-
 from zope.exceptions import Unauthorized
 
+from zope.app import zapi
+from zope.app.site.interfaces import ISite
 from zope.app.applicationcontrol.applicationcontrol \
      import applicationControllerRoot
 
+from zope.app.servicenames import ErrorLogging, Authentication
 from zope.app.security.principalregistry import principalRegistry as prin_reg
-
 from zope.app.security.interfaces import IUnauthenticatedPrincipal
-
 from zope.app.publication.publicationtraverse import PublicationTraverse
-
-# XXX Should this be imported here?
-from transaction import get_transaction
-
+from zope.app.traversing.interfaces import IPhysicallyLocatable
 from zope.app.location import LocationProxy
 
 class Cleanup(object):
+
     def __init__(self, f):
         self._f = f
 
     def __del__(self):
         self._f()
 
-
-class ZopePublication(object, PublicationTraverse):
+class ZopePublication(PublicationTraverse):
     """Base Zope publication specification."""
+    implements(IPublication)
 
     version_cookie = 'Zope-Version'
     root_name = 'Application'
@@ -121,7 +119,6 @@ class ZopePublication(object, PublicationTraverse):
         pass
 
     def getApplication(self, request):
-
         # If the first name is '++etc++process', then we should
         # get it rather than look in the database!
         stack = request.getTraversalStack()
@@ -150,18 +147,40 @@ class ZopePublication(object, PublicationTraverse):
     def callObject(self, request, ob):
         return mapply(ob, request.getPositionalArguments(), request)
 
-    def afterCall(self, request):
+    def afterCall(self, request, ob):
         txn = get_transaction()
-        if IHTTPRequest.providedBy(request):
-            txn.note(request["PATH_INFO"])
-        # XXX not sure why you would use id vs title or description
-        txn.setUser(request.user.id)
-        get_transaction().commit()
+        self.annotateTransaction(txn, request, ob)
+        txn.commit()
 
+    def annotateTransaction(self, txn, request, ob):
+        """Set some useful meta-information on the transaction. This
+        information is used by the undo framework, for example.
+
+        This method is not part of the IPublication interface, since
+        it's specific to this particular implementation.
+        """
+        txn.setUser(request.user.id)
+
+        # set the location path
+        path = None
+        locatable = IPhysicallyLocatable(ob, None)
+        if locatable is not None:
+            path = locatable.getPath()
+        txn.setExtendedInfo('location', path)
+
+        # set the request type
+        iface = IRequest
+        for iface in providedBy(request):
+            if iface.extends(IRequest):
+                break
+        iface_dotted = iface.__module__ + '.' + iface.getName()
+        txn.setExtendedInfo('request_type', iface_dotted)
+        return txn
 
     def _logErrorWithErrorReportingService(self, object, request, exc_info):
         # Record the error with the ErrorReportingService
-        beginErrorHandlingTransaction(request, 'error reporting service')
+        self.beginErrorHandlingTransaction(request, object,
+                                           'error reporting service')
         try:
             errService = queryService(object, ErrorLogging)
             if errService is not None:
@@ -225,8 +244,8 @@ class ZopePublication(object, PublicationTraverse):
         else:
             # We definitely have an Exception
             # Set the request body, and abort the current transaction.
-            beginErrorHandlingTransaction(
-                request, 'application error-handling')
+            self.beginErrorHandlingTransaction(
+                request, object, 'application error-handling')
             view = None
             try:
 
@@ -246,9 +265,9 @@ class ZopePublication(object, PublicationTraverse):
                     loc = ProxyFactory(loc)
                 
                 exception = LocationProxy(exc_info[1], loc)
-                name = queryDefaultViewName(exception, request, context=object)
+                name = zapi.queryDefaultViewName(exception, request, context=object)
                 if name is not None:
-                    view = queryView(exception, name, request, context=object)
+                    view = zapi.queryView(exception, name, request, context=object)
             except:
                 # Problem getting a view for this exception. Log an error.
                 tryToLogException(
@@ -287,8 +306,8 @@ class ZopePublication(object, PublicationTraverse):
                 adapter = None
 
             if adapter is not None:
-                beginErrorHandlingTransaction(
-                    request, 'application error-handling side-effect')
+                self.beginErrorHandlingTransaction(
+                    request, object, 'application error-handling side-effect')
                 try:
                     # Although request is passed in here, it should be
                     # considered read-only.
@@ -299,6 +318,13 @@ class ZopePublication(object, PublicationTraverse):
                         'Exception while calling'
                         ' IExceptionSideEffects adapter')
                     get_transaction().abort()
+
+    def beginErrorHandlingTransaction(self, request, ob, note):
+        txn = get_transaction()
+        txn.begin()
+        txn.note(note)
+        self.annotateTransaction(txn, request, ob)
+        return txn
 
     def _parameterSetskin(self, pname, pval, request):
         request.setPresentationSkin(pval)
@@ -330,12 +356,3 @@ def tryToLogWarning(arg1, arg2=None, exc_info=False):
     # logging a warning.
     except:
         pass
-
-def beginErrorHandlingTransaction(request, note):
-    get_transaction().begin()
-    if IHTTPRequest.providedBy(request):
-        pathnote = '%s ' % request["PATH_INFO"]
-    else:
-        pathnote = ''
-    get_transaction().note(
-        '%s(%s)' % (pathnote, note))

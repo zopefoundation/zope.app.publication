@@ -13,15 +13,28 @@
 ##############################################################################
 """HTTP Publication
 
-$Id: http.py,v 1.7 2004/03/13 23:34:30 srichter Exp $
+$Id: http.py,v 1.8 2004/03/20 13:37:45 philikon Exp $
 """
 from zope.app.publication.zopepublication import ZopePublication
 from zope.component import getView
 from zope.publisher.publish import mapply
 from zope.app.http.interfaces import IHTTPException
 
-class HTTPPublication(ZopePublication):
-    "HTTP-specific support"
+class BaseHTTPPublication(ZopePublication):
+    """Base for HTTP-based protocol publications"""
+
+    def annotateTransaction(self, txn, request, ob):
+        txn = super(BaseHTTPPublication, self).annotateTransaction(
+            txn, request, ob)
+        txn.setExtendedInfo('url', request.getURL())
+        txn.setExtendedInfo('method', request.method)
+        # XXX note the URL path for now until we have a new UI for the
+        # undo machinery
+        txn.note(request["PATH_INFO"])
+        return txn
+
+class HTTPPublication(BaseHTTPPublication):
+    """HTTP-specific publication"""
 
     def callObject(self, request, ob):
         # Exception handling, dont try to call request.method

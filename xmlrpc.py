@@ -15,15 +15,15 @@
 
 This module specifically implements a custom nameTraverse() method.
 
-$Id: xmlrpc.py,v 1.10 2004/03/19 20:26:29 srichter Exp $
+$Id: xmlrpc.py,v 1.11 2004/03/20 13:37:45 philikon Exp $
 """
-from zope.app.publication.zopepublication import ZopePublication
 from zope.component import queryView, queryDefaultViewName
 from zope.proxy import removeAllProxies
 from zope.app.publisher.interfaces.xmlrpc import IXMLRPCPresentation
 from zope.security.checker import ProxyFactory
+from zope.app.publication.http import BaseHTTPPublication
 
-class XMLRPCPublication(ZopePublication):
+class XMLRPCPublication(BaseHTTPPublication):
     """XML-RPC publication handling."""
 
     def traverseName(self, request, ob, name):
@@ -75,7 +75,6 @@ class XMLRPCPublication(ZopePublication):
 
         # See whether we have a subobject
         return super(XMLRPCPublication, self).traverseName(request, ob, name)
-
 
 # For now, have a factory that returns a singleton
 class XMLRPCPublicationFactory:

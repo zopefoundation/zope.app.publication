@@ -13,13 +13,13 @@
 ##############################################################################
 """XXX short summary goes here.
 
-$Id: browser.py,v 1.14 2004/03/17 18:24:25 philikon Exp $
+$Id: browser.py,v 1.15 2004/03/20 13:37:45 philikon Exp $
 """
 __metaclass__ = type
 
 from zope.app.publication.publicationtraverse \
      import PublicationTraverser as PublicationTraverser_
-from zope.app.publication.zopepublication import ZopePublication
+from zope.app.publication.http import BaseHTTPPublication
 from zope.component import queryViewProviding
 from zope.proxy import removeAllProxies
 from zope.publisher.interfaces.browser import IBrowserPublisher
@@ -42,7 +42,7 @@ class PublicationTraverser(PublicationTraverser_):
 
             ob = self.traversePath(request, ob, path)
 
-class BrowserPublication(ZopePublication):
+class BrowserPublication(BaseHTTPPublication):
     """Web browser publication handling."""
 
     def getDefaultTraversal(self, request, ob):
@@ -59,8 +59,8 @@ class BrowserPublication(ZopePublication):
                 # ob is already proxied
                 return ob, None
 
-    def afterCall(self, request):
-        super(BrowserPublication, self).afterCall(request)
+    def afterCall(self, request, ob):
+        super(BrowserPublication, self).afterCall(request, ob)
         if request.method == 'HEAD':
             request.response.setBody('')
 
