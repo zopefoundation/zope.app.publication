@@ -33,7 +33,7 @@ from zope.publisher.interfaces import Retry, IExceptionSideEffects
 from zope.publisher.interfaces import IRequest, IPublication
 from zope.security.management import newInteraction, endInteraction
 from zope.security.checker import ProxyFactory
-from zope.security.proxy import trustedRemoveSecurityProxy
+from zope.security.proxy import removeSecurityProxy
 
 from zope.app import zapi
 from zope.app.applicationcontrol.applicationcontrol \
@@ -172,7 +172,7 @@ class ZopePublication(PublicationTraverse):
         txn.setUser(request.principal.id)
 
         # Work around methods that are usually used for views
-        bare = trustedRemoveSecurityProxy(ob)
+        bare = removeSecurityProxy(ob)
         if isinstance(bare, instancemethod):
             ob = bare.im_self
 
