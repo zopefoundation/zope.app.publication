@@ -89,7 +89,7 @@ class TestTraverser:
             return getView(ob, name[6:], request)
 
         if name.startswith('_'):
-            raise Unauthorized("Name %s begins with an underscore" % `name`)
+            raise Unauthorized, name
 
         subob = getattr(ob, name, self) # self is marker here
         if subob is self:
