@@ -17,12 +17,12 @@ $Id$
 """
 import unittest
 from zope.component.tests.request import Request
-from zope.app.publication.traversers import SimpleComponentTraverser
-from zope.component import getService
-from zope.app.servicenames import Presentation
-from zope.interface import Interface
 from zope.exceptions import NotFoundError
+from zope.interface import Interface
+
+from zope.app.publication.traversers import SimpleComponentTraverser
 from zope.app.tests.placelesssetup import PlacelessSetup
+from zope.app.tests import ztapi
 
 class I(Interface):
     pass
@@ -66,11 +66,11 @@ class Test(PlacelessSetup, unittest.TestCase):
         req = Request(I, '')
 
         T = SimpleComponentTraverser(c, req)
-        getService(Presentation).provideView(None , 'foo', I, View)
+        ztapi.provideView(None, I, Interface, 'foo', View)
 
-        self.failUnless(T.publishTraverse(req,'foo').__class__ is View )
+        self.failUnless(T.publishTraverse(req,'foo').__class__ is View)
 
-        self.assertRaises(NotFoundError , T.publishTraverse, req ,'morebar')
+        self.assertRaises(NotFoundError, T.publishTraverse, req , 'morebar')
 
 
 

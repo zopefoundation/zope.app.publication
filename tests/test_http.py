@@ -16,15 +16,20 @@
 $Id$
 """
 from unittest import TestCase, TestSuite, main, makeSuite
-from zope.app import zapi
-import zope.app.publication.http
-from zope.publisher.http import HTTPRequest
-from zope.app.tests.placelesssetup import PlacelessSetup
 from StringIO import StringIO
+
 from zope.interface import Interface, implements
+from zope.publisher.http import HTTPRequest
 from zope.publisher.interfaces.http import IHTTPRequest
 
-class I(Interface): pass
+import zope.app.publication.http
+from zope.app import zapi
+from zope.app.tests import ztapi
+from zope.app.tests.placelesssetup import PlacelessSetup
+
+class I(Interface):
+    pass
+
 class C(object):
     spammed = 0
     implements(I)
@@ -46,8 +51,7 @@ class Test(PlacelessSetup, TestCase):
         request = HTTPRequest(StringIO(''), StringIO(), {})
         request.method = 'SPAM'
 
-        s = zapi.getGlobalService(zapi.servicenames.Presentation)
-        s.provideView(I, 'SPAM', IHTTPRequest, V)
+        ztapi.provideView(I, IHTTPRequest, Interface, 'SPAM', V)
 
         ob = C()
         pub.callObject(request, ob)

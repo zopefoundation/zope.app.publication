@@ -21,7 +21,6 @@ from zope.app.publication.tests.test_zopepublication import \
      BasePublicationTests
 from zope.app.publication.traversers import TestTraverser
 from zope.app.publication.xmlrpc import XMLRPCPublication
-from zope.app.servicenames import Presentation
 from zope.component import getService
 from zope.interface import Interface, implements
 from zope.proxy import removeAllProxies
@@ -53,9 +52,8 @@ class XMLRPCPublicationTests(BasePublicationTests):
             x = SimpleObject(1)
         ob = C()
         r = self._createRequest('/x', pub)
-        provideView = getService(Presentation).provideView
-        provideView(None, '', IXMLRPCRequest, TestTraverser,
-                    providing=IXMLRPCPublisher)
+        ztapi.provideView(None, IXMLRPCRequest, IXMLRPCPublisher,
+                          '', TestTraverser)
         ob2 = pub.traverseName(r, ob, 'x')
         self.assertEqual(removeAllProxies(ob2).v, 1)
 
@@ -77,10 +75,9 @@ class XMLRPCPublicationTests(BasePublicationTests):
 
         ob = C()
         r = self._createRequest('/foo', pub)
-        provideView = getService(Presentation).provideView
-        setDefaultViewName = getService(Presentation).setDefaultViewName
-        provideView(I, 'view', IXMLRPCPresentation, V)
-        setDefaultViewName(I, IXMLRPCPresentation, 'view')
+
+        ztapi.provideView(I, IXMLRPCPresentation, Interface, 'view', V)
+        ztapi.setDefaultViewName(I, 'view', type=IXMLRPCPresentation)
         self.assertRaises(NotFound, pub.traverseName, r, ob, 'foo')
 
 
@@ -109,8 +106,7 @@ class XMLRPCPublicationTests(BasePublicationTests):
                           SimpleComponentTraverser)
 
         r = self._createRequest('/@@spam', pub)
-        provideView = getService(Presentation).provideView
-        provideView(I, 'spam', IXMLRPCRequest, V)
+        ztapi.provideView(I, IXMLRPCRequest, Interface, 'spam', V)
         ob2 = pub.traverseName(r, ob, '@@spam')
         self.assertEqual(removeAllProxies(ob2).__class__, V)
         
