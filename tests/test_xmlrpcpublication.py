@@ -13,7 +13,7 @@
 ##############################################################################
 """XML-RPC Publication Tests
 
-$Id: test_xmlrpcpublication.py,v 1.6 2004/03/15 20:42:09 jim Exp $
+$Id: test_xmlrpcpublication.py,v 1.7 2004/03/17 18:24:26 philikon Exp $
 """
 import unittest
 
@@ -28,6 +28,7 @@ from zope.proxy import removeAllProxies
 from zope.publisher.interfaces import NotFound
 from zope.publisher.interfaces.xmlrpc import IXMLRPCPresentation
 from zope.publisher.interfaces.xmlrpc import IXMLRPCRequest
+from zope.publisher.interfaces.xmlrpc import IXMLRPCPublisher
 from zope.publisher.xmlrpc import TestRequest
 
 
@@ -51,8 +52,9 @@ class XMLRPCPublicationTests(BasePublicationTests):
             x = SimpleObject(1)
         ob = C()
         r = self._createRequest('/x', pub)
-        provideView=getService(None, Presentation).provideView
-        provideView(None, '_traverse', IXMLRPCRequest, TestTraverser)
+        provideView = getService(None, Presentation).provideView
+        provideView(None, '', IXMLRPCRequest, TestTraverser,
+                    providing=IXMLRPCPublisher)
         ob2 = pub.traverseName(r, ob, 'x')
         self.assertEqual(removeAllProxies(ob2).v, 1)
 

@@ -11,7 +11,9 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"$Id"
+"""
+$Id
+"""
 
 __metaclass__ = type
 
@@ -32,9 +34,7 @@ class SimpleComponentTraverser:
 
     def browserDefault(self, request):
         ob = self.context
-
         view_name = getDefaultViewName(ob, request)
-
         return ob, (view_name,)
 
     def publishTraverse(self, request, name):
@@ -50,7 +50,6 @@ class FileContentTraverser(SimpleComponentTraverser):
     The default view for file content has effective URLs that don't end in
     /.  In particular, if the content inclused HTML, relative links in
     the HTML are relative to the container the content is in.
-
     """
 
     def browserDefault(self, request):
@@ -69,8 +68,7 @@ class FileContentTraverser(SimpleComponentTraverser):
         return view, path
 
 class TestTraverser:
-    "Bobo-style traverser, mostly useful for testing"
-
+    """Bobo-style traverser, mostly useful for testing"""
     implements(IBrowserPublisher)
 
     def __init__(self, context, request):
@@ -80,9 +78,7 @@ class TestTraverser:
         ob = self.context
 
         if providedBy(ob):
-
             view_name = getDefaultViewName(ob, request)
-
             return ob, (("@@%s" % view_name),)
 
         return ob, ()

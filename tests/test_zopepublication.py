@@ -13,7 +13,7 @@
 ##############################################################################
 """Zope Publication Tests
 
-$Id: test_zopepublication.py,v 1.27 2004/03/15 20:42:09 jim Exp $
+$Id: test_zopepublication.py,v 1.28 2004/03/17 18:24:26 philikon Exp $
 """
 import unittest
 import sys
@@ -27,7 +27,7 @@ from zope.i18n.interfaces import IUserPreferredCharsets
 from zope.component.interfaces import IServiceService
 from zope.publisher.base import TestPublication
 from zope.publisher.http import IHTTPRequest, HTTPCharsets
-from zope.publisher.interfaces import IRequest
+from zope.publisher.interfaces import IRequest, IPublishTraverse
 from zope.security import simplepolicies
 from zope.security.management import setSecurityPolicy, getSecurityManager
 
@@ -288,8 +288,8 @@ class ZopePublicationTests(BasePublicationTests):
         from zope.app.container.traversal import ContainerTraverser
 
         s = zapi.getService(None, zapi.servicenames.Presentation) 
-        s.provideView(ISimpleReadContainer, '_traverse', IRequest,
-                      ContainerTraverser)
+        s.provideView(ISimpleReadContainer, '', IRequest,
+                      ContainerTraverser, providing=IPublishTraverse)
 
         from zope.app.folder.interfaces import IFolder
         from zope.security.checker import defineChecker, InterfaceChecker

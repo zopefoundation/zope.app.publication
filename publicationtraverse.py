@@ -12,11 +12,9 @@
 #
 ##############################################################################
 """
-
-$Id: publicationtraverse.py,v 1.12 2004/03/05 22:09:13 jim Exp $
+$Id: publicationtraverse.py,v 1.13 2004/03/17 18:24:25 philikon Exp $
 """
-
-from zope.component import queryView
+from zope.component import queryViewProviding
 from zope.publisher.interfaces import NotFound
 from types import StringTypes
 from zope.security.checker import ProxyFactory
@@ -71,7 +69,8 @@ class PublicationTraverse:
         if IPublishTraverse.providedBy(removeAllProxies(ob)):
             ob2 = ob.publishTraverse(request, nm)
         else:
-            adapter = queryView(ob, '_traverse', request, self) # marker
+            # self is marker
+            adapter = queryViewProviding(ob, IPublishTraverse, request, self)
             if adapter is not self:
                 ob2 = adapter.publishTraverse(request, nm)
                 # ob2 will be security proxied here becuase the adapter

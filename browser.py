@@ -13,14 +13,14 @@
 ##############################################################################
 """XXX short summary goes here.
 
-$Id: browser.py,v 1.13 2004/03/06 17:48:52 jim Exp $
+$Id: browser.py,v 1.14 2004/03/17 18:24:25 philikon Exp $
 """
 __metaclass__ = type
 
 from zope.app.publication.publicationtraverse \
      import PublicationTraverser as PublicationTraverser_
 from zope.app.publication.zopepublication import ZopePublication
-from zope.component import queryView
+from zope.component import queryViewProviding
 from zope.proxy import removeAllProxies
 from zope.publisher.interfaces.browser import IBrowserPublisher
 from zope.security.checker import ProxyFactory
@@ -31,7 +31,7 @@ class PublicationTraverser(PublicationTraverser_):
 
         ob = self.traversePath(request, ob, path)
 
-        while 1:
+        while True:
             adapter = IBrowserPublisher(ob, None)
             if adapter is None:
                 return ob
@@ -50,7 +50,7 @@ class BrowserPublication(ZopePublication):
             # ob is already proxied, so the result of calling a method will be
             return ob.browserDefault(request)
         else:
-            adapter = queryView(ob, '_traverse', request , None)
+            adapter = queryViewProviding(ob, IBrowserPublisher, request , None)
             if adapter is not None:
                 ob, path = adapter.browserDefault(request)
                 ob = ProxyFactory(ob)
