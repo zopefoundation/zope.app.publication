@@ -16,7 +16,8 @@
 $Id$
 """
 
-from zope.interface import Interface
+from zope.interface import implements, Interface
+from zope.app.event.interfaces import IEvent
 
 
 class IPublicationRequestFactoryFactory(Interface):
@@ -44,3 +45,27 @@ class IRequestFactory(IPublicationRequestFactory,
     """This is a pure read-only interface, since the values are set through
        a ZCML directive and we shouldn't be able to change them.
     """
+
+
+class IBeforeTraverseEvent(IEvent):
+    """An event which gets sent on publication traverse"""
+
+
+class BeforeTraverseEvent:
+    """An event which gets sent on publication traverse"""
+    implements(IBeforeTraverseEvent)
+    def __init__(self, ob, request):
+        self.object = ob
+        self.request = request
+
+
+class IEndRequestEvent(IEvent):
+    """An event which gets sent when the publication is ended"""
+
+
+class EndRequestEvent:
+    """An event which gets sent when the publication is ended"""
+    implements(IEndRequestEvent)
+    def __init__(self, ob, request):
+        self.object = ob
+        self.request = request

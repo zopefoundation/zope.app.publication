@@ -26,7 +26,7 @@ from ZODB.DemoStorage import DemoStorage
 from zope.interface.verify import verifyClass
 from zope.interface import implements, classImplements, implementedBy
 from zope.i18n.interfaces import IUserPreferredCharsets
-from zope.component import getServiceManager
+from zope.component import getGlobalServices
 from zope.component.interfaces import IServiceService
 from zope.publisher.base import TestPublication, TestRequest
 from zope.publisher.http import IHTTPRequest, HTTPCharsets
@@ -37,11 +37,13 @@ from zope.security.management import setSecurityPolicy, queryInteraction
 
 from zope.app import zapi
 from zope.app.tests.placelesssetup import PlacelessSetup
+from zope.app.tests import setup
 from zope.app.tests import ztapi
 
 from zope.app.errorservice.interfaces import IErrorReportingService
 from zope.app.servicenames import ErrorLogging, Authentication
 from zope.app.location.interfaces import ILocation
+from zope.app.traversing.interfaces import IPhysicallyLocatable
 from zope.app.security.principalregistry import principalRegistry
 from zope.app.security.interfaces import IUnauthenticatedPrincipal, IPrincipal
 from zope.app.publication.zopepublication import ZopePublication
@@ -153,6 +155,7 @@ class BasePublicationTests(PlacelessSetup, unittest.TestCase):
     def testInterfacesVerify(self):
         for interface in implementedBy(ZopePublication):
             verifyClass(interface, TestPublication)
+
 
 class ZopePublicationErrorHandling(BasePublicationTests):
 
@@ -317,7 +320,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
 
     def testAbortTransactionWithErrorLoggingService(self):
         # provide our fake error logging service
-        sm = getServiceManager(None)
+        sm = getGlobalServices()
         sm.defineService(ErrorLogging, IErrorReportingService)
         sm.provideService(ErrorLogging, ErrorLoggingService())
 
@@ -327,7 +330,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         last_txn_info = self.db.undoInfo()[0]
         try:
             raise FooError
-        except:
+        except FooError:
             pass
         self.publication.handleException(
             self.object, self.request, sys.exc_info(), retry_allowed=False)
@@ -434,7 +437,44 @@ class ZopePublicationTests(BasePublicationTests):
         self.publication.afterCall(self.request, bar.foo)
         self.assertEqual(txn_info['location'], expected_path)
 
-        
+    def testSiteEvents(self):
+        from zope.app.publication.interfaces import IBeforeTraverseEvent
+        from zope.app.publication.interfaces import IEndRequestEvent
+        from zope.app.event.interfaces import ISubscriber
+        from zope.app.servicenames import EventPublication
+        from zope.app.event.localservice import EventService
+
+        class Subscriber:
+            implements(ISubscriber)
+            def __init__(self):
+                self.events = []
+            def notify(self, event):
+                self.events.append(event)
+
+        events = zapi.getService(EventPublication)
+        set = Subscriber()
+        clear = Subscriber()
+        events.globalSubscribe(set, IBeforeTraverseEvent)
+        events.globalSubscribe(clear, IEndRequestEvent)
+
+        ob = object()
+
+        # This should fire the BeforeTraverseEvent
+        self.publication.callTraversalHooks(self.request, ob)
+
+        self.assertEqual(len(set.events), 1)
+        self.assertEqual(len(clear.events), 0)
+        self.assertEqual(set.events[0].object, ob)
+
+        ob2 = object()
+
+        # This should fire the EndRequestEvent
+        self.publication.endRequest(self.request, ob2)
+
+        self.assertEqual(len(set.events), 1)
+        self.assertEqual(len(clear.events), 1)
+        self.assertEqual(clear.events[0].object, ob2)
+
 
 def test_suite():
     return unittest.TestSuite((

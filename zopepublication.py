@@ -22,7 +22,9 @@ from new import instancemethod
 from ZODB.POSException import ConflictError
 
 from zope.interface import implements, providedBy
-from zope.component import queryService
+from zope.component import getService
+from zope.app.servicenames import ErrorLogging
+from zope.component.exceptions import ComponentLookupError
 from zope.publisher.publish import mapply
 from zope.publisher.interfaces import Retry, IExceptionSideEffects
 from zope.publisher.interfaces import IRequest, IPublication
@@ -44,6 +46,9 @@ from zope.app.security.interfaces import IUnauthenticatedPrincipal
 from zope.app.publication.publicationtraverse import PublicationTraverse
 from zope.app.traversing.interfaces import IPhysicallyLocatable
 from zope.app.location import LocationProxy
+from zope.app.event import publish
+from zope.app.publication.interfaces import BeforeTraverseEvent
+from zope.app.publication.interfaces import EndRequestEvent
 
 class Cleanup(object):
 
@@ -87,7 +92,7 @@ class ZopePublication(PublicationTraverse):
             return
 
         sm = removeAllProxies(ob).getSiteManager()
-        
+
         auth_service = sm.queryService(Authentication)
         if auth_service is None:
             # No auth service here
@@ -105,7 +110,7 @@ class ZopePublication(PublicationTraverse):
 
     def callTraversalHooks(self, request, ob):
         # Call __before_publishing_traverse__ hooks
-
+        publish(None, BeforeTraverseEvent(ob, request))
         # This is also a handy place to try and authenticate.
         self._maybePlacefullyAuthenticate(request, ob)
 
@@ -154,8 +159,8 @@ class ZopePublication(PublicationTraverse):
         txn.commit()
 
     def endRequest(self, request, ob):
-        # Make sure the interaction is ended
         endInteraction()
+        publish(None, EndRequestEvent(ob, request))
 
     def annotateTransaction(self, txn, request, ob):
         """Set some useful meta-information on the transaction. This
@@ -201,9 +206,13 @@ class ZopePublication(PublicationTraverse):
         self.beginErrorHandlingTransaction(request, object,
                                            'error reporting service')
         try:
-            errService = queryService(object, ErrorLogging)
-            if errService is not None:
+            try:
+                errService = getService(ErrorLogging)
                 errService.raising(exc_info, request)
+            except ComponentLookupError:
+                # There is no local error reporting service.
+                # XXX We need to build a local error reporting service.
+                pass
             # It is important that an error in errService.raising
             # does not propagate outside of here. Otherwise, nothing
             # meaningful will be returned to the user.
@@ -224,7 +233,6 @@ class ZopePublication(PublicationTraverse):
                 ErrorLogging)
             get_transaction().abort()
 
-
     def handleException(self, object, request, exc_info, retry_allowed=True):
         # This transaction had an exception that reached the publisher.
         # It must definitely be aborted.
@@ -233,7 +241,7 @@ class ZopePublication(PublicationTraverse):
         # Convert ConflictErrors to Retry exceptions.
         if retry_allowed and isinstance(exc_info[1], ConflictError):
             tryToLogWarning('ZopePublication',
-                'Competing writes/reads at %s' % 
+                'Competing writes/reads at %s' %
                 request.get('PATH_INFO', '???'),
                 exc_info=True)
             raise Retry
@@ -280,11 +288,11 @@ class ZopePublication(PublicationTraverse):
                     if loc is loc:
                         loc = getattr(loc, '__self__', loc)
                     loc = ProxyFactory(loc)
-                
+
                 exception = LocationProxy(exc_info[1], loc)
-                name = zapi.queryDefaultViewName(exception, request, context=object)
+                name = zapi.queryDefaultViewName(exception, request)
                 if name is not None:
-                    view = zapi.queryView(exception, name, request, context=object)
+                    view = zapi.queryView(exception, name, request)
             except:
                 # Problem getting a view for this exception. Log an error.
                 tryToLogException(
