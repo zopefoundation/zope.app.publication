@@ -48,7 +48,7 @@ from zope.app.publication.interfaces import EndRequestEvent
 from zope.app.publication.publicationtraverse import PublicationTraverse
 from zope.app.security.principalregistry import principalRegistry as prin_reg
 from zope.app.security.interfaces import IUnauthenticatedPrincipal
-from zope.app.security.interfaces import IAuthentication
+from zope.app.security.interfaces import IAuthentication2
 from zope.app.component.interfaces import ISite
 from zope.app.traversing.interfaces import IPhysicallyLocatable
 
@@ -95,7 +95,7 @@ class ZopePublication(PublicationTraverse):
 
         sm = removeSecurityProxy(ob).getSiteManager()
 
-        auth = sm.queryUtility(IAuthentication)
+        auth = sm.queryUtility(IAuthentication2)
         if auth is None:
             # No auth utility here
             return
