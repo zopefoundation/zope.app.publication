@@ -22,6 +22,7 @@ import logging
 from new import instancemethod
 
 from ZODB.POSException import ConflictError
+import transaction
 
 from zope.event import notify
 from zope.security.interfaces import Unauthorized
@@ -77,7 +78,7 @@ class ZopePublication(PublicationTraverse):
 
         request.setPrincipal(p)
         newInteraction(request)
-        get_transaction().begin()
+        transaction.begin()
 
     def _maybePlacefullyAuthenticate(self, request, ob):
         if not IUnauthenticatedPrincipal.providedBy(request.principal):
@@ -346,8 +347,7 @@ class ZopePublication(PublicationTraverse):
                     get_transaction().abort()
 
     def beginErrorHandlingTransaction(self, request, ob, note):
-        txn = get_transaction()
-        txn.begin()
+        txn = transaction.begin()
         txn.note(note)
         self.annotateTransaction(txn, request, ob)
         return txn
