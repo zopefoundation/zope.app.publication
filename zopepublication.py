@@ -289,7 +289,7 @@ class ZopePublication(PublicationTraverse):
                         loc = getattr(loc, '__self__', loc)
                     loc = ProxyFactory(loc)
 
-                exception = LocationProxy(exc_info[1], loc)
+                exception = LocationProxy(exc_info[1], loc, '')
                 name = zapi.queryDefaultViewName(exception, request)
                 if name is not None:
                     view = zapi.queryView(exception, name, request)
