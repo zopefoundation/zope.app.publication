@@ -28,8 +28,8 @@ from zope.publisher.browser import TestRequest
 from zope.app.publisher.browser import BrowserView
 from zope.publisher.interfaces.browser import IBrowserPublisher
 
-from zope.proxy import removeAllProxies, getProxiedObject
-from zope.security.proxy import Proxy
+from zope.proxy import getProxiedObject
+from zope.security.proxy import Proxy, removeSecurityProxy
 from zope.security.checker import defineChecker, NamesChecker
 
 from zope.app.security.principalregistry import principalRegistry
@@ -161,7 +161,6 @@ class BrowserPublicationTests(BasePublicationTests):
     def testAdaptedTraverseNameWrapping(self):
 
         class Adapter(object):
-            " "
             implements(IBrowserPublisher)
             def __init__(self, context, request):
                 self.context = context
@@ -178,7 +177,7 @@ class BrowserPublicationTests(BasePublicationTests):
         pub = self.klass(self.db)
         ob2 = pub.traverseName(self._createRequest('/bruce', pub), ob, 'bruce')
         self.assertRaises(ForbiddenAttribute, getattr, ob2, 'v')
-        self.assertEqual(removeAllProxies(ob2).v, 'bruce')
+        self.assertEqual(removeSecurityProxy(ob2).v, 'bruce')
 
     def testAdaptedTraverseDefaultWrapping(self):
         # Test default content and make sure that it's wrapped.
@@ -198,7 +197,7 @@ class BrowserPublicationTests(BasePublicationTests):
         ob2, x = pub.getDefaultTraversal(self._createRequest('/bruce',pub), ob)
         self.assertEqual(x, 'dummy')
         self.assertRaises(ForbiddenAttribute, getattr, ob2, 'v')
-        self.assertEqual(removeAllProxies(ob2).v, 'bruce')
+        self.assertEqual(removeSecurityProxy(ob2).v, 'bruce')
 
     def testTraverseName(self):
         pub = self.klass(self.db)
@@ -209,7 +208,7 @@ class BrowserPublicationTests(BasePublicationTests):
         ztapi.browserViewProviding(None, TestTraverser, IBrowserPublisher)
         ob2 = pub.traverseName(r, ob, 'x')
         self.assertRaises(ForbiddenAttribute, getattr, ob2, 'v')
-        self.assertEqual(removeAllProxies(ob2).v, 1)
+        self.assertEqual(removeSecurityProxy(ob2).v, 1)
 
     def testTraverseNameView(self):
         pub = self.klass(self.db)
@@ -233,7 +232,7 @@ class BrowserPublicationTests(BasePublicationTests):
         r = self._createRequest('/++etc++site',pub)
         ob2 = pub.traverseName(r, ob, '++etc++site')
         self.assertRaises(ForbiddenAttribute, getattr, ob2, 'v')
-        self.assertEqual(removeAllProxies(ob2).v, 1)
+        self.assertEqual(removeSecurityProxy(ob2).v, 1)
 
     def testTraverseNameApplicationControl(self):
         from zope.app.applicationcontrol.applicationcontrol \

@@ -24,7 +24,6 @@ from zope.app.publication.publicationtraverse \
      import PublicationTraverser as PublicationTraverser_
 from zope.app.publication.http import BaseHTTPPublication
 from zope.component import queryViewProviding
-from zope.proxy import removeAllProxies
 from zope.publisher.interfaces.browser import IBrowserPublisher
 from zope.security.checker import ProxyFactory
 
@@ -48,7 +47,7 @@ class BrowserPublication(BaseHTTPPublication):
     """Web browser publication handling."""
 
     def getDefaultTraversal(self, request, ob):
-        if IBrowserPublisher.providedBy(removeAllProxies(ob)):
+        if IBrowserPublisher.providedBy(ob):
             # ob is already proxied, so the result of calling a method will be
             return ob.browserDefault(request)
         else:
