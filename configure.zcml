@@ -1,0 +1,19 @@
+<zopeConfigure
+   xmlns='http://namespaces.zope.org/zope'
+   xmlns:browser='http://namespaces.zope.org/browser'
+   xmlns:xmlrpc='http://namespaces.zope.org/xmlrpc'
+>
+
+<browser:view name="_traverse" 
+ for="zope.interface.Interface"
+ factory="zope.app.publication.traversers.SimpleComponentTraverser" />
+
+<browser:view name="_traverse" 
+ for="zope.app.interfaces.content.file.IFileContent"
+ factory="zope.app.publication.traversers.FileContentTraverser" />
+
+  <xmlrpc:view name="_traverse" 
+   for="zope.interface.Interface"
+   factory="zope.app.publication.traversers.SimpleComponentTraverser" />
+
+</zopeConfigure>
