@@ -12,7 +12,7 @@
 #
 ##############################################################################
 """
-$Id: publicationtraverse.py,v 1.13 2004/03/17 18:24:25 philikon Exp $
+$Id: publicationtraverse.py,v 1.14 2004/03/20 13:37:13 philikon Exp $
 """
 from zope.component import queryViewProviding
 from zope.publisher.interfaces import NotFound
@@ -30,7 +30,7 @@ class DuplicateNamespaces(Exception):
 class UnknownNamespace(Exception):
     """A parameter specified an unknown namespace"""
 
-class PublicationTraverse:
+class PublicationTraverse(object):
 
     def traverseName(self, request, ob, name):
         nm = name # the name to look up the object with
