@@ -402,7 +402,7 @@ class ZopePublicationTests(BasePublicationTests):
 
     def testTransactionAnnotation(self):
         from zope.interface import directlyProvides
-        from zope.app.location import LocationPhysicallyLocatable
+        from zope.app.location.traversing import LocationPhysicallyLocatable
         from zope.app.location.interfaces import ILocation
         from zope.app.traversing.interfaces import IPhysicallyLocatable
         from zope.app.traversing.interfaces import IContainmentRoot
