@@ -41,8 +41,8 @@ from zope.app.tests.placelesssetup import PlacelessSetup
 from zope.app.tests import setup
 from zope.app.tests import ztapi
 
-from zope.app.errorservice.interfaces import IErrorReportingService
-from zope.app.servicenames import ErrorLogging, Authentication
+from zope.app.error.interfaces import IErrorReportingUtility
+from zope.app.servicenames import Authentication
 from zope.app.location.interfaces import ILocation
 from zope.app.traversing.interfaces import IPhysicallyLocatable
 from zope.app.security.principalregistry import principalRegistry
@@ -83,8 +83,8 @@ class AuthService2(AuthService1):
     def getPrincipal(self, id):
         return Principal(id)
 
-class ErrorLoggingService(object):
-    implements(IErrorReportingService)
+class ErrorReportingUtility(object):
+    implements(IErrorReportingUtility)
 
     def __init__(self):
         self.exceptions = []
@@ -223,7 +223,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         self.assertEqual(
             str(handler),
             'SiteError ERROR\n'
-            '  Error while reporting an error to the ErrorLogging service')
+            '  Error while reporting an error to the Error Reporting utility')
 
         # Here we got a single log record, because we havdn't
         # installed an error reporting service.  That's OK.
@@ -272,7 +272,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         self.assertEqual(
             str(handler),
             'SiteError ERROR\n'
-            '  Error while reporting an error to the ErrorLogging service\n'
+            '  Error while reporting an error to the Error Reporting utility\n'
             'SiteError ERROR\n'
             '  http://test.url'
             )
@@ -367,11 +367,12 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         # assert that we get a new transaction
         self.assert_(txn is not get_transaction())    
 
-    def testAbortTransactionWithErrorLoggingService(self):
+    def testAbortTransactionWithErrorReportingUtility(self):
         # provide our fake error logging service
         sm = getGlobalServices()
-        sm.defineService(ErrorLogging, IErrorReportingService)
-        sm.provideService(ErrorLogging, ErrorLoggingService())
+        utils = sm.getService('Utilities')
+        utils.provideUtility(IErrorReportingUtility,
+                             ErrorReportingUtility())
 
         class FooError(Exception):
             pass
@@ -389,12 +390,13 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         self.assertEqual(last_txn_info, new_txn_info)
 
         # instead, we expect a message in our logging service
-        error_log = sm.getService(ErrorLogging)
+        error_log = utils.getUtility(IErrorReportingUtility)
         self.assertEqual(len(error_log.exceptions), 1)
         error_info, request = error_log.exceptions[0]
         self.assertEqual(error_info[0], FooError)
         self.assert_(isinstance(error_info[1], FooError))
         self.assert_(request is self.request)
+
 
 class ZopePublicationTests(BasePublicationTests):
 

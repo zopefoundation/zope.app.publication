@@ -39,7 +39,8 @@ from zope.app import zapi
 from zope.app.applicationcontrol.applicationcontrol \
      import applicationControllerRoot
 from zope.app.component.hooks import getSite
-from zope.app.errorservice import RootErrorReportingService
+from zope.app.error.error import RootErrorReportingUtility
+from zope.app.error.interfaces import IErrorReportingUtility
 from zope.app.exception.interfaces import ISystemErrorView
 from zope.app.location import LocationProxy
 from zope.app.publication.interfaces import BeforeTraverseEvent
@@ -203,32 +204,31 @@ class ZopePublication(PublicationTraverse):
         txn.setExtendedInfo('request_type', iface_dotted)
         return txn
 
-    def _logErrorWithErrorReportingService(self, object, request, exc_info):
-        # Record the error with the ErrorReportingService
+    def _logErrorWithErrorReportingUtility(self, object, request, exc_info):
+        # Record the error with the ErrorReportingUtility
         self.beginErrorHandlingTransaction(request, object,
-                                           'error reporting service')
+                                           'error reporting utility')
         try:
-            errService = zapi.getService(zapi.servicenames.ErrorLogging)
+            errUtility = zapi.getUtility(IErrorReportingUtility)
 
-            # It is important that an error in errService.raising
+            # It is important that an error in errUtility.raising
             # does not propagate outside of here. Otherwise, nothing
             # meaningful will be returned to the user.
             #
-            # The error reporting service should not be doing database
+            # The error reporting utility should not be doing database
             # stuff, so we shouldn't get a conflict error.
             # Even if we do, it is more important that we log this
             # error, and proceed with the normal course of events.
             # We should probably (somehow!) append to the standard
             # error handling that this error occurred while using
-            # the ErrorReportingService, and that it will be in
+            # the ErrorReportingUtility, and that it will be in
             # the zope log.
 
-            errService.raising(exc_info, request)
+            errUtility.raising(exc_info, request)
             get_transaction().commit()
         except:
             tryToLogException(
-                'Error while reporting an error to the %s service' %
-                zapi.servicenames.ErrorLogging)
+                'Error while reporting an error to the Error Reporting utility')
             get_transaction().abort()
 
     def handleException(self, object, request, exc_info, retry_allowed=True):
@@ -247,8 +247,8 @@ class ZopePublication(PublicationTraverse):
         # handling determine whether a retry is allowed or not?
         # Assume not for now.
 
-        # Record the error with the ErrorReportingService
-        self._logErrorWithErrorReportingService(object, request, exc_info)
+        # Record the error with the ErrorReportingUtility
+        self._logErrorWithErrorReportingUtility(object, request, exc_info)
 
         response = request.response
         response.reset()
@@ -331,8 +331,8 @@ class ZopePublication(PublicationTraverse):
                     tryToLogException(
                         'Exception while rendering view on exception')
 
-                    # Record the error with the ErrorReportingService
-                    self._logErrorWithErrorReportingService(
+                    # Record the error with the ErrorReportingUtility
+                    self._logErrorWithErrorReportingUtility(
                         object, request, sys.exc_info())
 
                     view = None
