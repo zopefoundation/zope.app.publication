@@ -13,7 +13,7 @@
 ##############################################################################
 """
 
-$Id: publicationtraverse.py,v 1.2 2002/12/25 14:13:08 jim Exp $
+$Id: publicationtraverse.py,v 1.3 2002/12/28 17:49:29 stevea Exp $
 """
 
 from zope.component import queryView, getService
@@ -23,8 +23,8 @@ from zope.proxy.context import ContextWrapper
 
 from zope.app.interfaces.container import IWriteContainer
 from zope.proxy.introspection import removeAllProxies
-from zope.app.traversing.namespaces import namespaceLookup
-from zope.app.traversing.parameterparsing import parameterizedNameParse
+from zope.app.traversing.namespace import namespaceLookup
+from zope.app.traversing.namespace import parameterizedNameParse
 from zope.publisher.interfaces import IPublishTraverse
 
 class DuplicateNamespaces(Exception):

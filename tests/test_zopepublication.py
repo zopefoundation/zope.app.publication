@@ -24,20 +24,17 @@ from zope.component.adapter import provideAdapter
 from zope.interfaces.i18n import IUserPreferredCharsets
 
 from zope.publisher.base import TestPublication
-from zope.publisher.http import IHTTPRequest
-from zope.publisher.http import HTTPCharsets
+from zope.publisher.http import IHTTPRequest, HTTPCharsets
 
 from zope.security import simplesecuritypolicies
 from zope.security.securitymanagement import setSecurityPolicy
 
 from zope.app.security.registries.principalregistry import principalRegistry
-from zope.app.interfaces.security \
-     import IUnauthenticatedPrincipal
+from zope.app.interfaces.security import IUnauthenticatedPrincipal
 
 from zope.app.publication.zopepublication import ZopePublication
 
-from zope.app.content.folder import Folder
-from zope.app.content.folder import RootFolder
+from zope.app.content.folder import Folder, RootFolder
 
 from zope.component.interfaces import IServiceService
 
@@ -72,9 +69,8 @@ class BasePublicationTests(PlacelessSetup, unittest.TestCase):
 
         connection.close()
 
-        from zope.app.traversing.namespaces import provideNamespaceHandler
-        from zope.app.traversing.presentationnamespaces import view, resource
-        from zope.app.traversing.etcnamespace import etc
+        from zope.app.traversing.namespace import provideNamespaceHandler
+        from zope.app.traversing.namespace import view, resource, etc
         provideNamespaceHandler('view', view)
         provideNamespaceHandler('resource', resource)
         provideNamespaceHandler('etc', etc)
