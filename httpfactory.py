@@ -21,7 +21,8 @@ from zope.interface import implements, providedBy
 from zope.interface import directlyProvides, directlyProvidedBy
 from zope.publisher.http import HTTPRequest
 from zope.publisher.browser import BrowserRequest
-from zope.publisher.interfaces.browser import IDefaultSkin, IDefaultLayer
+from zope.publisher.interfaces.browser import IDefaultSkin
+from zope.publisher.interfaces.browser import IDefaultBrowserLayer
 from zope.publisher.xmlrpc import XMLRPCRequest
 
 from zope.app import zapi
@@ -60,7 +61,7 @@ class HTTPPublicationRequestFactory(object):
                 if skin is not None:
                     directlyProvides(request, directlyProvidedBy(request)+skin)
                 else:
-                    directlyProvides(request, IDefaultLayer)
+                    directlyProvides(request, IDefaultBrowserLayer)
         else:
             request = HTTPRequest(input_stream, output_steam, env)
             request.setPublication(self._http)
