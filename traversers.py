@@ -15,6 +15,7 @@
 
 __metaclass__ = type
 
+from zope.interface import providedBy
 from zope.publisher.interfaces import Unauthorized, NotFound
 from zope.publisher.interfaces.browser import IBrowserPublisher
 from zope.publisher.interfaces.xmlrpc import IXMLRPCPublisher
@@ -78,7 +79,7 @@ class TestTraverser:
     def browserDefault(self, request):
         ob = self.context
 
-        if hasattr(ob, '__implements__'):
+        if providedBy(ob):
 
             view_name = getDefaultViewName(ob, request)
 
