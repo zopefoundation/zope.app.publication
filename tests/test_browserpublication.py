@@ -15,7 +15,7 @@ import unittest
 
 from StringIO import StringIO
 
-from zope.interface import Interface
+from zope.interface import Interface, implements
 
 from zope.component import getService
 from zope.app.services.servicenames import Views
@@ -44,7 +44,7 @@ def foo():
 
 class DummyPublished:
 
-    __implements__ = IBrowserPublisher
+    implements(IBrowserPublisher)
 
     def publishTraverse(self, request, name):
         if name == 'bruce':
@@ -59,8 +59,6 @@ class DummyPublished:
 class DummyView(DummyPublished, BrowserView):
 
     __Security_checker__ = NamesChecker(["browserDefault", "publishTraverse"])
-
-    __implements__ = DummyPublished.__implements__, BrowserView.__implements__
 
 
 class BasePublicationTests(BasePublicationTests_):
@@ -108,8 +106,7 @@ class BrowserDefaultTests(BasePublicationTests):
         from persistence import Persistent
 
         class O1(Persistent):
-            __implements__ = I1
-
+            implements(I1)
 
         pub = BrowserPublication(self.db)
 
@@ -164,7 +161,7 @@ class I1(Interface):
     pass
 
 class mydict(dict):
-    __implements__ = I1
+    implements(I1)
 
 
 class BrowserPublicationTests(BasePublicationTests):
@@ -184,7 +181,7 @@ class BrowserPublicationTests(BasePublicationTests):
 
         class Adapter:
             " "
-            __implements__ = IBrowserPublisher
+            implements(IBrowserPublisher)
             def __init__(self, context, request):
                 self.context = context
                 self.counter = 0
@@ -209,7 +206,7 @@ class BrowserPublicationTests(BasePublicationTests):
     def testAdaptedTraverseDefaultWrapping(self):
         # Test default content and make sure that it's wrapped.
         class Adapter:
-            __implements__ = IBrowserPublisher
+            implements(IBrowserPublisher)
             def __init__(self, context, request):
                 self.context = context
 
@@ -233,7 +230,8 @@ class BrowserPublicationTests(BasePublicationTests):
     # XXX we no longer support path parameters! (At least for now)
     def XXXtestTraverseSkinExtraction(self):
         class I1(Interface): pass
-        class C: __implements__ = I1
+        class C:
+            implements(I1)
         class BobView(DummyView): pass
 
         pub = self.klass(self.db)
@@ -267,11 +265,11 @@ class BrowserPublicationTests(BasePublicationTests):
         pub = self.klass(self.db)
         class I(Interface): pass
         class C:
-            __implements__ = I
+            implements(I)
         ob = C()
         class V:
             def __init__(self, context, request): pass
-            __implements__ = IBrowserPresentation
+            implements(IBrowserPresentation)
         r = self._createRequest('/@@spam',pub)
         provideView=getService(None, Views).provideView
         provideView(I, 'spam', IBrowserPresentation, [V])

@@ -12,7 +12,7 @@
 #
 ##############################################################################
 """
-$Id: test_http.py,v 1.2 2003/02/11 15:59:53 sidnei Exp $
+$Id: test_http.py,v 1.3 2003/06/06 20:25:30 stevea Exp $
 """
 
 from unittest import TestCase, TestSuite, main, makeSuite
@@ -21,22 +21,21 @@ from zope.publisher.http import HTTPRequest
 from zope.app.tests.placelesssetup import PlacelessSetup
 from StringIO import StringIO
 from zope.component.view import provideView
-from zope.interface import Interface
+from zope.interface import Interface, implements
 from zope.publisher.interfaces.http import IHTTPPresentation
 
 class I(Interface): pass
 class C:
     spammed = 0
-    __implements__ = I
+    implements(I)
 
 class V:
 
     def __init__(self, context, request):
         self.context = context
-    
+
     def SPAM(self):
         self.context.spammed += 1
-
 
 
 class Test(PlacelessSetup, TestCase):
@@ -52,7 +51,6 @@ class Test(PlacelessSetup, TestCase):
         pub.callObject(request, ob)
         self.assertEqual(ob.spammed, 1)
 
-        
 
 def test_suite():
     return TestSuite((

@@ -15,7 +15,7 @@
 
 __metaclass__ = type
 
-from zope.interface import providedBy
+from zope.interface import providedBy, implements
 from zope.publisher.interfaces import Unauthorized, NotFound
 from zope.publisher.interfaces.browser import IBrowserPublisher
 from zope.publisher.interfaces.xmlrpc import IXMLRPCPublisher
@@ -24,7 +24,7 @@ from zope.component import queryView, getView, getDefaultViewName
 class SimpleComponentTraverser:
     """Browser traverser for simple components that can only traverse to views
     """
-    __implements__ = IBrowserPublisher, IXMLRPCPublisher
+    implements(IBrowserPublisher, IXMLRPCPublisher)
 
     def __init__(self, context, request):
         self.context = context
@@ -71,7 +71,7 @@ class FileContentTraverser(SimpleComponentTraverser):
 class TestTraverser:
     "Bobo-style traverser, mostly useful for testing"
 
-    __implements__ = IBrowserPublisher
+    implements(IBrowserPublisher)
 
     def __init__(self, context, request):
         self.context = context

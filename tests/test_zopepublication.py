@@ -15,7 +15,7 @@ import unittest
 import sys
 
 from zope.interface.verify import verifyClass
-from zope.interface.implements import instancesOfObjectImplements
+from zope.interface import implements, classImplements, implementedBy
 
 from zodb.db import DB
 from zodb.storage.mapping import MappingStorage
@@ -86,7 +86,7 @@ class BasePublicationTests(PlacelessSetup, unittest.TestCase):
         PlacelessSetup.tearDown(self)
 
     def testInterfacesVerify(self):
-        for interface in instancesOfObjectImplements(ZopePublication):
+        for interface in implementedBy(ZopePublication):
             verifyClass(interface, TestPublication)
 
 class Principal:
@@ -96,7 +96,7 @@ class Principal:
     def getDescription(self): return ''
 
 class UnauthenticatedPrincipal(Principal):
-    __implements__ = IUnauthenticatedPrincipal
+    implements(IUnauthenticatedPrincipal)
 
 
 class AuthService1:
@@ -125,7 +125,7 @@ class AuthService2(AuthService1):
 
 class ServiceManager:
 
-    __implements__ = IServiceService # a dirty lie
+    implements(IServiceService) # a dirty lie
 
     def __init__(self, auth):
         self.auth = auth
@@ -180,10 +180,9 @@ class ZopePublicationErrorHandling(BasePublicationTests):
     def testViewOnException(self):
         from zodb.interfaces import ConflictError
         from zope.interface import Interface
-        from zope.interface.implements import implements
         class IConflictError(Interface):
             pass
-        implements(ConflictError, IConflictError)
+        classImplements(ConflictError, IConflictError)
         setDefaultViewName(IConflictError, self.presentation_type, 'name')
         view_text = 'You had a conflict error'
         provideView(IConflictError, 'name', self.presentation_type,
@@ -200,13 +199,12 @@ class ZopePublicationErrorHandling(BasePublicationTests):
     def testNoViewOnClassicClassException(self):
         from zodb.interfaces import ConflictError
         from zope.interface import Interface
-        from zope.interface.implements import implements
         from types import ClassType
         class ClassicError:
             __metaclass__ = ClassType
         class IClassicError(Interface):
             pass
-        implements(ClassicError, IClassicError)
+        classImplements(ClassicError, IClassicError)
         setDefaultViewName(IClassicError, self.presentation_type, 'name')
         view_text = 'You made a classic error ;-)'
         provideView(IClassicError, 'name', self.presentation_type,
@@ -226,7 +224,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
     def testExceptionSideEffects(self):
         from zope.publisher.interfaces import IExceptionSideEffects
         class SideEffects:
-            __implements__ = IExceptionSideEffects
+            implements(IExceptionSideEffects)
             def __init__(self, exception):
                 self.exception = exception
             def __call__(self, obj, request, exc_info):
@@ -241,10 +239,9 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         factory = SideEffectsFactory()
         from zodb.interfaces import ConflictError
         from zope.interface import Interface
-        from zope.interface.implements import implements
         class IConflictError(Interface):
             pass
-        implements(ConflictError, IConflictError)
+        classImplements(ConflictError, IConflictError)
         provideAdapter(IConflictError, IExceptionSideEffects, factory)
         exception = ConflictError()
         try:
