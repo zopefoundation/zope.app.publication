@@ -20,8 +20,8 @@ from zope.publisher.http import HTTPRequest
 from zope.publisher.browser import BrowserRequest
 from zope.publisher.xmlrpc import XMLRPCRequest
 
-from zope.app.process.interfaces import IPublicationRequestFactoryFactory
-from zope.app.process.interfaces import IPublicationRequestFactory
+from zope.app.publication.interfaces import IPublicationRequestFactoryFactory
+from zope.app.publication.interfaces import IPublicationRequestFactory
 
 from zope.app.publication.http import HTTPPublication
 from zope.app.publication.browser import BrowserPublication
@@ -37,13 +37,13 @@ class HTTPPublicationRequestFactory:
     implements(IPublicationRequestFactory)
 
     def __init__(self, db):
-        """See zope.app.process.interfaces.IPublicationRequestFactory"""
+        """See zope.app.publication.interfaces.IPublicationRequestFactory"""
         self._http = HTTPPublication(db)
         self._brower = BrowserPublication(db)
         self._xmlrpc = XMLRPCPublication(db)
 
     def __call__(self, input_stream, output_steam, env):
-        """See zope.app.process.interfaces.IPublicationRequestFactory"""
+        """See zope.app.publication.interfaces.IPublicationRequestFactory"""
         method = env.get('REQUEST_METHOD', 'GET').upper()
 
         if method in _browser_methods:
