@@ -25,7 +25,7 @@ from zope.publisher.browser import BrowserView, TestRequest
 from zope.publisher.interfaces.browser \
      import IBrowserPresentation, IBrowserPublisher
 
-from zope.proxy.context import getWrapperContext, wrapperTypes
+from zope.context import getWrapperContext, wrapperTypes
 from zope.proxy.introspection import removeAllProxies
 from zope.security.proxy import Proxy, getObject
 from zope.security.checker import defineChecker, NamesChecker

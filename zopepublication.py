@@ -26,7 +26,7 @@ from zope.publisher.interfaces.http import IHTTPRequest
 from zope.security.management import newSecurityManager
 from zope.security.checker import ProxyFactory
 
-from zope.proxy.context import ContextWrapper
+from zope.context import ContextWrapper
 
 from zope.proxy.introspection import removeAllProxies
 
@@ -44,7 +44,7 @@ from zope.app.interfaces.security import IUnauthenticatedPrincipal
 
 from zope.app.publication.publicationtraverse import PublicationTraverse
 
-from zope.proxy.context import ContextWrapper
+from zope.context import ContextWrapper
 
 # XXX Should this be imported here?
 from transaction import get_transaction

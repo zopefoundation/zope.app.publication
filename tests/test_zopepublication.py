@@ -44,7 +44,7 @@ from zope.component.interfaces import IServiceService
 from zope.publisher.base import TestRequest
 from zope.publisher.browser import BrowserResponse
 
-from zope.proxy.context import getWrapperContext
+from zope.context import getWrapperContext
 
 from transaction import get_transaction
 from cStringIO import StringIO

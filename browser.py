@@ -13,7 +13,7 @@
 ##############################################################################
 """XXX short summary goes here.
 
-$Id: browser.py,v 1.6 2003/02/11 15:59:52 sidnei Exp $
+$Id: browser.py,v 1.7 2003/05/27 14:18:21 jim Exp $
 """
 __metaclass__ = type
 
@@ -21,7 +21,7 @@ from zope.app.publication.publicationtraverse \
      import PublicationTraverser as PublicationTraverser_
 from zope.app.publication.zopepublication import ZopePublication
 from zope.component import queryAdapter, queryView
-from zope.proxy.context import ContextWrapper
+from zope.context import ContextWrapper
 from zope.proxy.introspection import removeAllProxies
 from zope.publisher.interfaces.browser import IBrowserPublisher
 from zope.security.checker import ProxyFactory
