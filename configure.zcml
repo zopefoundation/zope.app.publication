@@ -1,0 +1,13 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    >
+
+  <browser:view
+      for="zope.app.publication.interfaces.IFileContent"
+      provides="zope.publisher.interfaces.browser.IBrowserPublisher"
+      class="zope.app.publication.traversers.FileContentTraverser"
+      permission="zope.Public"
+      />
+
+</configure>

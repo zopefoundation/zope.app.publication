@@ -64,4 +64,10 @@ class ISOAPRequestFactory(interface.Interface):
     def __call__(input_stream, output_steam, env):
         """Create a request object to handle SOAP input."""
 
+class IFileContent(interface.Interface):
+    """Marker interface for content that can be managed as files.
 
+    The default view for file content has effective URLs that don't end in
+    /.  In particular, if the content included HTML, relative links in
+    the HTML are relative to the container the content is in.
+    """
