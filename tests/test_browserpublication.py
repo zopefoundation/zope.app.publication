@@ -26,7 +26,7 @@ from zope.publisher.interfaces.browser \
      import IBrowserPresentation, IBrowserPublisher
 
 from zope.context import getWrapperContext, isWrapper
-from zope.proxy import removeAllProxies, getObject
+from zope.proxy import removeAllProxies, getProxiedObject
 from zope.security.proxy import Proxy
 from zope.security.checker import defineChecker, NamesChecker
 
@@ -177,7 +177,7 @@ class BrowserPublicationTests(BasePublicationTests):
         ob2 = pub.traverseName(self._createRequest('/bruce', pub), ob, 'bruce')
         self.failUnless(ob2 is not ob)
         self.failUnless(type(ob2) is Proxy)
-        ob2 = getObject(ob2)
+        ob2 = getProxiedObject(ob2)
         self.failUnless(isWrapper(ob2))
 
     def testAdaptedTraverseNameWrapping(self):
@@ -201,7 +201,7 @@ class BrowserPublicationTests(BasePublicationTests):
         pub = self.klass(self.db)
         ob2 = pub.traverseName(self._createRequest('/bruce', pub), ob, 'bruce')
         self.failUnless(type(ob2) is Proxy)
-        ob2 = getObject(ob2)
+        ob2 = getProxiedObject(ob2)
         self.failUnless(isWrapper(ob2))
         unw = removeAllProxies(ob2)
         self.assertEqual(unw.v, 'bruce')
@@ -225,7 +225,7 @@ class BrowserPublicationTests(BasePublicationTests):
         ob2, x = pub.getDefaultTraversal(self._createRequest('/bruce',pub), ob)
         self.assertEqual(x, 'dummy')
         self.failUnless(type(ob2) is Proxy)
-        ob2 = getObject(ob2)
+        ob2 = getProxiedObject(ob2)
         self.failUnless(isWrapper(ob2))
         unw = removeAllProxies(ob2)
         self.assertEqual(unw.v, 'bruce')
