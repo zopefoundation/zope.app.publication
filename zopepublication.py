@@ -28,8 +28,7 @@ from zope.security.checker import ProxyFactory
 
 from zope.proxy.introspection import removeAllProxies
 
-from zope.app.interfaces.services.service \
-     import IServiceManagerContainer
+from zope.app.interfaces.services.service import IServiceManagerContainer
 
 from zope.exceptions import Unauthorized
 
@@ -39,8 +38,7 @@ from zope.app.applicationcontrol.applicationcontrol \
 from zope.app.security.registries.principalregistry \
      import principalRegistry as prin_reg
 
-from zope.app.interfaces.security \
-     import IUnauthenticatedPrincipal
+from zope.app.interfaces.security import IUnauthenticatedPrincipal
 
 from zope.app.publication.publicationtraverse import PublicationTraverse
 
@@ -159,10 +157,9 @@ class ZopePublication(object, PublicationTraverse, DefaultPublication):
         return mapply(ob, request.getPositionalArguments(), request)
 
     def afterCall(self, request):
-        T = get_transaction()
-        T.note(request["PATH_INFO"])
-        # XXX should also call T.setUser(), but I don't know how to
-        # find out who the user is
+        txn = get_transaction()
+        txn.note(request["PATH_INFO"])
+        txn.setUser(getSecurityManager().getPrincipal())
         get_transaction().commit()
 
     def handleException(self, object, request, exc_info, retry_allowed=1):
