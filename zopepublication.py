@@ -22,7 +22,7 @@ from new import instancemethod
 from ZODB.POSException import ConflictError
 
 from zope.event import notify
-from zope.exceptions import Unauthorized
+from zope.security.interfaces import Unauthorized
 from zope.component.exceptions import ComponentLookupError
 from zope.interface import implements, providedBy
 from zope.proxy import removeAllProxies
