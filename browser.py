@@ -20,10 +20,10 @@ $Id$
 """
 __docformat__ = 'restructuredtext'
 
+from zope.app import zapi
 from zope.app.publication.publicationtraverse \
      import PublicationTraverser as PublicationTraverser_
 from zope.app.publication.http import BaseHTTPPublication
-from zope.component import queryViewProviding
 from zope.publisher.interfaces.browser import IBrowserPublisher
 from zope.security.checker import ProxyFactory
 
@@ -51,7 +51,7 @@ class BrowserPublication(BaseHTTPPublication):
             # ob is already proxied, so the result of calling a method will be
             return ob.browserDefault(request)
         else:
-            adapter = queryViewProviding(ob, IBrowserPublisher, request , None)
+            adapter = zapi.queryMultiAdapter((ob, request), IBrowserPublisher)
             if adapter is not None:
                 ob, path = adapter.browserDefault(request)
                 ob = ProxyFactory(ob)

@@ -24,8 +24,8 @@ from zope.publisher.interfaces.http import IHTTPRequest
 
 import zope.app.publication.http
 from zope.app import zapi
-from zope.app.tests import ztapi
-from zope.app.tests.placelesssetup import PlacelessSetup
+from zope.app.testing import ztapi
+from zope.app.testing.placelesssetup import PlacelessSetup
 
 class I(Interface):
     pass

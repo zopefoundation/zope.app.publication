@@ -16,9 +16,9 @@
 $Id$
 """
 import unittest
+from zope.app.testing import functional
 
 def test_suite():
-    from zope.app.tests import functional
     return unittest.TestSuite((
         functional.FunctionalDocFileSuite('notfound.txt'),
         ))

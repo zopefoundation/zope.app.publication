@@ -22,15 +22,13 @@ from StringIO import StringIO
 from zope.publisher.browser import BrowserRequest
 from zope.publisher.http import HTTPRequest
 from zope.publisher.xmlrpc import XMLRPCRequest
-from zope.component.interfaces import IAdapterService
-from zope.component.adapter import GlobalAdapterService
 from zope.component.tests.placelesssetup import PlacelessSetup
 
 from zope.app.publication.httpfactory import HTTPPublicationRequestFactory
 from zope.app.publication.browser import BrowserPublication
 from zope.app.publication.http import HTTPPublication
 from zope.app.publication.xmlrpc import XMLRPCPublication
-from zope.app.tests import ztapi
+from zope.app.testing import ztapi
 
 class Test(PlacelessSetup, TestCase):
 

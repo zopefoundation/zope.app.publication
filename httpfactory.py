@@ -66,7 +66,7 @@ class HTTPPublicationRequestFactory(object):
                 request = BrowserRequest(input_stream, output_steam, env)
                 request.setPublication(self._brower)
                 # Set the default skin
-                adapters = zapi.getService(zapi.servicenames.Adapters)
+                adapters = zapi.getSiteManager().adapters
                 skin = adapters.lookup((providedBy(request),), IDefaultSkin, '')
                 if skin is not None:
                     directlyProvides(request, directlyProvidedBy(request)+skin)

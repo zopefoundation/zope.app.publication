@@ -21,7 +21,6 @@ from zope.app.publication.tests.test_zopepublication import \
      BasePublicationTests
 from zope.app.publication.traversers import TestTraverser
 from zope.app.publication.xmlrpc import XMLRPCPublication
-from zope.component import getService
 from zope.interface import Interface, implements
 from zope.proxy import removeAllProxies
 from zope.publisher.interfaces import NotFound
@@ -29,7 +28,7 @@ from zope.app.publisher.interfaces.xmlrpc import IXMLRPCPresentation
 from zope.publisher.interfaces.xmlrpc import IXMLRPCRequest
 from zope.publisher.interfaces.xmlrpc import IXMLRPCPublisher
 from zope.publisher.xmlrpc import TestRequest
-from zope.app.tests import ztapi
+from zope.app.testing import ztapi
 
 
 class SimpleObject(object):
@@ -114,7 +113,7 @@ class XMLRPCPublicationTests(BasePublicationTests):
         self.assertEqual(removeAllProxies(ob2).__class__, V)
         
 
-    def testTraverseNameServices(self):
+    def testTraverseNameSiteManager(self):
         pub = self.klass(self.db)
         class C(object):
             def getSiteManager(self):

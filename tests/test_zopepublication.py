@@ -26,8 +26,6 @@ from ZODB.DemoStorage import DemoStorage
 from zope.interface.verify import verifyClass
 from zope.interface import implements, classImplements, implementedBy
 from zope.i18n.interfaces import IUserPreferredCharsets
-from zope.component import getGlobalServices
-from zope.component.interfaces import IServiceService
 from zope.component.exceptions import ComponentLookupError
 from zope.publisher.base import TestPublication, TestRequest
 from zope.publisher.http import IHTTPRequest, HTTPCharsets
@@ -37,12 +35,10 @@ from zope.security import simplepolicies
 from zope.security.management import setSecurityPolicy, queryInteraction
 
 from zope.app import zapi
-from zope.app.tests.placelesssetup import PlacelessSetup
-from zope.app.tests import setup
-from zope.app.tests import ztapi
+from zope.app.testing.placelesssetup import PlacelessSetup
+from zope.app.testing import setup, ztapi
 
 from zope.app.error.interfaces import IErrorReportingUtility
-from zope.app.servicenames import Authentication
 from zope.app.location.interfaces import ILocation
 from zope.app.traversing.interfaces import IPhysicallyLocatable
 from zope.app.security.principalregistry import principalRegistry
@@ -50,6 +46,7 @@ from zope.app.security.interfaces import IUnauthenticatedPrincipal, IPrincipal
 from zope.app.publication.zopepublication import ZopePublication
 from zope.app.folder import Folder, rootFolder
 from zope.app.location import Location
+from zope.app.security.interfaces import IAuthenticationUtility
 
 class Principal(object):
     implements(IPrincipal)
@@ -91,26 +88,6 @@ class ErrorReportingUtility(object):
 
     def raising(self, info, request=None):
         self.exceptions.append([info, request])
-
-
-class UtilityService(object):
-
-    utility = None
-
-    def getUtility(self, interface, name=''):
-        return self.utility
-
-
-class ServiceManager(object):
-    implements(IServiceService) # a dirty lie
-
-    def __init__(self, utils):
-        self.utils = utils
-
-    def getService(self, name):
-        if name == 'Utilities':
-            return self.utils
-        raise ComponentLookupError(name)
 
 class LocatableObject(Location):
 
@@ -235,7 +212,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
             '  Error while reporting an error to the Error Reporting utility')
 
         # Here we got a single log record, because we havdn't
-        # installed an error reporting service.  That's OK.
+        # installed an error reporting utility.  That's OK.
 
         handler.uninstall()
         self.out.seek(0)
@@ -277,7 +254,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
 
         # Now, since the view was a system error view, we should have
         # a log entry for the E2 error (as well as the missing
-        # error reporting service).
+        # error reporting utility).
         self.assertEqual(
             str(handler),
             'SiteError ERROR\n'
@@ -377,11 +354,9 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         self.assert_(txn is not get_transaction())    
 
     def testAbortTransactionWithErrorReportingUtility(self):
-        # provide our fake error logging service
-        sm = getGlobalServices()
-        utils = sm.getService('Utilities')
-        utils.provideUtility(IErrorReportingUtility,
-                             ErrorReportingUtility())
+        # provide our fake error reporting utility
+        sm = zapi.getGlobalSiteManager()
+        sm.provideUtility(IErrorReportingUtility, ErrorReportingUtility())
 
         class FooError(Exception):
             pass
@@ -398,8 +373,8 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         new_txn_info = self.db.undoInfo()[0]
         self.assertEqual(last_txn_info, new_txn_info)
 
-        # instead, we expect a message in our logging service
-        error_log = utils.getUtility(IErrorReportingUtility)
+        # instead, we expect a message in our logging utility
+        error_log = zapi.getUtility(IErrorReportingUtility)
         self.assertEqual(len(error_log.exceptions), 1)
         error_info, request = error_log.exceptions[0]
         self.assertEqual(error_info[0], FooError)
@@ -410,21 +385,23 @@ class ZopePublicationErrorHandling(BasePublicationTests):
 class ZopePublicationTests(BasePublicationTests):
 
     def testPlacefulAuth(self):
+        setup.setUpTraversal()
+        setup.setUpSiteManagerLookup()
         principalRegistry.defineDefaultPrincipal('anonymous', '')
 
         root = self.db.open().root()
         app = root[ZopePublication.root_name]
-        app['f1'] = Folder()
+        app['f1'] = rootFolder()
         f1 = app['f1']
         f1['f2'] = Folder()
-        utilservice1 = UtilityService()
-        utilservice1.utility = AuthUtility1()
-        f1.setSiteManager(ServiceManager(utilservice1))
+        sm1 = setup.createSiteManager(f1)
+        setup.addUtility(sm1, '', IAuthenticationUtility, AuthUtility1())
+
         f2 = f1['f2']
-        utilservice2 = UtilityService()
-        utilservice2.utility = AuthUtility2()
-        f2.setSiteManager(ServiceManager(utilservice2))
+        sm2 = setup.createSiteManager(f2)
+        setup.addUtility(sm2, '', IAuthenticationUtility, AuthUtility2())
         get_transaction().commit()
+
 
         from zope.app.container.interfaces import ISimpleReadContainer
         from zope.app.container.traversal import ContainerTraverser

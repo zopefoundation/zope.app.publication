@@ -21,8 +21,8 @@ from zope.publisher.interfaces import NotFound
 from zope.interface import Interface
 
 from zope.app.publication.traversers import SimpleComponentTraverser
-from zope.app.tests.placelesssetup import PlacelessSetup
-from zope.app.tests import ztapi
+from zope.app.testing.placelesssetup import PlacelessSetup
+from zope.app.testing import ztapi
 
 class I(Interface):
     pass

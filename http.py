@@ -16,11 +16,11 @@
 $Id$
 """
 __docformat__ = 'restructuredtext'
-
-from zope.app.publication.zopepublication import ZopePublication
-from zope.component import getView
 from zope.publisher.publish import mapply
+
+from zope.app import zapi
 from zope.app.http.interfaces import IHTTPException
+from zope.app.publication.zopepublication import ZopePublication
 
 class BaseHTTPPublication(ZopePublication):
     """Base for HTTP-based protocol publications"""
@@ -38,6 +38,6 @@ class HTTPPublication(BaseHTTPPublication):
     def callObject(self, request, ob):
         # Exception handling, dont try to call request.method
         if not IHTTPException.providedBy(ob):
-            ob = getView(ob, request.method, request)
+            ob = zapi.getMultiAdapter((ob, request), name=request.method)
             ob = getattr(ob, request.method)
         return mapply(ob, request.getPositionalArguments(), request)

@@ -49,7 +49,7 @@ from zope.app.publication.publicationtraverse import PublicationTraverse
 from zope.app.security.principalregistry import principalRegistry as prin_reg
 from zope.app.security.interfaces import IUnauthenticatedPrincipal
 from zope.app.security.interfaces import IAuthentication
-from zope.app.site.interfaces import ISite
+from zope.app.component.interfaces import ISite
 from zope.app.traversing.interfaces import IPhysicallyLocatable
 
 class Cleanup(object):
@@ -90,19 +90,17 @@ class ZopePublication(PublicationTraverse):
             return
 
         if not ISite.providedBy(ob):
-            # We won't find an authentication service here, so give up.
+            # We won't find an authentication utility here, so give up.
             return
 
         sm = removeSecurityProxy(ob).getSiteManager()
 
-        try:
-            utils = sm.getService(zapi.servicenames.Utilities)
-            auth = utils.getUtility(IAuthentication)
-        except ComponentLookupError:
+        auth = sm.queryUtility(IAuthentication)
+        if auth is None:
             # No auth utility here
             return
 
-        # Try to authenticate against the auth service
+        # Try to authenticate against the auth utility
         principal = auth.authenticate(request)
         if principal is None:
             principal = auth.unauthenticatedPrincipal()
@@ -188,8 +186,7 @@ class ZopePublication(PublicationTraverse):
             # Views are made children of their contexts, but that
             # doesn't necessarily mean that we can fully resolve the
             # path. E.g. the family tree of a resource cannot be
-            # resolved completely, as the presentation service is a
-            # dead end.
+            # resolved completely, as the site manager is a dead end.
             try:
                 path = locatable.getPath()
             except (AttributeError, TypeError):
@@ -296,9 +293,10 @@ class ZopePublication(PublicationTraverse):
                 # Give the exception instance its location and look up the
                 # view.
                 exception = LocationProxy(exc_info[1], loc, '')
-                name = zapi.queryDefaultViewName(exception, request)
+                name = zapi.getDefaultViewName(exception, request)
                 if name is not None:
-                    view = zapi.queryView(exception, name, request)
+                    view = zapi.queryMultiAdapter(
+                        (exception, request), name=name)
             except:
                 # Problem getting a view for this exception. Log an error.
                 tryToLogException(

@@ -16,12 +16,12 @@
 $Id$
 """
 __docformat__ = 'restructuredtext'
-
-from zope.component import queryViewProviding
-from zope.publisher.interfaces import NotFound
 from types import StringTypes
+
+from zope.publisher.interfaces import NotFound
 from zope.security.checker import ProxyFactory
 
+from zope.app import zapi
 from zope.app.traversing.namespace import namespaceLookup
 from zope.app.traversing.namespace import nsParse
 from zope.app.traversing.interfaces import TraversalError
@@ -56,7 +56,8 @@ class PublicationTraverse(object):
             ob2 = ob.publishTraverse(request, nm)
         else:
             # self is marker
-            adapter = queryViewProviding(ob, IPublishTraverse, request, self)
+            adapter = zapi.queryMultiAdapter((ob, request), IPublishTraverse,
+                                             default=self)
             if adapter is not self:
                 ob2 = adapter.publishTraverse(request, nm)
             else:
