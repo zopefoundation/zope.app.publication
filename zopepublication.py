@@ -49,7 +49,7 @@ from zope.app.publication.publicationtraverse import PublicationTraverse
 from zope.app.security.principalregistry import principalRegistry as prin_reg
 from zope.app.security.interfaces import IUnauthenticatedPrincipal
 from zope.app.security.interfaces import IAuthenticationUtility
-from zope.app.site.interfaces import ISite
+from zope.app.component.interfaces import ISite
 from zope.app.traversing.interfaces import IPhysicallyLocatable
 
 class Cleanup(object):
