@@ -21,7 +21,7 @@ from zodb.storage.mapping import DB
 from zope.app.tests.placelesssetup import PlacelessSetup
 from zope.component.adapter import provideAdapter
 
-from zope.interfaces.i18n import IUserPreferredCharsets
+from zope.i18n.interfaces import IUserPreferredCharsets
 
 from zope.publisher.base import TestPublication
 from zope.publisher.http import IHTTPRequest, HTTPCharsets
