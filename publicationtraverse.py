@@ -13,13 +13,13 @@
 ##############################################################################
 """
 
-$Id: publicationtraverse.py,v 1.8 2003/05/28 15:46:10 jim Exp $
+$Id: publicationtraverse.py,v 1.9 2003/06/01 15:59:34 jim Exp $
 """
 
 from zope.component import queryView
 from zope.publisher.interfaces import NotFound
 from types import StringTypes
-from zope.context import ContextWrapper
+from zope.app.context import ContextWrapper
 from zope.security.checker import ProxyFactory
 
 from zope.proxy import removeAllProxies
