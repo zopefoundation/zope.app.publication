@@ -16,6 +16,7 @@ import unittest
 from zope.interface import Interface
 
 from zope.component import getService, getServiceManager
+from zope.component.servicenames import Views
 
 from zope.publisher.publish import publish
 from zope.publisher.browser import BrowserView, TestRequest
@@ -191,7 +192,7 @@ class BrowserPublicationTests(BasePublicationTests):
                 self.counter+=1
                 return self.context[name]
 
-        provideView=getService(None, "Views").provideView
+        provideView=getService(None, Views).provideView
         provideView(I1, '_traverse', IBrowserPresentation, [Adapter])
         ob = mydict()
         ob['bruce'] =  SimpleObject('bruce')
@@ -214,7 +215,7 @@ class BrowserPublicationTests(BasePublicationTests):
             def browserDefault(self, request):
                 return (self.context['bruce'], 'dummy')
 
-        provideView=getService(None, "Views").provideView
+        provideView=getService(None, Views).provideView
         provideView(I1, '_traverse', IBrowserPresentation, [Adapter])
         ob = mydict()
         ob['bruce'] =  SimpleObject('bruce')
@@ -237,7 +238,7 @@ class BrowserPublicationTests(BasePublicationTests):
 
         pub = self.klass(self.db)
         ob = C()
-        provideView=getService(None, "Views").provideView
+        provideView=getService(None, Views).provideView
         provideView(I1, 'edit', IBrowserPresentation, [BobView])
 
         r = self._createRequest('/@@edit;skin=zmi',pub)
@@ -256,7 +257,7 @@ class BrowserPublicationTests(BasePublicationTests):
             x = SimpleObject(1)
         ob = C()
         r = self._createRequest('/x',pub)
-        provideView=getService(None, "Views").provideView
+        provideView=getService(None, Views).provideView
         provideView(None, '_traverse', IBrowserPresentation, [TestTraverser])
         ob2 = pub.traverseName(r, ob, 'x')
         self.assertEqual(removeAllProxies(ob2).v, 1)
@@ -272,7 +273,7 @@ class BrowserPublicationTests(BasePublicationTests):
             def __init__(self, context, request): pass
             __implements__ = IBrowserPresentation
         r = self._createRequest('/@@spam',pub)
-        provideView=getService(None, "Views").provideView
+        provideView=getService(None, Views).provideView
         provideView(I, 'spam', IBrowserPresentation, [V])
         ob2 = pub.traverseName(r, ob, '@@spam')
         self.assertEqual(removeAllProxies(ob2).__class__, V)

@@ -17,7 +17,7 @@ import logging
 from zope.component import getService, getView, getDefaultViewName
 from zope.component import queryService, getAdapter
 from zope.component.exceptions import ComponentLookupError
-from zope.component.servicenames import ErrorReports
+from zope.component.servicenames import ErrorReports, Authentication
 from zodb.interfaces import ConflictError
 
 from zope.publisher.publish import mapply
@@ -93,7 +93,7 @@ class ZopePublication(object, PublicationTraverse):
 
         sm = ContextWrapper(sm, ob, name="++etc++Services")
 
-        auth_service = sm.get('Authentication')
+        auth_service = sm.get(Authentication)
         if auth_service is None:
             # No auth service here
             return
