@@ -13,7 +13,7 @@
 ##############################################################################
 """XXX short summary goes here.
 
-$Id: browser.py,v 1.9 2003/06/01 15:59:34 jim Exp $
+$Id: browser.py,v 1.10 2003/09/21 17:32:36 jim Exp $
 """
 __metaclass__ = type
 
@@ -21,7 +21,6 @@ from zope.app.publication.publicationtraverse \
      import PublicationTraverser as PublicationTraverser_
 from zope.app.publication.zopepublication import ZopePublication
 from zope.component import queryAdapter, queryView
-from zope.app.context import ContextWrapper
 from zope.proxy import removeAllProxies
 from zope.publisher.interfaces.browser import IBrowserPublisher
 from zope.security.checker import ProxyFactory
@@ -51,19 +50,17 @@ class BrowserPublication(ZopePublication):
         r = ()
 
         if IBrowserPublisher.isImplementedBy(removeAllProxies(ob)):
-            r = ob.browserDefault(request)
+            # ob is already proxied, so the result of calling a method will be
+            return ob.browserDefault(request)
         else:
             adapter = queryView(ob, '_traverse', request , None)
             if adapter is not None:
-                r = adapter.browserDefault(request)
+                ob, path = adapter.browserDefault(request)
+                ob = ProxyFactory(ob)
+                return ob, path
             else:
+                # ob is already proxied
                 return (ob, None)
-
-        if r[0] is ob:
-            return r
-
-        wrapped = ContextWrapper(ProxyFactory(r[0]), ob, name=None)
-        return (wrapped, r[1])
 
     def afterCall(self, request):
         super(BrowserPublication, self).afterCall(request)
