@@ -11,18 +11,17 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""
+"""HTTP Factory
 
-$Id: httpfactory.py,v 1.5 2003/06/09 16:39:13 alga Exp $
+$Id: httpfactory.py,v 1.6 2004/03/13 20:24:26 srichter Exp $
 """
-
 from zope.interface import moduleProvides, implements
 from zope.publisher.http import HTTPRequest
 from zope.publisher.browser import BrowserRequest
 from zope.publisher.xmlrpc import XMLRPCRequest
 
-from zope.app.interfaces.startup import IPublicationRequestFactoryFactory
-from zope.app.interfaces.startup import IPublicationRequestFactory
+from zope.app.process.interfaces import IPublicationRequestFactoryFactory
+from zope.app.process.interfaces import IPublicationRequestFactory
 
 from zope.app.publication.http import HTTPPublication
 from zope.app.publication.browser import BrowserPublication
