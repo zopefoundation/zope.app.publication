@@ -27,7 +27,6 @@ from zope.event import notify
 from zope.security.interfaces import Unauthorized
 from zope.component.exceptions import ComponentLookupError
 from zope.interface import implements, providedBy
-from zope.proxy import removeAllProxies
 from zope.publisher.publish import mapply
 from zope.publisher.interfaces import Retry, IExceptionSideEffects
 from zope.publisher.interfaces import IRequest, IPublication
@@ -90,7 +89,7 @@ class ZopePublication(PublicationTraverse):
             # We won't find an authentication service here, so give up.
             return
 
-        sm = removeAllProxies(ob).getSiteManager()
+        sm = removeSecurityProxy(ob).getSiteManager()
 
         try:
             auth_service = sm.getService(zapi.servicenames.Authentication)
@@ -279,7 +278,7 @@ class ZopePublication(PublicationTraverse):
                 # an im_self or a __self__, use it. 
                 loc = object
                 if not hasattr(object, '__parent__'):
-                    loc = removeAllProxies(object)
+                    loc = removeSecurityProxy(object)
                     # Try to get an object, since we apparently have a method
                     # Note: We are guaranteed that an object has a location,
                     # so just getting the instance the method belongs to is
