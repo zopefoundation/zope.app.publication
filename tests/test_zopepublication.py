@@ -13,7 +13,7 @@
 ##############################################################################
 """Zope Publication Tests
 
-$Id: test_zopepublication.py,v 1.32 2004/04/05 08:16:03 hdima Exp $
+$Id: test_zopepublication.py,v 1.33 2004/04/18 16:00:32 jim Exp $
 """
 import unittest
 import sys
@@ -131,11 +131,10 @@ class BasePublicationTests(PlacelessSetup, unittest.TestCase):
         connection.close()
         self.app = app
 
-        from zope.app.traversing.namespace import provideNamespaceHandler
         from zope.app.traversing.namespace import view, resource, etc
-        provideNamespaceHandler('view', view)
-        provideNamespaceHandler('resource', resource)
-        provideNamespaceHandler('etc', etc)
+        ztapi.provideNamespaceHandler('view', view)
+        ztapi.provideNamespaceHandler('resource', resource)
+        ztapi.provideNamespaceHandler('etc', etc)
 
         self.out = StringIO()
         self.request = TestRequest('/f1/f2', outstream=self.out)
