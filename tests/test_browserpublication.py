@@ -17,7 +17,7 @@ from StringIO import StringIO
 
 from zope.interface import Interface
 
-from zope.component import getService, getServiceManager
+from zope.component import getService
 from zope.app.services.servicenames import Views
 
 from zope.publisher.publish import publish
@@ -33,7 +33,6 @@ from zope.security.checker import defineChecker, NamesChecker
 from zope.app.security.registries.principalregistry import principalRegistry
 from zope.app.security.grants.principalrole import principalRoleManager
 
-from zope.app.publication.zopepublication import ZopePublication
 from zope.app.publication.browser import BrowserPublication
 from zope.app.publication.traversers import TestTraverser
 from zope.app.publication.tests.test_zopepublication \

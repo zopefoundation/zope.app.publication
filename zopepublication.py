@@ -14,9 +14,8 @@
 import sys
 import logging
 
-from zope.component import getService, queryView, queryDefaultViewName
+from zope.component import queryView, queryDefaultViewName
 from zope.component import queryService, queryAdapter
-from zope.component.exceptions import ComponentLookupError
 from zope.app.services.servicenames import ErrorLogging, Authentication
 from zodb.interfaces import ConflictError
 
@@ -24,7 +23,7 @@ from zope.publisher.publish import mapply
 from zope.publisher.interfaces import Retry, IExceptionSideEffects
 from zope.publisher.interfaces.http import IHTTPRequest
 
-from zope.security.management import getSecurityManager, newSecurityManager
+from zope.security.management import newSecurityManager
 from zope.security.checker import ProxyFactory
 
 from zope.proxy.introspection import removeAllProxies

@@ -13,10 +13,10 @@
 ##############################################################################
 """
 
-$Id: test_simplecomponenttraverser.py,v 1.6 2003/03/13 18:49:08 alga Exp $
+$Id: test_simplecomponenttraverser.py,v 1.7 2003/05/01 19:35:26 faassen Exp $
 """
 
-import unittest, sys
+import unittest
 from zope.component.tests.request import Request
 from zope.app.publication.traversers import SimpleComponentTraverser
 from zope.component import getService
