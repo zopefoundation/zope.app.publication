@@ -18,7 +18,6 @@ from zope.component import getService
 from zope.component.exceptions import ComponentLookupError
 from zodb.interfaces import ConflictError
 
-from zope.publisher.base import DefaultPublication
 from zope.publisher.publish import mapply
 from zope.publisher.interfaces import Retry
 from zope.publisher.interfaces.http import IHTTPRequest
@@ -52,7 +51,7 @@ class Cleanup:
         self.__del__ = f
 
 
-class ZopePublication(object, PublicationTraverse, DefaultPublication):
+class ZopePublication(object, PublicationTraverse):
     """Base Zope publication specification."""
 
     version_cookie = 'Zope-Version'
@@ -149,9 +148,6 @@ class ZopePublication(object, PublicationTraverse, DefaultPublication):
             raise SystemError, "Zope Application Not Found"
 
         return ProxyFactory(app)
-
-    def getDefaultTraversal(self, request, ob):
-        return ob, None
 
     def callObject(self, request, ob):
         return mapply(ob, request.getPositionalArguments(), request)
