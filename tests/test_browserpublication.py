@@ -20,7 +20,7 @@ import unittest
 from zope.app.tests import ztapi
 from StringIO import StringIO
 
-from zope.exceptions import ForbiddenAttribute
+from zope.security.interfaces import ForbiddenAttribute
 from zope.interface import Interface, implements
 
 from zope.publisher.publish import publish
