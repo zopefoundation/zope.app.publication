@@ -24,6 +24,7 @@ from zope.security.checker import ProxyFactory
 
 from zope.app.traversing.namespace import namespaceLookup
 from zope.app.traversing.namespace import nsParse
+from zope.app.traversing.interfaces import TraversalError
 from zope.publisher.interfaces import IPublishTraverse
 
 class DuplicateNamespaces(Exception):
@@ -41,7 +42,11 @@ class PublicationTraverse(object):
             # Process URI segment parameters.
             ns, nm = nsParse(name)
             if ns:
-                ob2 = namespaceLookup(ns, nm, ob, request)
+                try:
+                    ob2 = namespaceLookup(ns, nm, ob, request)
+                except TraversalError:
+                    raise NotFound(ob, name)
+
                 return ProxyFactory(ob2)
 
         if nm == '.':
