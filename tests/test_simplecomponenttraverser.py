@@ -17,7 +17,7 @@ $Id$
 """
 import unittest
 from zope.component.tests.request import Request
-from zope.exceptions import NotFoundError
+from zope.publisher.interfaces import NotFound
 from zope.interface import Interface
 
 from zope.app.publication.traversers import SimpleComponentTraverser
@@ -56,7 +56,7 @@ class Test(PlacelessSetup, unittest.TestCase):
 
         T = SimpleComponentTraverser(c, req)
 
-        self.assertRaises(NotFoundError , T.publishTraverse, req ,'foo')
+        self.assertRaises(NotFound , T.publishTraverse, req ,'foo')
 
 
     def testView(self):
@@ -70,7 +70,7 @@ class Test(PlacelessSetup, unittest.TestCase):
 
         self.failUnless(T.publishTraverse(req,'foo').__class__ is View)
 
-        self.assertRaises(NotFoundError, T.publishTraverse, req , 'morebar')
+        self.assertRaises(NotFound, T.publishTraverse, req , 'morebar')
 
 
 
