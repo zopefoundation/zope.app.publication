@@ -13,16 +13,17 @@
 ##############################################################################
 """XXX short summary goes here.
 
-XXX longer description goes here.
-
-$Id: browser.py,v 1.2 2002/12/25 14:13:08 jim Exp $
+$Id: browser.py,v 1.3 2002/12/30 21:44:45 jeremy Exp $
 """
 __metaclass__ = type
 
 from zope.app.publication.publicationtraverse \
      import PublicationTraverser as PublicationTraverser_
+from zope.app.publication.http import ZopeHTTPPublication
+from zope.component import queryAdapter, queryView
+from zope.proxy.context import ContextWrapper
+from zope.proxy.introspection import removeAllProxies
 from zope.publisher.interfaces.browser import IBrowserPublisher
-from zope.component import queryAdapter
 
 class PublicationTraverser(PublicationTraverser_):
 
@@ -39,19 +40,6 @@ class PublicationTraverser(PublicationTraverser_):
                 return ob
 
             ob = self.traversePath(request, ob, path)
-
-
-"""
-
-Revision information:
-$Id: browser.py,v 1.2 2002/12/25 14:13:08 jim Exp $
-"""
-
-from zope.app.publication.http import ZopeHTTPPublication
-from zope.publisher.interfaces.browser import IBrowserPublisher
-from zope.component import queryView
-from zope.proxy.context import ContextWrapper
-from zope.proxy.introspection import removeAllProxies
 
 class BrowserPublication(ZopeHTTPPublication):
     """Web browser publication handling."""
