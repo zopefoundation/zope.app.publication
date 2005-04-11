@@ -16,8 +16,9 @@
 $Id$
 """
 import unittest
+from zope.testing import doctest
 
-from zope.app.testing import ztapi
+from zope.app.testing import placelesssetup, ztapi
 from StringIO import StringIO
 
 from zope.security.interfaces import ForbiddenAttribute
@@ -307,7 +308,14 @@ class BrowserPublicationTests(BasePublicationTests):
 def test_suite():
     t2 = unittest.makeSuite(BrowserPublicationTests, 'test')
     t3 = unittest.makeSuite(BrowserDefaultTests, 'test')
-    return unittest.TestSuite((t2, t3))
+    return unittest.TestSuite((
+        t2,
+        t3,
+        doctest.DocTestSuite('zope.app.publication.browser',
+                             setUp=placelesssetup.setUp,
+                             tearDown=placelesssetup.tearDown),
+
+        ))
 
 
 if __name__ == '__main__':

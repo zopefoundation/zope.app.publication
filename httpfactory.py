@@ -17,18 +17,16 @@ $Id$
 """
 __docformat__ = 'restructuredtext'
 
-from zope.interface import implements, providedBy
-from zope.interface import directlyProvides, directlyProvidedBy
+from zope.interface import implements
+
 from zope.publisher.http import HTTPRequest
 from zope.publisher.browser import BrowserRequest
-from zope.publisher.interfaces.browser import IDefaultSkin
-from zope.publisher.interfaces.browser import IDefaultBrowserLayer
 from zope.publisher.xmlrpc import XMLRPCRequest
 
 from zope.app import zapi
 from zope.app.publication.interfaces import IPublicationRequestFactory
 from zope.app.publication.http import HTTPPublication
-from zope.app.publication.browser import BrowserPublication
+from zope.app.publication.browser import BrowserPublication, setDefaultSkin
 from zope.app.publication.xmlrpc import XMLRPCPublication
 from zope.app.publication.soap import SOAPPublication
 from zope.app.publication.interfaces import ISOAPRequestFactory
@@ -65,13 +63,7 @@ class HTTPPublicationRequestFactory(object):
             else:
                 request = BrowserRequest(input_stream, output_steam, env)
                 request.setPublication(self._brower)
-                # Set the default skin
-                adapters = zapi.getSiteManager().adapters
-                skin = adapters.lookup((providedBy(request),), IDefaultSkin, '')
-                if skin is not None:
-                    directlyProvides(request, directlyProvidedBy(request)+skin)
-                else:
-                    directlyProvides(request, IDefaultBrowserLayer)
+                setDefaultSkin(request)
         else:
             request = HTTPRequest(input_stream, output_steam, env)
             request.setPublication(self._http)
