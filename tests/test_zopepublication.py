@@ -34,6 +34,7 @@ from zope.publisher.interfaces import IRequest, IPublishTraverse
 from zope.publisher.browser import BrowserResponse
 from zope.security import simplepolicies
 from zope.security.management import setSecurityPolicy, queryInteraction
+from zope.security.management import endInteraction
 
 from zope.app import zapi
 from zope.app.testing.placelesssetup import PlacelessSetup
@@ -141,7 +142,6 @@ class BasePublicationTests(PlacelessSetup, unittest.TestCase):
         self.publication = ZopePublication(self.db)
 
     def tearDown(self):
-        setSecurityPolicy(self.policy) # XXX still needed?
         super(BasePublicationTests, self).tearDown()
 
     def testInterfacesVerify(self):
@@ -397,23 +397,23 @@ class ZopePublicationTests(BasePublicationTests):
         f1['f2'] = Folder()
         sm1 = setup.createSiteManager(f1)
         setup.addUtility(sm1, '', IAuthenticationUtility, AuthUtility1())
-
+        
         f2 = f1['f2']
         sm2 = setup.createSiteManager(f2)
         setup.addUtility(sm2, '', IAuthenticationUtility, AuthUtility2())
         transaction.commit()
-
-
+        
+        
         from zope.app.container.interfaces import ISimpleReadContainer
         from zope.app.container.traversal import ContainerTraverser
-
+        
         ztapi.provideView(ISimpleReadContainer, IRequest, IPublishTraverse,
                           '', ContainerTraverser)
-
+        
         from zope.app.folder.interfaces import IFolder
         from zope.security.checker import defineChecker, InterfaceChecker
         defineChecker(Folder, InterfaceChecker(IFolder))
-
+        
         self.publication.beforeTraversal(self.request)
         self.assertEqual(list(queryInteraction().participations),
                          [self.request])
