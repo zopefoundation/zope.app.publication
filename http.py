@@ -19,8 +19,32 @@ __docformat__ = 'restructuredtext'
 from zope.publisher.publish import mapply
 
 from zope.app import zapi
+from zope.interface import Interface, implements, Attribute
+from zope.interface.common.interfaces import IException
 from zope.app.http.interfaces import IHTTPException
 from zope.app.publication.zopepublication import ZopePublication
+
+
+class IMethodNotAllowed(IException):
+    """An exception that signals the 405 Method Not Allowed HTTP error"""
+
+    object = Attribute("""The object on which the error occured""")
+
+    request = Attribute("""The request in which the error occured""")
+
+
+class MethodNotAllowed(Exception):
+    """An exception that signals the 405 Method Not Allowed HTTP error"""
+
+    implements(IMethodNotAllowed)
+
+    def __init__(self, object, request):
+        self.object = object
+        self.request = request
+
+    def __str__(self):
+        return "%r, %r" % (object, request)
+
 
 class BaseHTTPPublication(ZopePublication):
     """Base for HTTP-based protocol publications"""
@@ -32,12 +56,16 @@ class BaseHTTPPublication(ZopePublication):
         txn.setExtendedInfo('request_info', request_info)
         return txn
 
+
 class HTTPPublication(BaseHTTPPublication):
     """HTTP-specific publication"""
 
     def callObject(self, request, ob):
         # Exception handling, dont try to call request.method
+        orig = ob
         if not IHTTPException.providedBy(ob):
-            ob = zapi.getMultiAdapter((ob, request), name=request.method)
-            ob = getattr(ob, request.method)
+            ob = zapi.queryMultiAdapter((ob, request), name=request.method)
+            ob = getattr(ob, request.method, None)
+            if ob is None:
+                raise MethodNotAllowed(orig, request)
         return mapply(ob, request.getPositionalArguments(), request)
