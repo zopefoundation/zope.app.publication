@@ -29,7 +29,7 @@ from zope.security.interfaces import Unauthorized
 from zope.component.exceptions import ComponentLookupError
 from zope.interface import implements, providedBy
 from zope.publisher.publish import mapply
-from zope.publisher.interfaces import Retry, IExceptionSideEffects
+from zope.publisher.interfaces import Retry, IExceptionSideEffects, IHeld
 from zope.publisher.interfaces import IRequest, IPublication
 from zope.security.management import newInteraction, endInteraction
 from zope.security.checker import ProxyFactory
@@ -54,11 +54,20 @@ from zope.app.traversing.interfaces import IPhysicallyLocatable
 
 class Cleanup(object):
 
+    implements(IHeld)
+
     def __init__(self, f):
         self._f = f
 
-    def __del__(self):
+    def release(self):
         self._f()
+        self._f = None
+
+    def __del__(self):
+        if self._f is not None:
+            logging.getLogger('SiteError').error(
+                "Cleanup without request close")
+            self._f()
 
 class ZopePublication(PublicationTraverse):
     """Base Zope publication specification."""
