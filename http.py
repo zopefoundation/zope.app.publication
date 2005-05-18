@@ -15,11 +15,13 @@
 
 $Id$
 """
+
 __docformat__ = 'restructuredtext'
+
 from zope.publisher.publish import mapply
 
 from zope.app import zapi
-from zope.interface import Interface, implements, Attribute
+from zope.interface import implements, Attribute
 from zope.interface.common.interfaces import IException
 from zope.app.http.interfaces import IHTTPException
 from zope.app.publication.zopepublication import ZopePublication
@@ -43,7 +45,7 @@ class MethodNotAllowed(Exception):
         self.request = request
 
     def __str__(self):
-        return "%r, %r" % (object, request)
+        return "%r, %r" % (self.object, self.request)
 
 
 class BaseHTTPPublication(ZopePublication):
