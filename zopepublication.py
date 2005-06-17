@@ -250,7 +250,7 @@ class ZopePublication(PublicationTraverse):
                 'Competing writes/reads at %s' %
                 request.get('PATH_INFO', '???'),
                 exc_info=True)
-            raise Retry
+            raise Retry(exc_info)
         # Are there any reasons why we'd want to let application-level error
         # handling determine whether a retry is allowed or not?
         # Assume not for now.
