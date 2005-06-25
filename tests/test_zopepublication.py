@@ -484,8 +484,8 @@ class ZopePublicationTests(BasePublicationTests):
 
         set = []
         clear = []
-        ztapi.handle([IBeforeTraverseEvent], set.append)
-        ztapi.handle([IEndRequestEvent], clear.append)
+        ztapi.subscribe([IBeforeTraverseEvent], None, set.append)
+        ztapi.subscribe([IEndRequestEvent], None, clear.append)
 
         ob = object()
 
