@@ -236,7 +236,8 @@ class ZopePublication(PublicationTraverse):
             transaction.commit()
         except:
             tryToLogException(
-                'Error while reporting an error to the Error Reporting utility')
+                'Error while reporting an error to the Error Reporting utility'
+                )
             transaction.abort()
 
     def handleException(self, object, request, exc_info, retry_allowed=True):
