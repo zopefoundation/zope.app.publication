@@ -129,12 +129,12 @@ class BrowserDefaultTests(BasePublicationTests):
             'tim', 'timbot', 'ai at its best')
 
         # now place our object inside the application
-        from transaction import get_transaction
+        import transaction
 
         connection = self.db.open()
         app = connection.root()['Application']
         app.somepath = ob
-        get_transaction().commit()
+        transaction.commit()
         connection.close()
 
         defineChecker(app.__class__, NamesChecker(somepath='xxx'))

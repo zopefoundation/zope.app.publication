@@ -153,7 +153,7 @@ class ZopePublication(PublicationTraverse):
         return mapply(ob, request.getPositionalArguments(), request)
 
     def afterCall(self, request, ob):
-        txn = get_transaction()
+        txn = transaction.get()
         self.annotateTransaction(txn, request, ob)
 
         txn.commit()
@@ -222,17 +222,17 @@ class ZopePublication(PublicationTraverse):
             # the zope log.
 
             errService.raising(exc_info, request)
-            get_transaction().commit()
+            transaction.commit()
         except:
             tryToLogException(
                 'Error while reporting an error to the %s service' %
                 zapi.servicenames.ErrorLogging)
-            get_transaction().abort()
+            transaction.abort()
 
     def handleException(self, object, request, exc_info, retry_allowed=True):
         # This transaction had an exception that reached the publisher.
         # It must definitely be aborted.
-        get_transaction().abort()
+        transaction.abort()
 
         # Convert ConflictErrors to Retry exceptions.
         if retry_allowed and isinstance(exc_info[1], ConflictError):
@@ -303,7 +303,7 @@ class ZopePublication(PublicationTraverse):
             if view is not None:
                 try:
                     response.setBody(self.callObject(request, view))
-                    get_transaction().commit()
+                    transaction.commit()
                 except:
                     # Problem rendering the view for this exception.
                     # Log an error.
@@ -321,7 +321,7 @@ class ZopePublication(PublicationTraverse):
                 # because the view couldn't be rendered. In either case,
                 # we let the request handle it.
                 response.handleException(exc_info)
-                get_transaction().abort()
+                transaction.abort()
 
             # See if there's an IExceptionSideEffects adapter for the
             # exception
@@ -339,12 +339,12 @@ class ZopePublication(PublicationTraverse):
                     # Although request is passed in here, it should be
                     # considered read-only.
                     adapter(object, request, exc_info)
-                    get_transaction().commit()
+                    transaction.commit()
                 except:
                     tryToLogException(
                         'Exception while calling'
                         ' IExceptionSideEffects adapter')
-                    get_transaction().abort()
+                    transaction.abort()
 
     def beginErrorHandlingTransaction(self, request, ob, note):
         txn = transaction.begin()

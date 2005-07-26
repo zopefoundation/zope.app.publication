@@ -22,6 +22,7 @@ from cStringIO import StringIO
 from persistent import Persistent
 from ZODB.DB import DB
 from ZODB.DemoStorage import DemoStorage
+import transaction
 
 from zope.interface.verify import verifyClass
 from zope.interface import implements, classImplements, implementedBy
@@ -130,7 +131,7 @@ class BasePublicationTests(PlacelessSetup, unittest.TestCase):
             from zope.app.folder import rootFolder
             app = rootFolder()
             root[ZopePublication.root_name] = app
-            get_transaction().commit()
+            transaction.commit()
 
         connection.close()
         self.app = app
@@ -288,7 +289,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         self.assertEqual(self.request.response._cookies, {})
 
     def testAbortOrCommitTransaction(self):
-        txn = get_transaction()
+        txn = transaction.get()
         try:
             raise Exception
         except:
@@ -296,7 +297,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         self.publication.handleException(
             self.object, self.request, sys.exc_info(), retry_allowed=False)
         # assert that we get a new transaction
-        self.assert_(txn is not get_transaction())    
+        self.assert_(txn is not transaction.get())    
 
     def testAbortTransactionWithErrorLoggingService(self):
         # provide our fake error logging service
@@ -340,7 +341,7 @@ class ZopePublicationTests(BasePublicationTests):
         f1.setSiteManager(ServiceManager(AuthService1()))
         f2 = f1['f2']
         f2.setSiteManager(ServiceManager(AuthService2()))
-        get_transaction().commit()
+        transaction.commit()
 
         from zope.app.container.interfaces import ISimpleReadContainer
         from zope.app.container.traversal import ContainerTraverser
@@ -373,13 +374,13 @@ class ZopePublicationTests(BasePublicationTests):
 
     def testTransactionCommitAfterCall(self):
         root = self.db.open().root()
-        txn = get_transaction()
+        txn = transaction.get()
         # we just need a change in the database to make the
         # transaction notable in the undo log
         root['foo'] = object()
         last_txn_info = self.db.undoInfo()[0]
         self.publication.afterCall(self.request, self.object)
-        self.assert_(txn is not get_transaction())
+        self.assert_(txn is not transaction.get())
         new_txn_info = self.db.undoInfo()[0]
         self.failIfEqual(last_txn_info, new_txn_info)
 
