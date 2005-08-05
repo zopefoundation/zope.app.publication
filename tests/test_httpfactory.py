@@ -19,6 +19,7 @@ from unittest import TestCase, TestSuite, main, makeSuite
 
 from StringIO import StringIO
 
+from zope import component, interface
 from zope.publisher.browser import BrowserRequest
 from zope.publisher.http import HTTPRequest
 from zope.publisher.xmlrpc import XMLRPCRequest
@@ -29,6 +30,17 @@ from zope.app.publication.browser import BrowserPublication
 from zope.app.publication.http import HTTPPublication
 from zope.app.publication.xmlrpc import XMLRPCPublication
 from zope.app.testing import ztapi
+from zope.app.publication import interfaces
+
+class DummyRequestFactory(object):
+    def __call__(self, input_stream, output_steam, env):
+        self.input_stream = input_stream
+        self.output_steam = output_steam
+        self.env = env
+        return self
+
+    def setPublication(self, pub):
+        self.pub = pub
 
 class Test(PlacelessSetup, TestCase):
 
@@ -41,6 +53,42 @@ class Test(PlacelessSetup, TestCase):
             'CONTENT_LENGTH':     '0',
             'GATEWAY_INTERFACE':  'TestFooInterface/1.0',
             }
+
+    def test_override(self):
+        # TODO: making a SOAP request without configuring a SOAP request
+        # currently generates an XMLRPC request.  Not sure what the right thing
+        # is, but that doesn't seem to be the right thing.
+        soaprequestfactory = DummyRequestFactory()
+        interface.directlyProvides(
+            soaprequestfactory, interfaces.ISOAPRequestFactory)
+        component.provideUtility(soaprequestfactory)
+        xmlrpcrequestfactory = DummyRequestFactory()
+        interface.directlyProvides(
+            xmlrpcrequestfactory, interfaces.IXMLRPCRequestFactory)
+        component.provideUtility(xmlrpcrequestfactory)
+        httprequestfactory = DummyRequestFactory()
+        interface.directlyProvides(
+            httprequestfactory, interfaces.IHTTPRequestFactory)
+        component.provideUtility(httprequestfactory)
+        browserrequestfactory = DummyRequestFactory()
+        interface.directlyProvides(
+            browserrequestfactory, interfaces.IBrowserRequestFactory)
+        component.provideUtility(browserrequestfactory)
+        httpfactory = HTTPPublicationRequestFactory(None)
+        env = self.__env
+        env['REQUEST_METHOD'] = 'POST'
+        env['CONTENT_TYPE'] = 'text/xml'
+        input = StringIO('')
+        output = StringIO()
+        env['HTTP_SOAPACTION'] = 'foo'
+        self.assertEqual(httpfactory(input, output, env), soaprequestfactory)
+        del env['HTTP_SOAPACTION']
+        self.assertEqual(httpfactory(input, output, env), xmlrpcrequestfactory)
+        env['CONTENT_TYPE'] = 'text/foo'
+        self.assertEqual(
+            httpfactory(input, output, env), browserrequestfactory)
+        env['REQUEST_METHOD'] = 'FLOO'
+        self.assertEqual(httpfactory(input, output, env), httprequestfactory)
 
     def test_browser(self):
         r = self.__factory(StringIO(''), StringIO(), self.__env)

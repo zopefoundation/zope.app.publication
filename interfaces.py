@@ -57,12 +57,23 @@ class EndRequestEvent(object):
         self.object = ob
         self.request = request
 
-
-class ISOAPRequestFactory(interface.Interface):
-    """SOAP request factory"""
+class IRequestFactory(interface.Interface):
 
     def __call__(input_stream, output_steam, env):
-        """Create a request object to handle SOAP input."""
+        """Create a request object to handle input."""
+
+class ISOAPRequestFactory(IRequestFactory):
+    """SOAP request factory"""
+
+class IHTTPRequestFactory(IRequestFactory):
+    # TODO: should SOAP, XMLRPC, and Browser extend this?
+    """generic HTTP request factory"""
+
+class IXMLRPCRequestFactory(IRequestFactory):
+    """XMLRPC request factory"""
+
+class IBrowserRequestFactory(IRequestFactory):
+    """browser request factory"""
 
 class IFileContent(interface.Interface):
     """Marker interface for content that can be managed as files.

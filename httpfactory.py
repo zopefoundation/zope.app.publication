@@ -17,24 +17,22 @@ $Id$
 """
 __docformat__ = 'restructuredtext'
 
-from zope.interface import implements
+from zope import component, interface
 
 from zope.publisher.http import HTTPRequest
 from zope.publisher.browser import BrowserRequest
 from zope.publisher.xmlrpc import XMLRPCRequest
 
-from zope.app import zapi
-from zope.app.publication.interfaces import IPublicationRequestFactory
+from zope.app.publication import interfaces
 from zope.app.publication.http import HTTPPublication
 from zope.app.publication.browser import BrowserPublication, setDefaultSkin
 from zope.app.publication.xmlrpc import XMLRPCPublication
 from zope.app.publication.soap import SOAPPublication
-from zope.app.publication.interfaces import ISOAPRequestFactory
 
 _browser_methods = 'GET', 'POST', 'HEAD'
 
 class HTTPPublicationRequestFactory(object):
-    implements(IPublicationRequestFactory)
+    interface.implements(interfaces.IPublicationRequestFactory)
 
     def __init__(self, db):
         """See `zope.app.publication.interfaces.IPublicationRequestFactory`"""
@@ -42,7 +40,13 @@ class HTTPPublicationRequestFactory(object):
         self._brower = BrowserPublication(db)
         self._xmlrpc = XMLRPCPublication(db)
         self._soappub = SOAPPublication(db)
-        self._soapreq = zapi.queryUtility(ISOAPRequestFactory)
+        self._soapreq = component.queryUtility(interfaces.ISOAPRequestFactory)
+        self._httpreq = component.queryUtility(
+            interfaces.IHTTPRequestFactory, default=HTTPRequest)
+        self._xmlrpcreq = component.queryUtility(
+            interfaces.IXMLRPCRequestFactory, default=XMLRPCRequest)
+        self._browserrequest = component.queryUtility(
+            interfaces.IBrowserRequestFactory, default=BrowserRequest)
 
     def __call__(self, input_stream, output_steam, env):
         """See `zope.app.publication.interfaces.IPublicationRequestFactory`"""
@@ -58,14 +62,14 @@ class HTTPPublicationRequestFactory(object):
                 request = self._soapreq(input_stream, output_steam, env)
                 request.setPublication(self._soappub)
             elif (method == 'POST' and is_xml):
-                request = XMLRPCRequest(input_stream, output_steam, env)
+                request = self._xmlrpcreq(input_stream, output_steam, env)
                 request.setPublication(self._xmlrpc)
             else:
-                request = BrowserRequest(input_stream, output_steam, env)
+                request = self._browserrequest(input_stream, output_steam, env)
                 request.setPublication(self._brower)
                 setDefaultSkin(request)
         else:
-            request = HTTPRequest(input_stream, output_steam, env)
+            request = self._httpreq(input_stream, output_steam, env)
             request.setPublication(self._http)
 
         return request
