@@ -21,6 +21,7 @@ from zope import component, interface
 
 from zope.publisher.http import HTTPRequest
 from zope.publisher.browser import BrowserRequest
+from zope.publisher.interfaces.browser import IBrowserRequest
 from zope.publisher.xmlrpc import XMLRPCRequest
 
 from zope.app.publication import interfaces
@@ -29,47 +30,47 @@ from zope.app.publication.browser import BrowserPublication, setDefaultSkin
 from zope.app.publication.xmlrpc import XMLRPCPublication
 from zope.app.publication.soap import SOAPPublication
 
-_browser_methods = 'GET', 'POST', 'HEAD'
+
+def chooseClasses(method, environment):
+    if method in ('GET', 'POST', 'HEAD'):
+        content_type = environment.get('CONTENT_TYPE', '')
+        is_xml = content_type.startswith('text/xml')
+
+        soap_request = component.queryUtility(interfaces.ISOAPRequestFactory)
+        if (method == 'POST' and is_xml and environment.get('HTTP_SOAPACTION')
+        and soap_request is not None):
+            request_class = soap_request
+            publication_class = SOAPPublication
+        elif (method == 'POST' and is_xml):
+            request_class = component.queryUtility(
+                interfaces.IXMLRPCRequestFactory, default=XMLRPCRequest)
+            publication_class = XMLRPCPublication
+        else:
+            request_class = component.queryUtility(
+                interfaces.IBrowserRequestFactory, default=BrowserRequest)
+            publication_class = BrowserPublication
+    else:
+        request_class = component.queryUtility(
+            interfaces.IHTTPRequestFactory, default=HTTPRequest)
+        publication_class = HTTPPublication
+
+    return request_class, publication_class
+
 
 class HTTPPublicationRequestFactory(object):
     interface.implements(interfaces.IPublicationRequestFactory)
 
     def __init__(self, db):
         """See `zope.app.publication.interfaces.IPublicationRequestFactory`"""
-        self._http = HTTPPublication(db)
-        self._brower = BrowserPublication(db)
-        self._xmlrpc = XMLRPCPublication(db)
-        self._soappub = SOAPPublication(db)
-        self._soapreq = component.queryUtility(interfaces.ISOAPRequestFactory)
-        self._httpreq = component.queryUtility(
-            interfaces.IHTTPRequestFactory, default=HTTPRequest)
-        self._xmlrpcreq = component.queryUtility(
-            interfaces.IXMLRPCRequestFactory, default=XMLRPCRequest)
-        self._browserrequest = component.queryUtility(
-            interfaces.IBrowserRequestFactory, default=BrowserRequest)
+        self._db = db
 
     def __call__(self, input_stream, output_steam, env):
         """See `zope.app.publication.interfaces.IPublicationRequestFactory`"""
         method = env.get('REQUEST_METHOD', 'GET').upper()
-
-        if method in _browser_methods:
-            content_type = env.get('CONTENT_TYPE', '')
-            is_xml = content_type.startswith('text/xml')
-
-            if (method == 'POST' and is_xml and
-                env.get('HTTP_SOAPACTION', None)
-                and self._soapreq is not None):
-                request = self._soapreq(input_stream, output_steam, env)
-                request.setPublication(self._soappub)
-            elif (method == 'POST' and is_xml):
-                request = self._xmlrpcreq(input_stream, output_steam, env)
-                request.setPublication(self._xmlrpc)
-            else:
-                request = self._browserrequest(input_stream, output_steam, env)
-                request.setPublication(self._brower)
-                setDefaultSkin(request)
-        else:
-            request = self._httpreq(input_stream, output_steam, env)
-            request.setPublication(self._http)
-
+        request_class, publication_class = chooseClasses(method, env)
+        request = request_class(input_stream, output_steam, env)
+        request.setPublication(publication_class(self._db))
+        if IBrowserRequest.providedBy(request):
+            # only browser requests have skins
+            setDefaultSkin(request)
         return request
