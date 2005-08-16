@@ -36,6 +36,7 @@ from zope.security.checker import defineChecker, NamesChecker
 from zope.app.security.principalregistry import principalRegistry
 
 from zope.app.publication.browser import BrowserPublication
+from zope.app.publication.httpfactory import HTTPPublicationRequestFactory
 from zope.app.publication.traversers import TestTraverser
 from zope.app.publication.tests.test_zopepublication \
      import BasePublicationTests as BasePublicationTests_
@@ -305,12 +306,20 @@ class BrowserPublicationTests(BasePublicationTests):
             '\r\n\xd1\x82\xd0\xb5\xd1\x81\xd1\x82')
 
 
+class HTTPPublicationRequestFactoryTests(BasePublicationTests):
+
+    def testGetBackSamePublication(self):
+        factory = HTTPPublicationRequestFactory(db=None)
+        args = (None, None, {})
+        self.assert_(id(factory(*args).publication) ==
+                     id(factory(*args).publication))
+
+
 def test_suite():
-    t2 = unittest.makeSuite(BrowserPublicationTests, 'test')
-    t3 = unittest.makeSuite(BrowserDefaultTests, 'test')
     return unittest.TestSuite((
-        t2,
-        t3,
+        unittest.makeSuite(BrowserPublicationTests, 'test'),
+        unittest.makeSuite(BrowserDefaultTests, 'test'),
+        unittest.makeSuite(HTTPPublicationRequestFactoryTests, 'test'),
         doctest.DocTestSuite('zope.app.publication.browser',
                              setUp=placelesssetup.setUp,
                              tearDown=placelesssetup.tearDown),

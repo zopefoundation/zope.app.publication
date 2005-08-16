@@ -34,17 +34,15 @@ from zope.app.publication.soap import SOAPPublication
 def chooseClasses(method, environment):
     if method in ('GET', 'POST', 'HEAD'):
         content_type = environment.get('CONTENT_TYPE', '')
-        is_xml = content_type.startswith('text/xml')
-
-        soap_request = component.queryUtility(interfaces.ISOAPRequestFactory)
-        if (method == 'POST' and is_xml and environment.get('HTTP_SOAPACTION')
-        and soap_request is not None):
-            request_class = soap_request
-            publication_class = SOAPPublication
-        elif (method == 'POST' and is_xml):
-            request_class = component.queryUtility(
-                interfaces.IXMLRPCRequestFactory, default=XMLRPCRequest)
-            publication_class = XMLRPCPublication
+        if method == 'POST' and content_type.startswith('text/xml'):
+            soap_req = component.queryUtility(interfaces.ISOAPRequestFactory)
+            if environment.get('HTTP_SOAPACTION') and soap_req is not None:
+                request_class = soap_req
+                publication_class = SOAPPublication
+            else:
+                request_class = component.queryUtility(
+                    interfaces.IXMLRPCRequestFactory, default=XMLRPCRequest)
+                publication_class = XMLRPCPublication
         else:
             request_class = component.queryUtility(
                 interfaces.IBrowserRequestFactory, default=BrowserRequest)
@@ -63,13 +61,20 @@ class HTTPPublicationRequestFactory(object):
     def __init__(self, db):
         """See `zope.app.publication.interfaces.IPublicationRequestFactory`"""
         self._db = db
+        self._publication_cache = {}
 
     def __call__(self, input_stream, output_steam, env):
         """See `zope.app.publication.interfaces.IPublicationRequestFactory`"""
         method = env.get('REQUEST_METHOD', 'GET').upper()
         request_class, publication_class = chooseClasses(method, env)
+
+        publication = self._publication_cache.get(publication_class)
+        if publication is None:
+            publication = publication_class(self._db)
+            self._publication_cache[publication_class] = publication
+
         request = request_class(input_stream, output_steam, env)
-        request.setPublication(publication_class(self._db))
+        request.setPublication(publication)
         if IBrowserRequest.providedBy(request):
             # only browser requests have skins
             setDefaultSkin(request)
