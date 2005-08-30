@@ -53,7 +53,7 @@ class DummyPublished(object):
     def publishTraverse(self, request, name):
         if name == 'bruce':
             return foo
-        raise KeyError, name
+        raise KeyError(name)
 
     def browserDefault(self, request):
         return self, ['bruce']

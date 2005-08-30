@@ -156,7 +156,7 @@ class ZopePublication(PublicationTraverse):
         app = root.get(self.root_name, None)
 
         if app is None:
-            raise SystemError, "Zope Application Not Found"
+            raise SystemError("Zope Application Not Found")
 
         return ProxyFactory(app)
 

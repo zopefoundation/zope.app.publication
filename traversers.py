@@ -89,7 +89,7 @@ class TestTraverser(object):
             return zapi.getMultiAdapter((ob, request), name=name[6:])
 
         if name.startswith('_'):
-            raise Unauthorized, name
+            raise Unauthorized(name)
 
         subob = getattr(ob, name, self) # self is marker here
         if subob is self:
