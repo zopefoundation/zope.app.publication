@@ -258,7 +258,7 @@ class BrowserPublicationTests(BasePublicationTests):
         # With a normal request, we should get a body:
         request = TestRequest(StringIO(''), {'PATH_INFO': '/'})
         request.setPrincipal(User())
-        request.response.setBody(u"spam")
+        request.response.setResult(u"spam")
         pub.afterCall(request, None)
         self.assertEqual(request.response.testBody(), 'spam' )
 
@@ -266,31 +266,32 @@ class BrowserPublicationTests(BasePublicationTests):
         request = TestRequest(StringIO(''), {'PATH_INFO': '/'})
         request.setPrincipal(User())
         request.method = 'HEAD'
-        request.response.setBody(u"spam")
+        request.response.setResult(u"spam")
         pub.afterCall(request, None)
         self.assertEqual(request.response.testBody(), '')
 
     def testUnicode_NO_HTTP_CHARSET(self):
         # Test so that a unicode body doesn't cause a UnicodeEncodeError
-        output = StringIO()
-        request = TestRequest(StringIO(''), output, {})
-        request.response.setBody(u"\u0442\u0435\u0441\u0442")
-        request.response.outputBody()
+        request = TestRequest(StringIO(''), {})
+        request.response.setResult(u"\u0442\u0435\u0441\u0442")
+        headers = request.response.getHeaders()
+        headers.sort()
         self.assertEqual(
-            output.getvalue(),
-            'Status: 200 Ok\r\n'
-            'Content-Length: 8\r\n'
-            'Content-Type: text/plain;charset=utf-8\r\n'
-            'X-Content-Type-Warning: guessed from content\r\n'
-            'X-Powered-By: Zope (www.zope.org), Python (www.python.org)\r\n'
-            '\r\n\xd1\x82\xd0\xb5\xd1\x81\xd1\x82')
+            headers,
+            [('Content-Length', '8'),
+             ('Content-Type', 'text/plain;charset=utf-8'),
+             ('X-Content-Type-Warning', 'guessed from content'),
+             ('X-Powered-By', 'Zope (www.zope.org), Python (www.python.org)')])
+        self.assertEqual(
+            ''.join(request.response.result.body),
+            '\xd1\x82\xd0\xb5\xd1\x81\xd1\x82')
 
 
 class HTTPPublicationRequestFactoryTests(BasePublicationTests):
 
     def testGetBackSamePublication(self):
         factory = HTTPPublicationRequestFactory(db=None)
-        args = (None, None, {})
+        args = (None, {})
         self.assert_(id(factory(*args).publication) ==
                      id(factory(*args).publication))
 

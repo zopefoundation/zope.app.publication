@@ -131,8 +131,7 @@ class BasePublicationTests(PlacelessSetup, unittest.TestCase):
         ztapi.provideNamespaceHandler('resource', resource)
         ztapi.provideNamespaceHandler('etc', etc)
 
-        self.out = StringIO()
-        self.request = TestRequest('/f1/f2', outstream=self.out)
+        self.request = TestRequest('/f1/f2')
         self.user = Principal('test.principal')
         self.request.setPrincipal(self.user)
         from zope.interface import Interface
@@ -169,8 +168,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
             pass
         self.publication.handleException(
             self.object, self.request, sys.exc_info(), retry_allowed=False)
-        self.request.response.outputBody()
-        value = self.out.getvalue().split()
+        value = ''.join(self.request.response.result).split()
         self.assertEqual(' '.join(value[:6]),
                          'Traceback (most recent call last): File')
         self.assertEqual(' '.join(value[-8:]),
@@ -194,8 +192,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
             pass
         self.publication.handleException(
             self.object, self.request, sys.exc_info(), retry_allowed=False)
-        self.request.response.outputBody()
-        self.assertEqual(self.out.getvalue(), view_text)
+        self.assertEqual(''.join(self.request.response.result), view_text)
 
     def testHandlingSystemErrors(self):
 
@@ -204,7 +201,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
 
         from zope.testing import loggingsupport
         handler = loggingsupport.InstalledHandler('SiteError')
-        
+
         self.testViewOnException()
 
         self.assertEqual(
@@ -216,13 +213,11 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         # installed an error reporting utility.  That's OK.
 
         handler.uninstall()
-        self.out.seek(0)
-        self.out.truncate(0)
         handler = loggingsupport.InstalledHandler('SiteError')
 
         # Now, we'll register an exception view that indicates that we
         # have a system error.
-        
+
         from zope.interface import Interface, implements
         class E2(Exception):
             pass
@@ -240,10 +235,10 @@ class ZopePublicationErrorHandling(BasePublicationTests):
 
             def isSystemError(self):
                 return True
-            
+
             def __call__(self):
                 return view_text
-        
+
         ztapi.provideView(E2, self.presentation_type, Interface,
                           'name', MyView)
         try:
@@ -251,7 +246,6 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         except:
             self.publication.handleException(
                 self.object, self.request, sys.exc_info(), retry_allowed=False)
-        self.request.response.outputBody()
 
         # Now, since the view was a system error view, we should have
         # a log entry for the E2 error (as well as the missing
@@ -284,11 +278,10 @@ class ZopePublicationErrorHandling(BasePublicationTests):
             pass
         self.publication.handleException(
             self.object, self.request, sys.exc_info(), retry_allowed=False)
-        self.request.response.outputBody()
         # check we don't get the view we registered
-        self.failIf(self.out.getvalue() == view_text)
+        self.failIf(''.join(self.request.response.result) == view_text)
         # check we do actually get something
-        self.failIf(self.out.getvalue() == '')
+        self.failIf(''.join(self.request.response.result) == '')
 
     def testExceptionSideEffects(self):
         from zope.publisher.interfaces import IExceptionSideEffects
@@ -351,7 +344,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         self.publication.handleException(
             self.object, self.request, sys.exc_info(), retry_allowed=False)
         # assert that we get a new transaction
-        self.assert_(txn is not transaction.get())    
+        self.assert_(txn is not transaction.get())
 
     def testAbortTransactionWithErrorReportingUtility(self):
         # provide our fake error reporting utility
