@@ -320,7 +320,7 @@ class ZopePublication(PublicationTraverse):
                     # arguments.  The positional arguments were meant
                     # for the published object, not an exception view.
                     body = mapply(view, (), request)
-                    response.setBody(body)
+                    response.setResult(body)
                     transaction.commit()
                     if (ISystemErrorView.providedBy(view)
                         and view.isSystemError()):

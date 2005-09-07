@@ -47,7 +47,7 @@ class Test(PlacelessSetup, TestCase):
 
     def test_callObject(self):
         pub = zope.app.publication.http.HTTPPublication(None)
-        request = HTTPRequest(StringIO(''), StringIO(), {})
+        request = HTTPRequest(StringIO(''), {})
         request.method = 'SPAM'
 
         ztapi.provideView(I, IHTTPRequest, Interface, 'SPAM', V)

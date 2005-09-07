@@ -31,7 +31,6 @@ from zope.component.exceptions import ComponentLookupError
 from zope.publisher.base import TestPublication, TestRequest
 from zope.publisher.http import IHTTPRequest, HTTPCharsets
 from zope.publisher.interfaces import IRequest, IPublishTraverse
-from zope.publisher.browser import BrowserResponse
 from zope.security import simplepolicies
 from zope.security.management import setSecurityPolicy, queryInteraction
 from zope.security.management import endInteraction
@@ -131,8 +130,7 @@ class BasePublicationTests(PlacelessSetup, unittest.TestCase):
         ztapi.provideNamespaceHandler('resource', resource)
         ztapi.provideNamespaceHandler('etc', etc)
 
-        self.out = StringIO()
-        self.request = TestRequest('/f1/f2', outstream=self.out)
+        self.request = TestRequest('/f1/f2')
         self.user = Principal('test.principal')
         self.request.setPrincipal(self.user)
         from zope.interface import Interface
@@ -169,8 +167,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
             pass
         self.publication.handleException(
             self.object, self.request, sys.exc_info(), retry_allowed=False)
-        self.request.response.outputBody()
-        value = self.out.getvalue().split()
+        value = ''.join(self.request.response._result).split()
         self.assertEqual(' '.join(value[:6]),
                          'Traceback (most recent call last): File')
         self.assertEqual(' '.join(value[-8:]),
@@ -194,8 +191,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
             pass
         self.publication.handleException(
             self.object, self.request, sys.exc_info(), retry_allowed=False)
-        self.request.response.outputBody()
-        self.assertEqual(self.out.getvalue(), view_text)
+        self.assertEqual(self.request.response._result, view_text)
 
     def testHandlingSystemErrors(self):
 
@@ -204,7 +200,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
 
         from zope.testing import loggingsupport
         handler = loggingsupport.InstalledHandler('SiteError')
-        
+
         self.testViewOnException()
 
         self.assertEqual(
@@ -216,13 +212,11 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         # installed an error reporting utility.  That's OK.
 
         handler.uninstall()
-        self.out.seek(0)
-        self.out.truncate(0)
         handler = loggingsupport.InstalledHandler('SiteError')
 
         # Now, we'll register an exception view that indicates that we
         # have a system error.
-        
+
         from zope.interface import Interface, implements
         class E2(Exception):
             pass
@@ -240,10 +234,10 @@ class ZopePublicationErrorHandling(BasePublicationTests):
 
             def isSystemError(self):
                 return True
-            
+
             def __call__(self):
                 return view_text
-        
+
         ztapi.provideView(E2, self.presentation_type, Interface,
                           'name', MyView)
         try:
@@ -251,7 +245,6 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         except:
             self.publication.handleException(
                 self.object, self.request, sys.exc_info(), retry_allowed=False)
-        self.request.response.outputBody()
 
         # Now, since the view was a system error view, we should have
         # a log entry for the E2 error (as well as the missing
@@ -263,7 +256,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
             'SiteError ERROR\n'
             '  http://test.url'
             )
-    
+
         handler.uninstall()
 
     def testNoViewOnClassicClassException(self):
@@ -284,11 +277,10 @@ class ZopePublicationErrorHandling(BasePublicationTests):
             pass
         self.publication.handleException(
             self.object, self.request, sys.exc_info(), retry_allowed=False)
-        self.request.response.outputBody()
         # check we don't get the view we registered
-        self.failIf(self.out.getvalue() == view_text)
+        self.failIf(''.join(self.request.response._result) == view_text)
         # check we do actually get something
-        self.failIf(self.out.getvalue() == '')
+        self.failIf(''.join(self.request.response._result) == '')
 
     def testExceptionSideEffects(self):
         from zope.publisher.interfaces import IExceptionSideEffects
@@ -327,21 +319,20 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         self.assertEqual(self.request, adapter.request)
 
     def testExceptionResetsResponse(self):
-        self.request._response = BrowserResponse(
-            self.request.response._outstream)
-        self.request.response.setHeader('Content-Type', 'application/pdf')
-        self.request.response.setCookie('spam', 'eggs')
+        from zope.publisher.browser import TestRequest
+        request = TestRequest()
+        request.response.setHeader('Content-Type', 'application/pdf')
+        request.response.setCookie('spam', 'eggs')
         from ZODB.POSException import ConflictError
         try:
             raise ConflictError
         except:
             pass
         self.publication.handleException(
-            self.object, self.request, sys.exc_info(), retry_allowed=False)
-        self.request.response.outputBody()
-        self.assertEqual(self.request.response.getHeader('Content-Type'),
+            self.object, request, sys.exc_info(), retry_allowed=False)
+        self.assertEqual(request.response.getHeader('Content-Type'),
                          'text/html;charset=utf-8')
-        self.assertEqual(self.request.response._cookies, {})
+        self.assertEqual(request.response._cookies, {})
 
     def testAbortOrCommitTransaction(self):
         txn = transaction.get()
@@ -352,7 +343,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         self.publication.handleException(
             self.object, self.request, sys.exc_info(), retry_allowed=False)
         # assert that we get a new transaction
-        self.assert_(txn is not transaction.get())    
+        self.assert_(txn is not transaction.get())
 
     def testAbortTransactionWithErrorReportingUtility(self):
         # provide our fake error reporting utility
@@ -397,23 +388,22 @@ class ZopePublicationTests(BasePublicationTests):
         f1['f2'] = Folder()
         sm1 = setup.createSiteManager(f1)
         setup.addUtility(sm1, '', IAuthenticationUtility, AuthUtility1())
-        
+
         f2 = f1['f2']
         sm2 = setup.createSiteManager(f2)
         setup.addUtility(sm2, '', IAuthenticationUtility, AuthUtility2())
         transaction.commit()
-        
-        
+
         from zope.app.container.interfaces import ISimpleReadContainer
         from zope.app.container.traversal import ContainerTraverser
-        
+
         ztapi.provideView(ISimpleReadContainer, IRequest, IPublishTraverse,
                           '', ContainerTraverser)
-        
+
         from zope.app.folder.interfaces import IFolder
         from zope.security.checker import defineChecker, InterfaceChecker
         defineChecker(Folder, InterfaceChecker(IFolder))
-        
+
         self.publication.beforeTraversal(self.request)
         self.assertEqual(list(queryInteraction().participations),
                          [self.request])
@@ -430,7 +420,7 @@ class ZopePublicationTests(BasePublicationTests):
         self.assertEqual(list(queryInteraction().participations),
                          [self.request])
         self.publication.endRequest(self.request, ob)
-        self.assertEqual(queryInteraction(), None)        
+        self.assertEqual(queryInteraction(), None)
 
     def testTransactionCommitAfterCall(self):
         root = self.db.open().root()

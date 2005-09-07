@@ -69,7 +69,7 @@ class BrowserPublication(BaseHTTPPublication):
     def afterCall(self, request, ob):
         super(BrowserPublication, self).afterCall(request, ob)
         if request.method == 'HEAD':
-            request.response.setBody('')
+            request.response.setResult('')
 
 # For now, have a factory that returns a singleton
 class PublicationFactory(object):
@@ -130,7 +130,7 @@ def setDefaultSkin(request):
 
     Any interfaces that are directly provided by the request coming into this
     method are replaced by the applied layer/skin interface:
-    
+
       >>> request = Request()
       >>> class IFoo(Interface):
       ...     pass
