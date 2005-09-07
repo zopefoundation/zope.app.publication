@@ -31,7 +31,6 @@ from zope.component.exceptions import ComponentLookupError
 from zope.publisher.base import TestPublication, TestRequest
 from zope.publisher.http import IHTTPRequest, HTTPCharsets
 from zope.publisher.interfaces import IRequest, IPublishTraverse
-from zope.publisher.browser import BrowserResponse
 from zope.security import simplepolicies
 from zope.security.management import setSecurityPolicy, queryInteraction
 from zope.security.management import endInteraction
@@ -168,7 +167,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
             pass
         self.publication.handleException(
             self.object, self.request, sys.exc_info(), retry_allowed=False)
-        value = ''.join(self.request.response.result).split()
+        value = ''.join(self.request.response._result).split()
         self.assertEqual(' '.join(value[:6]),
                          'Traceback (most recent call last): File')
         self.assertEqual(' '.join(value[-8:]),
@@ -192,7 +191,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
             pass
         self.publication.handleException(
             self.object, self.request, sys.exc_info(), retry_allowed=False)
-        self.assertEqual(''.join(self.request.response.result), view_text)
+        self.assertEqual(self.request.response._result, view_text)
 
     def testHandlingSystemErrors(self):
 
@@ -257,7 +256,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
             'SiteError ERROR\n'
             '  http://test.url'
             )
-    
+
         handler.uninstall()
 
     def testNoViewOnClassicClassException(self):
@@ -279,9 +278,9 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         self.publication.handleException(
             self.object, self.request, sys.exc_info(), retry_allowed=False)
         # check we don't get the view we registered
-        self.failIf(''.join(self.request.response.result) == view_text)
+        self.failIf(''.join(self.request.response._result) == view_text)
         # check we do actually get something
-        self.failIf(''.join(self.request.response.result) == '')
+        self.failIf(''.join(self.request.response._result) == '')
 
     def testExceptionSideEffects(self):
         from zope.publisher.interfaces import IExceptionSideEffects
@@ -389,23 +388,22 @@ class ZopePublicationTests(BasePublicationTests):
         f1['f2'] = Folder()
         sm1 = setup.createSiteManager(f1)
         setup.addUtility(sm1, '', IAuthenticationUtility, AuthUtility1())
-        
+
         f2 = f1['f2']
         sm2 = setup.createSiteManager(f2)
         setup.addUtility(sm2, '', IAuthenticationUtility, AuthUtility2())
         transaction.commit()
-        
-        
+
         from zope.app.container.interfaces import ISimpleReadContainer
         from zope.app.container.traversal import ContainerTraverser
-        
+
         ztapi.provideView(ISimpleReadContainer, IRequest, IPublishTraverse,
                           '', ContainerTraverser)
-        
+
         from zope.app.folder.interfaces import IFolder
         from zope.security.checker import defineChecker, InterfaceChecker
         defineChecker(Folder, InterfaceChecker(IFolder))
-        
+
         self.publication.beforeTraversal(self.request)
         self.assertEqual(list(queryInteraction().participations),
                          [self.request])
@@ -422,7 +420,7 @@ class ZopePublicationTests(BasePublicationTests):
         self.assertEqual(list(queryInteraction().participations),
                          [self.request])
         self.publication.endRequest(self.request, ob)
-        self.assertEqual(queryInteraction(), None)        
+        self.assertEqual(queryInteraction(), None)
 
     def testTransactionCommitAfterCall(self):
         root = self.db.open().root()

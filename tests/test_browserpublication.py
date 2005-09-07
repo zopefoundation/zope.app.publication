@@ -260,7 +260,7 @@ class BrowserPublicationTests(BasePublicationTests):
         request.setPrincipal(User())
         request.response.setResult(u"spam")
         pub.afterCall(request, None)
-        self.assertEqual(request.response.testBody(), 'spam' )
+        self.assertEqual(request.response.consumeBody(), 'spam' )
 
         # But with a HEAD request, the body should be empty
         request = TestRequest(StringIO(''), {'PATH_INFO': '/'})
@@ -268,7 +268,7 @@ class BrowserPublicationTests(BasePublicationTests):
         request.method = 'HEAD'
         request.response.setResult(u"spam")
         pub.afterCall(request, None)
-        self.assertEqual(request.response.testBody(), '')
+        self.assertEqual(request.response.consumeBody(), '')
 
     def testUnicode_NO_HTTP_CHARSET(self):
         # Test so that a unicode body doesn't cause a UnicodeEncodeError
@@ -283,7 +283,7 @@ class BrowserPublicationTests(BasePublicationTests):
              ('X-Content-Type-Warning', 'guessed from content'),
              ('X-Powered-By', 'Zope (www.zope.org), Python (www.python.org)')])
         self.assertEqual(
-            ''.join(request.response.result.body),
+            request.response.consumeBody(),
             '\xd1\x82\xd0\xb5\xd1\x81\xd1\x82')
 
 
