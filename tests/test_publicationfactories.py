@@ -31,7 +31,7 @@ from zope.app.publication.http import HTTPPublication
 from zope.app.publication.xmlrpc import XMLRPCPublication
 from zope.app.testing import ztapi
 from zope.app.publication import interfaces
-from zope.app.publication.publicationfactories import SOAPFactory 
+from zope.app.publication.publicationfactories import SOAPFactory, XMLRPCFactory, HTTPFactory 
 from zope.app.publication.soap import SOAPPublication
 
 class DummyRequestFactory(object):
@@ -61,12 +61,37 @@ class Test(PlacelessSetup, TestCase):
             soaprequestfactory, interfaces.ISOAPRequestFactory)
         component.provideUtility(soaprequestfactory)
         env = self.__env
-        env['HTTP_SOAPACTION'] = 'server:foo'
         factory = SOAPFactory()
+        self.assertEqual(factory.canHandle(env), False)
+        env['HTTP_SOAPACTION'] = 'server:foo'
         self.assertEqual(factory.canHandle(env), True)
         request, publication = factory.getRequestPublication()
         self.assertEqual(isinstance(request, DummyRequestFactory), True)
         self.assertEqual(publication, SOAPPublication)
+
+    def test_xmlrpcfactory(self):
+        xmlrpcrequestfactory = DummyRequestFactory()
+        interface.directlyProvides(
+            xmlrpcrequestfactory, interfaces.IXMLRPCRequestFactory)
+        component.provideUtility(xmlrpcrequestfactory)
+        env = self.__env
+        factory = XMLRPCFactory()
+        self.assertEqual(factory.canHandle(env), True)
+        request, publication = factory.getRequestPublication()
+        self.assertEqual(isinstance(request, DummyRequestFactory), True)
+        self.assertEqual(publication, XMLRPCPublication)
+
+    def test_httpfactory(self):
+        httprequestfactory = DummyRequestFactory()
+        interface.directlyProvides(
+            httprequestfactory, interfaces.IHTTPRequestFactory)
+        component.provideUtility(httprequestfactory)
+        env = self.__env
+        factory = HTTPFactory()
+        self.assertEqual(factory.canHandle(env), True)
+        request, publication = factory.getRequestPublication()
+        self.assertEqual(isinstance(request, DummyRequestFactory), True)
+        self.assertEqual(publication, HTTPPublication)
 
 def test_suite():
     return TestSuite((

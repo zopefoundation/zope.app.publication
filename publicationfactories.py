@@ -25,6 +25,10 @@ from zope.app.publication.http import BaseHTTPPublication
 from zope.app.publication.interfaces import IRequestPublicationFactory, ISOAPRequestFactory, ISOAPRequestFactory
 from zope.app.publication import interfaces
 from zope.app.publication.soap import SOAPPublication
+from zope.app.publication.xmlrpc import XMLRPCPublication
+from zope.app.publication.http import HTTPPublication
+from zope.publisher.xmlrpc import XMLRPCRequest
+from zope.publisher.http import HTTPRequest
 
 class SOAPFactory(object):
 
@@ -36,4 +40,30 @@ class SOAPFactory(object):
 
     def getRequestPublication(self):
         return self.soap_req, SOAPPublication
+
+
+class XMLRPCFactory(object):
+
+    implements(IRequestPublicationFactory)
+
+    def canHandle(self, environment):
+        return True
+
+    def getRequestPublication(self):
+        request_class = component.queryUtility(
+            interfaces.IXMLRPCRequestFactory, default=XMLRPCRequest)
+        return request_class, XMLRPCPublication
+
+
+class HTTPFactory(object):
+
+    implements(IRequestPublicationFactory)
+
+    def canHandle(self, environment):
+        return True
+
+    def getRequestPublication(self):
+        request_class = component.queryUtility(
+            interfaces.IHTTPRequestFactory, default=HTTPRequest)
+        return request_class, HTTPPublication
 
