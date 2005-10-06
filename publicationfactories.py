@@ -15,7 +15,7 @@
 
 This module provides factories for tuples (request, publication).
 
-$Id: xmlrpc.py 27311 2004-08-27 21:22:43Z jim $
+$Id$
 """
 __docformat__ = 'restructuredtext'
 
