@@ -28,7 +28,9 @@ from zope.app.publication.soap import SOAPPublication
 from zope.app.publication.xmlrpc import XMLRPCPublication
 from zope.app.publication.http import HTTPPublication
 from zope.publisher.xmlrpc import XMLRPCRequest
+from zope.app.publication.browser import BrowserPublication 
 from zope.publisher.http import HTTPRequest
+from zope.publisher.browser import BrowserRequest
 
 class SOAPFactory(object):
 
@@ -66,4 +68,16 @@ class HTTPFactory(object):
         request_class = component.queryUtility(
             interfaces.IHTTPRequestFactory, default=HTTPRequest)
         return request_class, HTTPPublication
+
+class BrowserFactory(object):
+
+    implements(IRequestPublicationFactory)
+
+    def canHandle(self, environment):
+        return True
+
+    def getRequestPublication(self):
+        request_class = component.queryUtility(
+                interfaces.IBrowserRequestFactory, default=BrowserRequest)
+        return request_class, BrowserPublication
 

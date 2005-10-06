@@ -31,8 +31,9 @@ from zope.app.publication.http import HTTPPublication
 from zope.app.publication.xmlrpc import XMLRPCPublication
 from zope.app.testing import ztapi
 from zope.app.publication import interfaces
-from zope.app.publication.publicationfactories import SOAPFactory, XMLRPCFactory, HTTPFactory 
+from zope.app.publication.publicationfactories import SOAPFactory, XMLRPCFactory, HTTPFactory, BrowserFactory 
 from zope.app.publication.soap import SOAPPublication
+from zope.app.publication.browser import BrowserPublication
 
 class DummyRequestFactory(object):
     def __call__(self, input_stream, env):
@@ -92,6 +93,18 @@ class Test(PlacelessSetup, TestCase):
         request, publication = factory.getRequestPublication()
         self.assertEqual(isinstance(request, DummyRequestFactory), True)
         self.assertEqual(publication, HTTPPublication)
+
+    def test_browserfactory(self):
+        browserrequestfactory = DummyRequestFactory()
+        interface.directlyProvides(
+            browserrequestfactory, interfaces.IBrowserRequestFactory)
+        component.provideUtility(browserrequestfactory)
+        env = self.__env
+        factory = BrowserFactory()
+        self.assertEqual(factory.canHandle(env), True)
+        request, publication = factory.getRequestPublication()
+        self.assertEqual(isinstance(request, DummyRequestFactory), True)
+        self.assertEqual(publication, BrowserPublication)
 
 def test_suite():
     return TestSuite((
