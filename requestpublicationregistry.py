@@ -78,5 +78,3 @@ class RequestPublicationRegistry(object):
                 return factory
 
         return None
-
-PublicationRegistry = RequestPublicationRegistry()
