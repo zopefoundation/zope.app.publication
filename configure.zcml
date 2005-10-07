@@ -10,6 +10,11 @@
       permission="zope.Public"
       />
 
+  <utility
+      provides="zope.app.publication.interfaces.IRequestPublicationRegistry"
+      component="zope.app.publication.requestpublicationregistry.PublicationRegistry"
+      />
+
   <publisher
       name="SOAP"
       factory=".requestpublicationfactories.SOAPFactory"
