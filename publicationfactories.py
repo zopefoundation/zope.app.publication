@@ -40,7 +40,7 @@ class SOAPFactory(object):
         self.soap_req = component.queryUtility(interfaces.ISOAPRequestFactory)
         return bool(environment.get('HTTP_SOAPACTION') and self.soap_req)
 
-    def getRequestPublication(self):
+    def __call__(self):
         return self.soap_req, SOAPPublication
 
 
@@ -51,7 +51,7 @@ class XMLRPCFactory(object):
     def canHandle(self, environment):
         return True
 
-    def getRequestPublication(self):
+    def __call__(self):
         request_class = component.queryUtility(
             interfaces.IXMLRPCRequestFactory, default=XMLRPCRequest)
         return request_class, XMLRPCPublication
@@ -64,7 +64,7 @@ class HTTPFactory(object):
     def canHandle(self, environment):
         return True
 
-    def getRequestPublication(self):
+    def __call__(self):
         request_class = component.queryUtility(
             interfaces.IHTTPRequestFactory, default=HTTPRequest)
         return request_class, HTTPPublication
@@ -76,7 +76,7 @@ class BrowserFactory(object):
     def canHandle(self, environment):
         return True
 
-    def getRequestPublication(self):
+    def __call__(self):
         request_class = component.queryUtility(
                 interfaces.IBrowserRequestFactory, default=BrowserRequest)
         return request_class, BrowserPublication

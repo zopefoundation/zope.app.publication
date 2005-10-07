@@ -66,7 +66,7 @@ class Test(PlacelessSetup, TestCase):
         self.assertEqual(factory.canHandle(env), False)
         env['HTTP_SOAPACTION'] = 'server:foo'
         self.assertEqual(factory.canHandle(env), True)
-        request, publication = factory.getRequestPublication()
+        request, publication = factory()
         self.assertEqual(isinstance(request, DummyRequestFactory), True)
         self.assertEqual(publication, SOAPPublication)
 
@@ -78,7 +78,7 @@ class Test(PlacelessSetup, TestCase):
         env = self.__env
         factory = XMLRPCFactory()
         self.assertEqual(factory.canHandle(env), True)
-        request, publication = factory.getRequestPublication()
+        request, publication = factory()
         self.assertEqual(isinstance(request, DummyRequestFactory), True)
         self.assertEqual(publication, XMLRPCPublication)
 
@@ -90,7 +90,7 @@ class Test(PlacelessSetup, TestCase):
         env = self.__env
         factory = HTTPFactory()
         self.assertEqual(factory.canHandle(env), True)
-        request, publication = factory.getRequestPublication()
+        request, publication = factory()
         self.assertEqual(isinstance(request, DummyRequestFactory), True)
         self.assertEqual(publication, HTTPPublication)
 
@@ -102,7 +102,7 @@ class Test(PlacelessSetup, TestCase):
         env = self.__env
         factory = BrowserFactory()
         self.assertEqual(factory.canHandle(env), True)
-        request, publication = factory.getRequestPublication()
+        request, publication = factory()
         self.assertEqual(isinstance(request, DummyRequestFactory), True)
         self.assertEqual(publication, BrowserPublication)
 

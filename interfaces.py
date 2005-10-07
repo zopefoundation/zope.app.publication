@@ -115,5 +115,5 @@ class IRequestPublicationFactory(interface.Interface):
             to make a decision based on the HTTP headers.
         """
 
-    def getRequestPublication():
+    def __call__():
         """ returns a tuple (request, publication) """
