@@ -25,6 +25,7 @@ from zope.component.tests.placelesssetup import PlacelessSetup
 
 from zope.app.publication.interfaces import IRequestPublicationRegistry
 from zope.app.publication.requestpublicationregistry import RequestPublicationRegistry
+from zope.app.publication.requestpublicationfactories import HTTPFactory, SOAPFactory, BrowserFactory, XMLRPCFactory
 
 
 def DummyFactory():
@@ -32,15 +33,11 @@ def DummyFactory():
 
 class Test(PlacelessSetup, TestCase):
 
-    def setUp(self):
-        super(Test, self).setUp()
-        self._registry = RequestPublicationRegistry()
-
     def test_interface(self):
         verifyClass(IRequestPublicationRegistry, RequestPublicationRegistry)
 
     def test_registration(self):
-        r = self._registry
+        r = RequestPublicationRegistry()
         xmlrpc_f = DummyFactory()
         r.register('POST', 'text/xml', 'xmlrpc', 0, xmlrpc_f)
         soap_f = DummyFactory()
@@ -53,6 +50,20 @@ class Test(PlacelessSetup, TestCase):
                             ])
         self.assertEqual(r.getFactoriesFor('POST', 'text/html'), None)
 
+    def test_realfactories(self):
+        r = RequestPublicationRegistry()
+        r.register('POST', '*', 'post_fallback', 0, HTTPFactory())
+        r.register('POST', 'text/xml', 'xmlrpc', 1, XMLRPCFactory())
+        r.register('POST', 'text/xml', 'soap', 1, SOAPFactory())
+        r.register('GET', '*', 'http', 0, HTTPFactory())
+        r.register('PUT', '*', 'http', 0, HTTPFactory())
+        r.register('HEAD', '*', 'http', 0, HTTPFactory())
+        r.register('*', '*', 'http', 1, BrowserFactory())
+
+        self.assertEqual(len(r.getFactoriesFor('POST', 'text/xml')) , 2)
+        self.assertEqual(len(r.getFactoriesFor('POST', '*')) , 1)
+        self.assertEqual(r.getFactoriesFor('GET', 'text/html') , None)
+        self.assertEqual(len(r.getFactoriesFor('HEAD', '*')) , 1)
 
 
 def test_suite():
