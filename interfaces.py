@@ -112,3 +112,8 @@ class IRequestPublicationRegistry(interface.Interface):
         """ Lookup a factory for a given method+mimetype and a 
             environment. 
         """
+
+    def getFactoriesFor(method, mimetype):
+        """ return the internal datastructure representing the configured
+            factories (basically for testing, not for introspection)
+        """
