@@ -24,12 +24,14 @@ from zope.app.publication.interfaces import IRequestPublicationRegistry
 class RequestPublicationRegistry(object):
     """ The registry implements a three stage lookup for registred factories
         to deal with request.
-        {method --> { mimetype -> [{'priority' : some_int,
+        {method > { mimetype -> [{'priority' : some_int,
                                    'factory' :  factory,
                                    'name' : some_name }, ...
                                   ]
                     },
         }
+        The 'priority' is used to define a lookup-order when multiple
+        factories are registered for a given method and mime-type.
     """
 
     implements(IRequestPublicationRegistry)
@@ -64,15 +66,18 @@ class RequestPublicationRegistry(object):
             enviroment. 
         """
 
-        factories = self.getFactoriesFor(method, mimetype)
-        if not factories:
-            factories = self.getFactoriesFor(method, '*')
-            if not factories:
-                factories = self.getFactoriesFor('*', '*')
-                if not factories:
+        factory_lst = self.getFactoriesFor(method, mimetype)
+        if not factory_lst:
+            factory_lst = self.getFactoriesFor(method, '*')
+            if not factory_lst:
+                factory_lst = self.getFactoriesFor('*', '*')
+                if not factory_lst:
                     return None
 
-        for d in factories:
+        # now iterate over all factory candidates and let them introspect
+        # the request environment to figure out if they can handle the
+        # request
+        for d in factory_lst:
             factory = d['factory']
             if factory.canHandle(environment):
                 return factory
