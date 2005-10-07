@@ -40,11 +40,19 @@ class IRequestPublicationDirective(Interface):
                            description=u'The request-publication factory')
 
     method = TextLine(title=u'Method',
-                      description=u'The name of the request method.',
+                      description=(u'The name of the request method.'
+                                    'The method can be a "*" for'
+                                    'the publication to catch all method'
+                                    'otherwise, has to be one or many methods'
+                                    'all separated by commas: ie: "GET,POST"'),
                       required=False)
 
     mimetype = TextLine(title=u'MimeType',
-                        description=u'The content type of the request.',
+                        description=(u'The content type of the request.'
+                                      'The method can be a "*" for'
+                                      'the publication to catch all method'
+                                      'otherwise, has to be one or many methods'
+                                      'all separated by commas: ie: "text/xml,text/html"'),
                         required=False)
 
     priority = Int(title=u'Priority',
