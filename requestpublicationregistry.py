@@ -22,11 +22,20 @@ from zope.interface import implements
 from zope.app.publication.interfaces import IRequestPublicationRegistry
 
 class RequestPublicationRegistry(object):
+    """ The registry implements a three stage lookup for registred factories
+        to deal with request.
+        {method --> { mimetype -> [{'priority' : some_int,
+                                   'factory' :  factory,
+                                   'name' : some_name }, ...
+                                  ]
+                    },
+        }
+    """
 
     implements(IRequestPublicationRegistry)
 
     def __init__(self):
-        self._d = {}   # method -> { mimetype -> [factories]}
+        self._d = {}   # method -> { mimetype -> {factories_data}}
 
     def register(self, method, mimetype, name, priority, factory):
         """ registers a factory for method+mimetype """
@@ -41,7 +50,7 @@ class RequestPublicationRegistry(object):
                 del l[pos]
                 break
         l.append({'name' : name, 'factory' : factory, 'priority' : priority})
-        l.sort(lambda x,y: cmp(x['priority'], y['priority']))
+        l.sort(lambda x,y: -cmp(x['priority'], y['priority'])) # order by descending priority
 
     def getFactoriesFor(self, method, mimetype):
         try:
@@ -55,5 +64,19 @@ class RequestPublicationRegistry(object):
             enviroment. 
         """
 
+        factories = self.getFactoriesFor(method, mimetype)
+        if not factories:
+            factories = self.getFactoriesFor(method, '*')
+            if not factories:
+                factories = self.getFactoriesFor('*', '*')
+                if not factories:
+                    return None
 
+        for d in factories:
+            factory = d['factory']
+            if factory.canHandle(environment):
+                return factory
 
+        return None
+
+PublicationRegistry = RequestPublicationRegistry()
