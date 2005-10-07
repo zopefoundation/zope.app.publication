@@ -96,7 +96,7 @@ class IRequestPublicationFactory(interface.Interface):
     def __call__():
         """ returns a tuple (request, publication) """
 
-class IRquestPublicationRegistry(interface.Interface):
+class IRequestPublicationRegistry(interface.Interface):
     """ A registry to lookup a RequestPublicationFactory by
         request method + mime-type. Multiple factories can be configured
         for the same method+mimetype. The factory itself can introspect
