@@ -37,12 +37,15 @@ class SOAPFactory(object):
     implements(IRequestPublicationFactory)
 
     def canHandle(self, environment):
-        self.soap_req = component.queryUtility(interfaces.ISOAPRequestFactory)
-        return bool(environment.get('HTTP_SOAPACTION') and self.soap_req)
+        soap_req = component.queryUtility(interfaces.ISOAPRequestFactory)
+        return bool(environment.get('HTTP_SOAPACTION') and soap_req)
+
+    def getSortKey(self):
+        return '1'
 
     def __call__(self):
-        return self.soap_req, SOAPPublication
-
+        soap_req = component.queryUtility(interfaces.ISOAPRequestFactory)
+        return soap_req, SOAPPublication
 
 class XMLRPCFactory(object):
 
@@ -56,6 +59,8 @@ class XMLRPCFactory(object):
             interfaces.IXMLRPCRequestFactory, default=XMLRPCRequest)
         return request_class, XMLRPCPublication
 
+    def getSortKey(self):
+        return '0'
 
 class HTTPFactory(object):
 
@@ -63,6 +68,9 @@ class HTTPFactory(object):
 
     def canHandle(self, environment):
         return True
+
+    def getSortKey(self):
+        return '0'
 
     def __call__(self):
         request_class = component.queryUtility(
@@ -81,3 +89,5 @@ class BrowserFactory(object):
                 interfaces.IBrowserRequestFactory, default=BrowserRequest)
         return request_class, BrowserPublication
 
+    def getSortKey(self):
+        return '0'

@@ -85,28 +85,36 @@ class IFileContent(interface.Interface):
 
 
 # marker interfaces for request-publication factories
+class IMethodBase(interface.interfaces.IInterface):
+    """ interface for all request-publication factories """
+
 class IMethodPOST(interface.Interface):
     """Marker interface for request-publication factories able to deal
        with POST requests.
     """
+interface.directlyProvides(IMethodPOST, IMethodBase)
 
 class IMethodGET(interface.Interface):
     """Marker interface for request-publication factories able to deal
        with GET requests.
     """
+interface.directlyProvides(IMethodGET, IMethodBase)
 
 class IMethodHEAD(interface.Interface):
     """Marker interface for request-publication factories able to deal
        with HEAD requests.
     """
-    
+interface.directlyProvides(IMethodHEAD, IMethodBase)
+
+# marker interfaces for request-chooser factories
+class IMimetypeBase(interface.interfaces.IInterface):
+    """Base interface for all request-choosers """
+
 class IMimetypeTextXML(interface.Interface):
     """ request-chooser able to deal with text/html """
+interface.directlyProvides(IMimetypeTextXML, IMimetypeBase)
 
-class IMimetypesAll(interface.Interface):
-    """ request-chooser able to deal with any mimetypes """
-
-class IRequestPublicationFactory(interface.Interface):
+class IRequestPublicationFactory(IMimetypeBase):
     """ request-publication factory """
 
     def canHandle(environment):
@@ -117,3 +125,10 @@ class IRequestPublicationFactory(interface.Interface):
 
     def __call__():
         """ returns a tuple (request, publication) """
+
+    def getSortKey():
+        """ returns a string that is used to sort the factories
+            when several factories can handle the request.
+
+            After a sort, the highest one gets picked
+        """

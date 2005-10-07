@@ -63,8 +63,9 @@ class Test(PlacelessSetup, TestCase):
         component.provideUtility(soaprequestfactory)
         env = self.__env
         factory = SOAPFactory()
+        self.assertEquals(factory.getSortKey(), '1')
         self.assertEqual(factory.canHandle(env), False)
-        env['HTTP_SOAPACTION'] = 'server:foo'
+        env['HTTP_SOAPACTION'] = 'server#foo'
         self.assertEqual(factory.canHandle(env), True)
         request, publication = factory()
         self.assertEqual(isinstance(request, DummyRequestFactory), True)
@@ -77,6 +78,7 @@ class Test(PlacelessSetup, TestCase):
         component.provideUtility(xmlrpcrequestfactory)
         env = self.__env
         factory = XMLRPCFactory()
+        self.assertEquals(factory.getSortKey(), '0')
         self.assertEqual(factory.canHandle(env), True)
         request, publication = factory()
         self.assertEqual(isinstance(request, DummyRequestFactory), True)
@@ -89,6 +91,7 @@ class Test(PlacelessSetup, TestCase):
         component.provideUtility(httprequestfactory)
         env = self.__env
         factory = HTTPFactory()
+        self.assertEquals(factory.getSortKey(), '0')
         self.assertEqual(factory.canHandle(env), True)
         request, publication = factory()
         self.assertEqual(isinstance(request, DummyRequestFactory), True)
@@ -101,6 +104,7 @@ class Test(PlacelessSetup, TestCase):
         component.provideUtility(browserrequestfactory)
         env = self.__env
         factory = BrowserFactory()
+        self.assertEquals(factory.getSortKey(), '0')
         self.assertEqual(factory.canHandle(env), True)
         request, publication = factory()
         self.assertEqual(isinstance(request, DummyRequestFactory), True)
