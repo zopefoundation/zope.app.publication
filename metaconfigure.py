@@ -19,6 +19,9 @@ $Id: $
 """
 __docformat__ = 'restructuredtext'
 
+from zope.app.zapi import getUtility
+from zope.app.publication.interfaces import IRequestPublicationRegistry
+
 class RequestPublicationRegisterer(object):
     """ Link a request type to a request-publication factory """
 
@@ -53,7 +56,14 @@ class RequestPublicationRegisterer(object):
         """ calls the register factory utility, that actually links
             the factory.
         """
-        pass
+        factory_registerer = zapi.getUtility(IRequestPublicationRegistry)
+        registerer = factory_registerer.register
+
+        # need to register all methods<->mimetypes combos here
+        # for imbrication: usally there are more methods than mimetypes
+        for method in methods:
+            for mimetype in mimetypes:
+                registerer(method, mimetype, name, priority, factory)
 
 def publisher(_context, name, factory, method='*', mimetype='*', priority=0):
     RequestPublicationRegisterer(name, factory, method, mimetype, priority)
