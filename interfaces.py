@@ -105,10 +105,10 @@ class IRequestPublicationRegistry(interface.Interface):
         of their registration in ZCML.
     """
 
-    def register(method, mimetype, name, sortkey, factory):
+    def register(method, mimetype, name, priority, factory):
         """ registers a factory for method+mimetype """
 
     def lookup(method, mimetype, environment):
         """ Lookup a factory for a given method+mimetype and a 
-            enviroment. 
+            environment. 
         """
