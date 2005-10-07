@@ -19,8 +19,8 @@ $Id: $
 """
 __docformat__ = 'restructuredtext'
 
-from zope.app.zapi import getUtility
-from zope.app.publication.interfaces import IRequestPublicationRegistry
+from zope.app.publication.requestpublicationregistry import RequestPublicationRegistry
+
 
 class RequestPublicationRegisterer(object):
     """ Link a request type to a request-publication factory """
@@ -56,7 +56,7 @@ class RequestPublicationRegisterer(object):
         """ calls the register factory utility, that actually links
             the factory.
         """
-        factory_registerer = getUtility(IRequestPublicationRegistry)
+        factory_registerer = RequestPublicationRegistry()
         registerer = factory_registerer.register
 
         # need to register all methods<->mimetypes combos here
