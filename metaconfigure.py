@@ -32,6 +32,7 @@ class RequestPublicationRegisterer(object):
 
     def _extractElements(self, chain):
         """ elements are separated by commas,
+        XXXX use schema.token
 
         >>> reg = RequestPublicationRegisterer()
         >>> reg._extractElements('GET, POST,HEAD')
