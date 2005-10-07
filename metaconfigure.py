@@ -56,7 +56,7 @@ class RequestPublicationRegisterer(object):
         """ calls the register factory utility, that actually links
             the factory.
         """
-        factory_registerer = zapi.getUtility(IRequestPublicationRegistry)
+        factory_registerer = getUtility(IRequestPublicationRegistry)
         registerer = factory_registerer.register
 
         # need to register all methods<->mimetypes combos here
