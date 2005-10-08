@@ -31,7 +31,7 @@
       factory=".requestpublicationfactories.BrowserFactory"
       method="GET,POST,HEAD"
       mimetype="*"
-      priority="10"
+      priority="0"
       />
 
   <publisher

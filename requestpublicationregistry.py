@@ -54,6 +54,7 @@ class RequestPublicationRegistry(object):
         # Check if there is already a registered publisher factory (check by name).
         # If yes then it will be removed and replaced by a new publisher.
         for pos, d in enumerate(l): 
+            print pos,d, name
             if d['name'] == name:
                 del l[pos]
                 break

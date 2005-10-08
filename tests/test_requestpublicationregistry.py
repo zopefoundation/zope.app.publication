@@ -23,6 +23,7 @@ from zope import component, interface
 from zope.interface.verify import verifyClass
 from zope.component.tests.placelesssetup import PlacelessSetup
 
+from zope.configuration.exceptions import ConfigurationError
 from zope.app.publication import interfaces
 from zope.app.publication.interfaces import IRequestPublicationRegistry
 from zope.app.publication.requestpublicationregistry import RequestPublicationRegistry
@@ -60,6 +61,25 @@ class Test(PlacelessSetup, TestCase):
                              {'name' : 'xmlrpc', 'priority' : 0, 'factory' : object},
                             ])
         self.assertEqual(r.getFactoriesFor('POST', 'text/html'), None)
+
+    def test_configuration_same_priority(self):
+        r = RequestPublicationRegistry()
+        xmlrpc_f = DummyFactory()
+        r.register('POST', 'text/xml', 'xmlrpc', 0, DummyFactory)
+        r.register('POST', 'text/xml', 'soap', 1, DummyFactory())
+        # try to register a factory with the same priority
+        self.assertRaises(ConfigurationError, r.register, 'POST', 'text/xml', 'soap2', 1, DummyFactory())
+
+    def test_configuration_reregistration(self):
+        r = RequestPublicationRegistry()
+        xmlrpc_f = DummyFactory()
+        r.register('POST', 'text/xml', 'xmlrpc', 0, DummyFactory)
+        r.register('POST', 'text/xml', 'soap', 1, DummyFactory())
+        # re-register 'soap' but with priority 2
+        r.register('POST', 'text/xml', 'soap', 2, DummyFactory())
+        factory_data = r.getFactoriesFor('POST', 'text/xml')
+        priorities = [item['priority'] for item in factory_data]
+        self.assertEqual(priorities, [2, 0])
 
     def test_realfactories(self):
         r = RequestPublicationRegistry()
