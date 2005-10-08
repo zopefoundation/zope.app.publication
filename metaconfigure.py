@@ -56,7 +56,7 @@ class RequestPublicationRegisterer(object):
         """ calls the register factory utility, that actually links
             the factory.
         """
-        registerer = _factory_registerer.register
+        registerer = getFactoryRegistry().register
 
         # need to register all methods<->mimetypes combos here
         # for imbrication: usally there are more methods than mimetypes
