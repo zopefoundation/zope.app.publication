@@ -18,9 +18,10 @@ $Id: publicationfactories.py 38841 2005-10-07 04:34:09Z andreasjung $
 """
 __docformat__ = 'restructuredtext'
 
+import sets
 from zope.interface import implements
 from zope.app.publication.interfaces import IRequestPublicationRegistry
-from zope.configuration.exception import ConfigurationError
+from zope.configuration.exceptions import ConfigurationError
 
 class RequestPublicationRegistry(object):
     """ The registry implements a three stage lookup for registred factories
@@ -64,7 +65,7 @@ class RequestPublicationRegistry(object):
 
         # check if the priorities are unique
         priorities = [item['priority'] for item in l]
-        if len(sets.Set(priorities)) != len(l)  
+        if len(sets.Set(priorities)) != len(l):
             raise ConfigurationError('All registered publishers for a given ' 
                                      'method+mimetype must have distinct '
                                      'priorities. Please check your ZCML '
