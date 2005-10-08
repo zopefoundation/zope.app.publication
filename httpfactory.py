@@ -17,7 +17,7 @@ $Id$
 """
 __docformat__ = 'restructuredtext'
 
-from zope import component, interface
+from zope import interface
 
 from zope.publisher.interfaces.browser import IBrowserRequest
 
