@@ -13,7 +13,7 @@
 ##############################################################################
 """Browser Publication Tests
 
-$Id$
+$Id: test_browserpublication.py 38357 2005-09-07 20:14:34Z srichter $
 """
 import unittest
 from zope.testing import doctest
@@ -288,6 +288,20 @@ class BrowserPublicationTests(BasePublicationTests):
 
 
 class HTTPPublicationRequestFactoryTests(BasePublicationTests):
+
+    def setUp(self):
+        super(BasePublicationTests, self).setUp()
+        from zope.app.publication.metaconfigure import getFactoryRegistry
+        from zope.app.publication.requestpublicationfactories \
+            import SOAPFactory, XMLRPCFactory, HTTPFactory, BrowserFactory
+        registerer = getFactoryRegistry()
+
+        registerer.register('*', '*', 'HTTP', 0, HTTPFactory())
+        registerer.register('POST', 'text/xml', 'SOAP', 20, SOAPFactory())
+        registerer.register('POST', 'text/xml', 'XMLRPC', 10, XMLRPCFactory())
+        registerer.register('GET', '*', 'BROWSER', 10, BrowserFactory())
+        registerer.register('POST', '*', 'BROWSER', 10, BrowserFactory())
+        registerer.register('HEAD', '*', 'BROWSER', 10, BrowserFactory())
 
     def testGetBackSamePublication(self):
         factory = HTTPPublicationRequestFactory(db=None)
