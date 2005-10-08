@@ -23,10 +23,10 @@ from zope.publisher.interfaces.browser import IBrowserRequest
 
 from zope.app.publication import interfaces
 from zope.app.publication.browser import setDefaultSkin
+from zope.app.publication.metaconfigure import getFactoryRegistry
 
 
 def chooseClasses(method, environment):
-    from zope.app.publication.metaconfigure import getFactoryRegistry
 
     content_type = environment.get('CONTENT_TYPE', '')
     factory = getFactoryRegistry().lookup(method, content_type, environment)
