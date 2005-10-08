@@ -40,7 +40,7 @@ A text/xml POST request, wich is an xml-rpc call
   ... Content-Type: text/xml
   ... """)
   HTTP/1.0 200 Ok
-  Content-Length: 352
+  Content-Length: ...
   Content-Type: text/xml;charset=utf-8
   ...
 
@@ -55,7 +55,7 @@ XXX need to create a real SOAP exchange test here
   ... HTTP_SOAPACTION: soap#action
   ... """)
   HTTP/1.0 200 Ok
-  Content-Length: 352
+  Content-Length: ...
   Content-Type: text/xml;charset=utf-8
   ...
 
