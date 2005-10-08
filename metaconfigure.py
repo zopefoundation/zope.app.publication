@@ -46,7 +46,7 @@ class RequestPublicationRegisterer(object):
         """
         def _cleanElement(element):
             element = element.strip()
-            if element == u'':
+            if element == u'' or element is None:
                 return u'*'
             return element
 
@@ -67,12 +67,10 @@ class RequestPublicationRegisterer(object):
 _factory_registerer = None
 
 def getFactoryRegistry():
-    return _factory_registerer
-
-def publisher(_context, name, factory, method='*', mimetype='*', priority=0):
-
     global _factory_registerer
     if _factory_registerer is None:
         _factory_registerer = RequestPublicationRegistry()
+    return _factory_registerer
 
+def publisher(_context, name, factory, method='*', mimetype='*', priority=0):
     RequestPublicationRegisterer(name, factory(), method, mimetype, priority)
