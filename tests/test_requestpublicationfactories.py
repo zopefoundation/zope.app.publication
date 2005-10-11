@@ -31,7 +31,8 @@ from zope.app.publication.http import HTTPPublication
 from zope.app.publication.xmlrpc import XMLRPCPublication
 from zope.app.testing import ztapi
 from zope.app.publication import interfaces
-from zope.app.publication.requestpublicationfactories import SOAPFactory, XMLRPCFactory, HTTPFactory, BrowserFactory 
+from zope.app.publication.requestpublicationfactories import \
+     SOAPFactory, XMLRPCFactory, HTTPFactory, BrowserFactory
 from zope.app.publication.soap import SOAPPublication
 from zope.app.publication.browser import BrowserPublication
 
@@ -43,7 +44,7 @@ class DummyRequestFactory(object):
 
     def setPublication(self, pub):
         self.pub = pub
- 
+
 
 class Test(PlacelessSetup, TestCase):
 

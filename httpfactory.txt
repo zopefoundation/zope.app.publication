@@ -1,5 +1,4 @@
-$Id:$
-
+=================
 HTTPFactory tests
 =================
 
@@ -9,7 +8,7 @@ for each request type, defined in the configure.zcml with publisher directive.
 The publication class is chosen upon the method name,
 the mime type and sometimes some request headers
 
-A regular GET, POST or HEAD 
+A regular GET, POST or HEAD
 
   >>> print http(r"""
   ... GET / HTTP/1.1

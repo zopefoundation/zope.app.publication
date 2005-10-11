@@ -21,13 +21,13 @@ __docformat__ = 'restructuredtext'
 
 from zope import component
 from zope.interface import implements
-from zope.app.publication.interfaces import IRequestPublicationFactory 
+from zope.app.publication.interfaces import IRequestPublicationFactory
 from zope.app.publication import interfaces
 from zope.app.publication.soap import SOAPPublication
 from zope.app.publication.xmlrpc import XMLRPCPublication
 from zope.app.publication.http import HTTPPublication
 from zope.publisher.xmlrpc import XMLRPCRequest
-from zope.app.publication.browser import BrowserPublication 
+from zope.app.publication.browser import BrowserPublication
 from zope.publisher.http import HTTPRequest
 from zope.publisher.browser import BrowserRequest
 

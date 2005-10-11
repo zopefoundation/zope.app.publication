@@ -13,32 +13,32 @@
   <publisher
       name="SOAP"
       factory=".requestpublicationfactories.SOAPFactory"
-      method="POST"
-      mimetype="text/xml"
+      methods="POST"
+      mimetypes="text/xml"
       priority="30"
       />
 
   <publisher
       name="XMLRPC"
       factory=".requestpublicationfactories.XMLRPCFactory"
-      method="POST"
-      mimetype="text/xml"
+      methods="POST"
+      mimetypes="text/xml"
       priority="20"
       />
 
   <publisher
       name="BROWSER"
       factory=".requestpublicationfactories.BrowserFactory"
-      method="GET,POST,HEAD"
-      mimetype="*"
+      methods="GET POST HEAD"
+      mimetypes="*"
       priority="0"
       />
 
   <publisher
       name="HTTP"
       factory=".requestpublicationfactories.HTTPFactory"
-      method="*"
-      mimetype="*"
+      methods="*"
+      mimetypes="*"
       priority="0"
       />
 

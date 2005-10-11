@@ -26,8 +26,10 @@ from zope.component.tests.placelesssetup import PlacelessSetup
 from zope.configuration.exceptions import ConfigurationError
 from zope.app.publication import interfaces
 from zope.app.publication.interfaces import IRequestPublicationRegistry
-from zope.app.publication.requestpublicationregistry import RequestPublicationRegistry
-from zope.app.publication.requestpublicationfactories import HTTPFactory, SOAPFactory, BrowserFactory, XMLRPCFactory
+from zope.app.publication.requestpublicationregistry import \
+     RequestPublicationRegistry
+from zope.app.publication.requestpublicationfactories import \
+     HTTPFactory, SOAPFactory, BrowserFactory, XMLRPCFactory
 
 
 def DummyFactory():
@@ -41,7 +43,7 @@ class DummyRequestFactory(object):
 
     def setPublication(self, pub):
         self.pub = pub
- 
+
 class Test(PlacelessSetup, TestCase):
 
     def test_interface(self):
@@ -56,10 +58,10 @@ class Test(PlacelessSetup, TestCase):
         browser_f = DummyFactory()
         r.register('*', '*', 'browser_default', 0, browser_f)
         l = r.getFactoriesFor('POST', 'text/xml')
-        self.assertEqual(l, [
-                             {'name' : 'soap', 'priority' : 1, 'factory' : object},
-                             {'name' : 'xmlrpc', 'priority' : 0, 'factory' : object},
-                            ])
+        self.assertEqual(
+            l,
+            [{'name' : 'soap', 'priority' : 1, 'factory' : object},
+             {'name' : 'xmlrpc', 'priority' : 0, 'factory' : object}])
         self.assertEqual(r.getFactoriesFor('POST', 'text/html'), None)
 
     def test_configuration_same_priority(self):
@@ -68,7 +70,8 @@ class Test(PlacelessSetup, TestCase):
         r.register('POST', 'text/xml', 'xmlrpc', 0, DummyFactory)
         r.register('POST', 'text/xml', 'soap', 1, DummyFactory())
         # try to register a factory with the same priority
-        self.assertRaises(ConfigurationError, r.register, 'POST', 'text/xml', 'soap2', 1, DummyFactory())
+        self.assertRaises(ConfigurationError, r.register,
+                          'POST', 'text/xml', 'soap2', 1, DummyFactory())
 
     def test_configuration_reregistration(self):
         r = RequestPublicationRegistry()
@@ -108,10 +111,14 @@ class Test(PlacelessSetup, TestCase):
             soaprequestfactory, interfaces.ISOAPRequestFactory)
         component.provideUtility(soaprequestfactory)
 
-        self.assertEqual(isinstance(r.lookup('POST', 'text/xml', env), XMLRPCFactory), True)
+        self.assert_(
+            isinstance(r.lookup('POST', 'text/xml', env), XMLRPCFactory))
         env['HTTP_SOAPACTION'] = 'foo'
-        self.assertEqual(isinstance(r.lookup('POST', 'text/xml', env), SOAPFactory), True)
-        self.assertEqual(isinstance(r.lookup('FOO', 'zope/sucks', env), BrowserFactory), True)
+        self.assert_(
+            isinstance(r.lookup('POST', 'text/xml', env), SOAPFactory))
+        self.assert_(
+            isinstance(r.lookup('FOO', 'zope/sucks', env), BrowserFactory))
+
 
 def test_suite():
     return TestSuite((
