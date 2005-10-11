@@ -82,3 +82,38 @@ class IFileContent(interface.Interface):
     /.  In particular, if the content included HTML, relative links in
     the HTML are relative to the container the content is in.
     """
+
+
+class IRequestPublicationFactory(interface.Interface):
+    """ request-publication factory """
+
+    def canHandle(environment):
+        """ returns True if it can handle the request,
+            otherwise False. 'environment' can be used by the factory 
+            to make a decision based on the HTTP headers.
+        """
+
+    def __call__():
+        """ returns a tuple (request, publication) """
+
+class IRequestPublicationRegistry(interface.Interface):
+    """ A registry to lookup a RequestPublicationFactory by
+        request method + mime-type. Multiple factories can be configured
+        for the same method+mimetype. The factory itself can introspect
+        the environment to decide if it can handle the request as given
+        by the environment or not. Factories are sorted in the order
+        of their registration in ZCML.
+    """
+
+    def register(method, mimetype, name, priority, factory):
+        """ registers a factory for method+mimetype """
+
+    def lookup(method, mimetype, environment):
+        """ Lookup a factory for a given method+mimetype and a 
+            environment. 
+        """
+
+    def getFactoriesFor(method, mimetype):
+        """ return the internal datastructure representing the configured
+            factories (basically for testing, not for introspection)
+        """

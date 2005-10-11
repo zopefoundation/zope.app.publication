@@ -22,6 +22,7 @@ def test_suite():
     return unittest.TestSuite((
         functional.FunctionalDocFileSuite('notfound.txt'),
         functional.FunctionalDocFileSuite('methodnotallowed.txt'),
+        functional.FunctionalDocFileSuite('httpfactory.txt'),
         ))
 
 if __name__ == '__main__':

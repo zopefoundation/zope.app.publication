@@ -26,7 +26,6 @@ import transaction
 
 from zope.event import notify
 from zope.security.interfaces import Unauthorized
-from zope.component.exceptions import ComponentLookupError
 from zope.interface import implements, providedBy
 from zope.publisher.publish import mapply
 from zope.publisher.interfaces import Retry, IExceptionSideEffects, IHeld
@@ -38,8 +37,6 @@ from zope.security.proxy import removeSecurityProxy
 from zope.app import zapi
 from zope.app.applicationcontrol.applicationcontrol \
      import applicationControllerRoot
-from zope.app.component.hooks import getSite
-from zope.app.error.error import RootErrorReportingUtility
 from zope.app.error.interfaces import IErrorReportingUtility
 from zope.app.exception.interfaces import ISystemErrorView
 from zope.app.location import LocationProxy

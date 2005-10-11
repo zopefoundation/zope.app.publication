@@ -13,7 +13,7 @@
 ##############################################################################
 """Tests for the HTTP Publication Request Factory.
 
-$Id$
+$Id: test_httpfactory.py 38357 2005-09-07 20:14:34Z srichter $
 """
 from unittest import TestCase, TestSuite, main, makeSuite
 
@@ -31,6 +31,9 @@ from zope.app.publication.http import HTTPPublication
 from zope.app.publication.xmlrpc import XMLRPCPublication
 from zope.app.testing import ztapi
 from zope.app.publication import interfaces
+from zope.app.publication.requestpublicationregistry import factoryRegistry
+from zope.app.publication.requestpublicationfactories import \
+     HTTPFactory, SOAPFactory, BrowserFactory, XMLRPCFactory
 
 class DummyRequestFactory(object):
     def __call__(self, input_stream, env):
@@ -52,6 +55,16 @@ class Test(PlacelessSetup, TestCase):
             'CONTENT_LENGTH':     '0',
             'GATEWAY_INTERFACE':  'TestFooInterface/1.0',
             }
+
+        # Simulate standard configuration
+        factoryRegistry.register('GET', '*', 'browser', 0, BrowserFactory())
+        factoryRegistry.register('POST', '*', 'browser', 0, BrowserFactory())
+        factoryRegistry.register('HEAD', '*', 'browser', 0, BrowserFactory())
+        factoryRegistry.register('*', '*', 'http', 0, HTTPFactory())
+        factoryRegistry.register('POST', 'text/xml', 'xmlrpc', 20,
+                                 XMLRPCFactory())
+        factoryRegistry.register('POST', 'text/xml', 'soap', 30,
+                                 SOAPFactory())
 
     def test_override(self):
         # TODO: making a SOAP request without configuring a SOAP request
@@ -100,7 +113,6 @@ class Test(PlacelessSetup, TestCase):
             self.assertEqual(r.publication.__class__, BrowserPublication)
 
     def test_http(self):
-
         for method in ('PUT', 'put', 'ZZZ'):
             self.__env['REQUEST_METHOD'] = method
             r = self.__factory(StringIO(''), self.__env)
