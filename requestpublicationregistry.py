@@ -75,7 +75,7 @@ class RequestPublicationRegistry(object):
         try:
             return self._d[method][mimetype]
         except:
-s            return None
+            return None
 
 
     def lookup(self, method, mimetype, environment):
