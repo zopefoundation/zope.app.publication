@@ -83,14 +83,16 @@ class RequestPublicationRegistry(object):
             environment.
         """
 
-        factory_lst = self.getFactoriesFor(method, mimetype)
-        if not factory_lst:
-            factory_lst = self.getFactoriesFor(method, '*')
-            if not factory_lst:
-                factory_lst = self.getFactoriesFor('*', '*')
-                if not factory_lst:
-                    raise ConfigurationError('No registered publisher found '
-                                             'for (%s/%s)' % (method, mimetype))
+        found = False
+        for m,mt in ((method, mimetype), (method, '*'), ('*', '*')):
+            factory_lst = self.getFactoriesFor(m, mt)
+            if factory_lst:
+                found = True
+                break
+
+        if not found:
+            raise ConfigurationError('No registered publisher found '
+                                     'for (%s/%s)' % (method, mimetype))
 
         # now iterate over all factory candidates and let them introspect
         # the request environment to figure out if they can handle the
