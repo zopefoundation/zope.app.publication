@@ -101,7 +101,7 @@ class RequestPublicationRegistry(object):
                 return factory
 
         # Actually we should never get here unless of improper
-        # configuration (no default handler for method=* and mimetype=*
+        # configuration (no default handler for method=* and mimetype=*)
         return None
 
 
