@@ -24,7 +24,7 @@ from zope.configuration.exceptions import ConfigurationError
 
 class RequestPublicationRegistry(object):
     """ The registry implements a three stage lookup for registred factories
-        to deal with request.
+        that have to deal with requests.
         {method > { mimetype -> [{'priority' : some_int,
                                    'factory' :  factory,
                                    'name' : some_name }, ...
@@ -32,7 +32,7 @@ class RequestPublicationRegistry(object):
                     },
         }
         The 'priority' is used to define a lookup-order when multiple
-        factories are registered for a given method and mime-type.
+        factories are registered for the same method and mime-type.
     """
     implements(IRequestPublicationRegistry)
 
@@ -75,12 +75,12 @@ class RequestPublicationRegistry(object):
         try:
             return self._d[method][mimetype]
         except:
-            return None
+s            return None
 
 
     def lookup(self, method, mimetype, environment):
         """ Lookup a factory for a given method+mimetype and a
-            enviroment.
+            environment.
         """
 
         factory_lst = self.getFactoriesFor(method, mimetype)
