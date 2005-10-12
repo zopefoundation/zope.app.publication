@@ -83,14 +83,11 @@ class RequestPublicationRegistry(object):
             environment.
         """
 
-        found = False
         for m,mt in ((method, mimetype), (method, '*'), ('*', '*')):
             factory_lst = self.getFactoriesFor(m, mt)
             if factory_lst:
-                found = True
                 break
-
-        if not found:
+        else:
             raise ConfigurationError('No registered publisher found '
                                      'for (%s/%s)' % (method, mimetype))
 
