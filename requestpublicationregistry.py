@@ -72,9 +72,15 @@ class RequestPublicationRegistry(object):
 
 
     def getFactoriesFor(self, method, mimetype):
+
+        if ';' in mimetype:
+            # 'mimetype' might be something like 'text/xml; charset=utf8'. In 
+            # this case we are only interested in the first part.
+            mimetype = mimetype.split(';')[0]
+
         try:
             return self._d[method][mimetype]
-        except:
+        except KeyError:
             return None
 
 

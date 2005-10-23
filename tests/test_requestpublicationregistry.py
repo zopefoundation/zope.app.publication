@@ -95,6 +95,7 @@ class Test(PlacelessSetup, TestCase):
         r.register('*', '*', 'http', 1, BrowserFactory())
 
         self.assertEqual(len(r.getFactoriesFor('POST', 'text/xml')) , 2)
+        self.assertEqual(len(r.getFactoriesFor('POST', 'text/xml; charset=utf-8')) , 2)
         self.assertEqual(len(r.getFactoriesFor('POST', '*')) , 1)
         self.assertEqual(r.getFactoriesFor('GET', 'text/html') , None)
         self.assertEqual(len(r.getFactoriesFor('HEAD', '*')) , 1)
