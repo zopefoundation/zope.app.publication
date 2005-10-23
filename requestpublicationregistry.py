@@ -79,7 +79,7 @@ class RequestPublicationRegistry(object):
             mimetype = mimetype.split(';')[0]
 
         try:
-            return self._d[method][mimetype]
+            return self._d[method][mimetype.strip()]
         except KeyError:
             return None
 
