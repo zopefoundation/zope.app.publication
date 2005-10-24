@@ -22,7 +22,7 @@ Each directive also has a name and a sortkey.
 The sortkey helps when several directives can handle a request:
 they are sorted by this key and the highest one is taken.
 
-$Id:$
+$Id$
 """
 __docformat__ = 'restructuredtext'
 
