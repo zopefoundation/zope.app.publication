@@ -15,7 +15,7 @@
 
 See metadirective.py
 
-$Id: $
+$Id:$
 """
 __docformat__ = 'restructuredtext'
 
