@@ -23,16 +23,18 @@ from zope.app.publication.interfaces import IRequestPublicationRegistry
 from zope.configuration.exceptions import ConfigurationError
 
 class RequestPublicationRegistry(object):
-    """ The registry implements a three stage lookup for registred factories
-        that have to deal with requests.
-        {method > { mimetype -> [{'priority' : some_int,
-                                   'factory' :  factory,
-                                   'name' : some_name }, ...
-                                  ]
-                    },
-        }
-        The 'priority' is used to define a lookup-order when multiple
-        factories are registered for the same method and mime-type.
+    """The registry implements a three stage lookup for registred factories
+    that have to deal with requests::
+
+      {method > { mimetype -> [{'priority' : some_int,
+                                 'factory' :  factory,
+                                 'name' : some_name }, ...
+                                ]
+                  },
+      }
+
+    The `priority` is used to define a lookup-order when multiple factories
+    are registered for the same method and mime-type.
     """
     implements(IRequestPublicationRegistry)
 
@@ -40,7 +42,7 @@ class RequestPublicationRegistry(object):
         self._d = {}   # method -> { mimetype -> {factories_data}}
 
     def register(self, method, mimetype, name, priority, factory):
-        """registers a factory for method+mimetype """
+        """Register a factory for method+mimetype """
 
         # initialize the two-level deep nested datastructure if necessary
         if not self._d.has_key(method):
@@ -74,7 +76,7 @@ class RequestPublicationRegistry(object):
     def getFactoriesFor(self, method, mimetype):
 
         if ';' in mimetype:
-            # 'mimetype' might be something like 'text/xml; charset=utf8'. In 
+            # `mimetype` might be something like 'text/xml; charset=utf8'. In
             # this case we are only interested in the first part.
             mimetype = mimetype.split(';')[0]
 
@@ -85,9 +87,7 @@ class RequestPublicationRegistry(object):
 
 
     def lookup(self, method, mimetype, environment):
-        """ Lookup a factory for a given method+mimetype and a
-            environment.
-        """
+        """Lookup a factory for a given method+mimetype and a environment."""
 
         for m,mt in ((method, mimetype), (method, '*'), ('*', '*')):
             factory_lst = self.getFactoriesFor(m, mt)
