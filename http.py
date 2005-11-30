@@ -30,9 +30,9 @@ from zope.app.publication.zopepublication import ZopePublication
 class IMethodNotAllowed(IException):
     """An exception that signals the 405 Method Not Allowed HTTP error"""
 
-    object = Attribute("""The object on which the error occured""")
+    object = Attribute("""The object on which the error occurred""")
 
-    request = Attribute("""The request in which the error occured""")
+    request = Attribute("""The request in which the error occurred""")
 
 
 class MethodNotAllowed(Exception):
