@@ -46,7 +46,7 @@ A text/xml POST request, wich is an xml-rpc call
 A text/xml POST request, with a HTTP_SOAPACTION in the headers,
 wich is an xml-rpc call:
 
-XXX need to create a real SOAP exchange test here
+TODO need to create a real SOAP exchange test here
 
   >>> print http(r"""
   ... POST /RPC2 HTTP/1.0
@@ -60,7 +60,7 @@ XXX need to create a real SOAP exchange test here
 
 Unknown request types:
 
-XXX: need more here
+TODO need more testing here
 
   >>> print http(r"""
   ... POST /BUBA HTTP/1.0
