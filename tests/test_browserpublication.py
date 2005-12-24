@@ -306,7 +306,7 @@ class HTTPPublicationRequestFactoryTests(BasePublicationTests):
 
     def testGetBackSamePublication(self):
         factory = HTTPPublicationRequestFactory(db=None)
-        args = (None, {})
+        args = (StringIO(''), {})
         self.assert_(id(factory(*args).publication) ==
                      id(factory(*args).publication))
 
