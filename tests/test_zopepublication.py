@@ -155,24 +155,55 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         try:
             raise ConflictError
         except:
-            pass
-        self.assertRaises(Retry, self.publication.handleException,
-            self.object, self.request, sys.exc_info(), retry_allowed=True)
+            self.assertRaises(Retry, self.publication.handleException,
+                self.object, self.request, sys.exc_info(), retry_allowed=True)
+
+        try:
+            raise Retry(sys.exc_info())
+        except:
+            self.assertRaises(Retry, self.publication.handleException,
+                self.object, self.request, sys.exc_info(), retry_allowed=True)
 
     def testRetryNotAllowed(self):
         from ZODB.POSException import ConflictError
+        from zope.publisher.interfaces import Retry
         try:
             raise ConflictError
         except:
-            pass
-        self.publication.handleException(
-            self.object, self.request, sys.exc_info(), retry_allowed=False)
+            self.publication.handleException(
+                self.object, self.request, sys.exc_info(), retry_allowed=False)
         value = ''.join(self.request.response._result).split()
         self.assertEqual(' '.join(value[:6]),
                          'Traceback (most recent call last): File')
         self.assertEqual(' '.join(value[-8:]),
                          'in testRetryNotAllowed raise ConflictError'
                          ' ConflictError: database conflict error')
+
+        try:
+            raise Retry(sys.exc_info())
+        except:
+            self.publication.handleException(
+                self.object, self.request, sys.exc_info(), retry_allowed=False)
+        value = ''.join(self.request.response._result).split()
+        self.assertEqual(' '.join(value[:6]),
+                         'Traceback (most recent call last): File')
+        self.assertEqual(' '.join(value[-8:]),
+                         'in testRetryNotAllowed raise Retry(sys.exc_info())'
+                         ' Retry: database conflict error')
+
+        try:
+            raise Retry
+        except:
+            self.publication.handleException(
+                self.object, self.request, sys.exc_info(), retry_allowed=False)
+        value = ''.join(self.request.response._result).split()
+        self.assertEqual(' '.join(value[:6]),
+                         'Traceback (most recent call last): File')
+        self.assertEqual(' '.join(value[-6:]),
+                         'in testRetryNotAllowed raise Retry'
+                         ' Retry: None')
+
+
 
     def testViewOnException(self):
         from zope.interface import Interface
