@@ -24,6 +24,7 @@ from ZODB.DB import DB
 from ZODB.DemoStorage import DemoStorage
 import transaction
 
+import zope.component
 from zope.interface.verify import verifyClass
 from zope.interface import implements, classImplements, implementedBy
 from zope.i18n.interfaces import IUserPreferredCharsets
@@ -35,18 +36,17 @@ from zope.security import simplepolicies
 from zope.security.management import setSecurityPolicy, queryInteraction
 from zope.security.management import endInteraction
 from zope.traversing.interfaces import IPhysicallyLocatable
+from zope.location.interfaces import ILocation
 
-from zope.app import zapi
 from zope.app.testing.placelesssetup import PlacelessSetup
 from zope.app.testing import setup, ztapi
 
 from zope.app.error.interfaces import IErrorReportingUtility
-from zope.app.location.interfaces import ILocation
 from zope.app.security.principalregistry import principalRegistry
 from zope.app.security.interfaces import IUnauthenticatedPrincipal, IPrincipal
 from zope.app.publication.zopepublication import ZopePublication
 from zope.app.folder import Folder, rootFolder
-from zope.app.location import Location
+from zope.location import Location
 from zope.app.security.interfaces import IAuthenticationUtility
 
 class Principal(object):
@@ -378,7 +378,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
 
     def testAbortTransactionWithErrorReportingUtility(self):
         # provide our fake error reporting utility
-        sm = zapi.getGlobalSiteManager()
+        sm = zope.component.getGlobalSiteManager()
         sm.provideUtility(IErrorReportingUtility, ErrorReportingUtility())
 
         class FooError(Exception):
@@ -397,7 +397,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         self.assertEqual(last_txn_info, new_txn_info)
 
         # instead, we expect a message in our logging utility
-        error_log = zapi.getUtility(IErrorReportingUtility)
+        error_log = zope.component.getUtility(IErrorReportingUtility)
         self.assertEqual(len(error_log.exceptions), 1)
         error_info, request = error_log.exceptions[0]
         self.assertEqual(error_info[0], FooError)
@@ -467,8 +467,8 @@ class ZopePublicationTests(BasePublicationTests):
 
     def testTransactionAnnotation(self):
         from zope.interface import directlyProvides
-        from zope.app.location.traversing import LocationPhysicallyLocatable
-        from zope.app.location.interfaces import ILocation
+        from zope.location.traversing import LocationPhysicallyLocatable
+        from zope.location.interfaces import ILocation
         from zope.traversing.interfaces import IPhysicallyLocatable
         from zope.traversing.interfaces import IContainmentRoot
         ztapi.provideAdapter(ILocation, IPhysicallyLocatable,
