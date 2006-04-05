@@ -34,6 +34,7 @@ from zope.publisher.interfaces import IRequest, IPublishTraverse
 from zope.security import simplepolicies
 from zope.security.management import setSecurityPolicy, queryInteraction
 from zope.security.management import endInteraction
+from zope.traversing.interfaces import IPhysicallyLocatable
 
 from zope.app import zapi
 from zope.app.testing.placelesssetup import PlacelessSetup
@@ -41,7 +42,6 @@ from zope.app.testing import setup, ztapi
 
 from zope.app.error.interfaces import IErrorReportingUtility
 from zope.app.location.interfaces import ILocation
-from zope.app.traversing.interfaces import IPhysicallyLocatable
 from zope.app.security.principalregistry import principalRegistry
 from zope.app.security.interfaces import IUnauthenticatedPrincipal, IPrincipal
 from zope.app.publication.zopepublication import ZopePublication
@@ -125,7 +125,7 @@ class BasePublicationTests(PlacelessSetup, unittest.TestCase):
         connection.close()
         self.app = app
 
-        from zope.app.traversing.namespace import view, resource, etc
+        from zope.traversing.namespace import view, resource, etc
         ztapi.provideNamespaceHandler('view', view)
         ztapi.provideNamespaceHandler('resource', resource)
         ztapi.provideNamespaceHandler('etc', etc)
@@ -469,8 +469,8 @@ class ZopePublicationTests(BasePublicationTests):
         from zope.interface import directlyProvides
         from zope.app.location.traversing import LocationPhysicallyLocatable
         from zope.app.location.interfaces import ILocation
-        from zope.app.traversing.interfaces import IPhysicallyLocatable
-        from zope.app.traversing.interfaces import IContainmentRoot
+        from zope.traversing.interfaces import IPhysicallyLocatable
+        from zope.traversing.interfaces import IContainmentRoot
         ztapi.provideAdapter(ILocation, IPhysicallyLocatable,
                              LocationPhysicallyLocatable)
 
