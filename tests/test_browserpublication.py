@@ -24,8 +24,7 @@ from zope.security.interfaces import ForbiddenAttribute
 from zope.interface import Interface, implements
 
 from zope.publisher.publish import publish
-from zope.publisher.browser import TestRequest
-from zope.app.publisher.browser import BrowserView
+from zope.publisher.browser import TestRequest, BrowserView
 from zope.publisher.interfaces.browser import IBrowserPublisher
 
 from zope.proxy import getProxiedObject
