@@ -378,8 +378,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
 
     def testAbortTransactionWithErrorReportingUtility(self):
         # provide our fake error reporting utility
-        sm = zope.component.getGlobalSiteManager()
-        sm.provideUtility(IErrorReportingUtility, ErrorReportingUtility())
+        zope.component.provideUtility(ErrorReportingUtility())
 
         class FooError(Exception):
             pass
