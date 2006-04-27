@@ -67,6 +67,9 @@ class FileContentTraverser(SimpleComponentTraverser):
 
         return view, path
 
+def NoTraverser(ob, request):
+    return None
+
 class TestTraverser(object):
     """Bobo-style traverser, mostly useful for testing"""
     implements(IBrowserPublisher)
@@ -77,7 +80,7 @@ class TestTraverser(object):
     def browserDefault(self, request):
         ob = self.context
 
-        if providedBy(ob):
+        if list(providedBy(ob)):
             view_name = zapi.getDefaultViewName(ob, request)
             return ob, (("@@%s" % view_name),)
 

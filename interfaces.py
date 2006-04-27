@@ -18,7 +18,7 @@ $Id$
 __docformat__ = 'restructuredtext'
 
 from zope import interface
-import zope.app.event.interfaces
+import zope.component.interfaces
 
 class IPublicationRequestFactory(interface.Interface):
     """Publication request factory"""
@@ -29,7 +29,7 @@ class IPublicationRequestFactory(interface.Interface):
         A request is created and configured with a publication object.
         """
 
-class IBeforeTraverseEvent(zope.app.event.interfaces.IObjectEvent):
+class IBeforeTraverseEvent(zope.component.interfaces.IObjectEvent):
     """An event which gets sent on publication traverse"""
 
     request = interface.Attribute("The current request")

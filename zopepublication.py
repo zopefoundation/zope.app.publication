@@ -33,13 +33,14 @@ from zope.publisher.interfaces import IRequest, IPublication
 from zope.security.management import newInteraction, endInteraction
 from zope.security.checker import ProxyFactory
 from zope.security.proxy import removeSecurityProxy
+from zope.traversing.interfaces import IPhysicallyLocatable
+from zope.location import LocationProxy
 
 from zope.app import zapi
 from zope.app.applicationcontrol.applicationcontrol \
      import applicationControllerRoot
 from zope.app.error.interfaces import IErrorReportingUtility
 from zope.app.exception.interfaces import ISystemErrorView
-from zope.app.location import LocationProxy
 from zope.app.publication.interfaces import BeforeTraverseEvent
 from zope.app.publication.interfaces import EndRequestEvent
 from zope.app.publication.publicationtraverse import PublicationTraverse
@@ -47,7 +48,6 @@ from zope.app.security.principalregistry import principalRegistry as prin_reg
 from zope.app.security.interfaces import IUnauthenticatedPrincipal
 from zope.app.security.interfaces import IAuthentication
 from zope.app.component.interfaces import ISite
-from zope.app.traversing.interfaces import IPhysicallyLocatable
 
 class Cleanup(object):
 

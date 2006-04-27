@@ -20,18 +20,26 @@ $Id$
 """
 __docformat__ = 'restructuredtext'
 
-from zope.interface import providedBy
-from zope.interface import directlyProvides
-
+from zope.component import queryMultiAdapter
 from zope.publisher.interfaces.browser import IBrowserPublisher
-from zope.publisher.interfaces.browser import IDefaultSkin
-from zope.publisher.interfaces.browser import IDefaultBrowserLayer
+from zope.security.checker import ProxyFactory
 
-from zope.app import zapi
 from zope.app.publication.publicationtraverse \
      import PublicationTraverser as PublicationTraverser_
 from zope.app.publication.http import BaseHTTPPublication
-from zope.security.checker import ProxyFactory
+
+##############################################################################
+# BBB 2006/04/03 - to be removed after 12 months
+
+import zope.deferredimport
+zope.deferredimport.deprecated(
+    "setDefaultSkin has been moved to zope.publisher.browser. This "
+    "reference will be removed in Zope 3.5.",
+    setDefaultSkin = 'zope.publisher.browser:setDefaultSkin',
+    )
+
+#
+##############################################################################
 
 class PublicationTraverser(PublicationTraverser_):
 
@@ -57,7 +65,7 @@ class BrowserPublication(BaseHTTPPublication):
             # ob is already proxied, so the result of calling a method will be
             return ob.browserDefault(request)
         else:
-            adapter = zapi.queryMultiAdapter((ob, request), IBrowserPublisher)
+            adapter = queryMultiAdapter((ob, request), IBrowserPublisher)
             if adapter is not None:
                 ob, path = adapter.browserDefault(request)
                 ob = ProxyFactory(ob)
@@ -79,72 +87,3 @@ class PublicationFactory(object):
 
     def __call__(self):
         return self.__pub
-
-def setDefaultSkin(request):
-    """Sets the default skin for the request.
-
-    The default skin is a marker interface that can be registered as an
-    adapter that provides IDefaultSkin for the request type.
-
-    If a default skin is not available, the default layer
-    (IDefaultBrowserLayer) is used.
-
-    To illustrate, we'll first use setDefaultSkin without a registered
-    IDefaultSkin adapter:
-
-      >>> from zope.publisher.interfaces.browser import IBrowserRequest
-      >>> from zope.interface import implements
-      >>> class Request(object):
-      ...     implements(IBrowserRequest)
-
-      >>> request = Request()
-      >>> IDefaultBrowserLayer.providedBy(request)
-      False
-
-      >>> setDefaultSkin(request)
-      >>> IDefaultBrowserLayer.providedBy(request)
-      True
-
-    When we register a default layer, however:
-
-      >>> from zope.interface import Interface
-      >>> class IMySkin(Interface):
-      ...     pass
-      >>> from zope.app.testing import ztapi
-      >>> ztapi.provideAdapter(IBrowserRequest, IDefaultSkin, IMySkin)
-
-    setDefaultSkin uses the layer instead of IDefaultBrowserLayer.providedBy:
-
-      >>> request = Request()
-      >>> IMySkin.providedBy(request)
-      False
-      >>> IDefaultSkin.providedBy(request)
-      False
-
-      >>> setDefaultSkin(request)
-
-      >>> IMySkin.providedBy(request)
-      True
-      >>> IDefaultBrowserLayer.providedBy(request)
-      False
-
-    Any interfaces that are directly provided by the request coming into this
-    method are replaced by the applied layer/skin interface:
-
-      >>> request = Request()
-      >>> class IFoo(Interface):
-      ...     pass
-      >>> directlyProvides(request, IFoo)
-      >>> IFoo.providedBy(request)
-      True
-      >>> setDefaultSkin(request)
-      >>> IFoo.providedBy(request)
-      False
-
-    """
-    adapters = zapi.getSiteManager().adapters
-    skin = adapters.lookup((providedBy(request),), IDefaultSkin, '')
-    if skin is not None:
-        directlyProvides(request, skin)
-    else:
-        directlyProvides(request, IDefaultBrowserLayer)

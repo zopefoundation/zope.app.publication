@@ -16,9 +16,8 @@
 $Id$
 """
 import unittest
-from zope.component.tests.request import Request
 from zope.publisher.interfaces import NotFound
-from zope.interface import Interface
+from zope.interface import Interface, directlyProvides
 
 from zope.app.publication.traversers import SimpleComponentTraverser
 from zope.app.testing.placelesssetup import PlacelessSetup
@@ -37,7 +36,11 @@ class Container(object):
         return getattr(self, name, default)
 
 
-class Request(Request):
+class Request(object):
+
+    def __init__(self, type):
+        directlyProvides(self, type)
+
     def getEffectiveURL(self):
         return ''
 

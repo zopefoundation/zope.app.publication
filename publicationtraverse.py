@@ -18,13 +18,12 @@ $Id$
 __docformat__ = 'restructuredtext'
 from types import StringTypes
 
+from zope.component import queryMultiAdapter
 from zope.publisher.interfaces import NotFound
 from zope.security.checker import ProxyFactory
-
-from zope.app import zapi
-from zope.app.traversing.namespace import namespaceLookup
-from zope.app.traversing.namespace import nsParse
-from zope.app.traversing.interfaces import TraversalError
+from zope.traversing.namespace import namespaceLookup
+from zope.traversing.namespace import nsParse
+from zope.traversing.interfaces import TraversalError
 from zope.publisher.interfaces import IPublishTraverse
 
 class DuplicateNamespaces(Exception):
@@ -56,8 +55,8 @@ class PublicationTraverse(object):
             ob2 = ob.publishTraverse(request, nm)
         else:
             # self is marker
-            adapter = zapi.queryMultiAdapter((ob, request), IPublishTraverse,
-                                             default=self)
+            adapter = queryMultiAdapter((ob, request), IPublishTraverse,
+                                        default=self)
             if adapter is not self:
                 ob2 = adapter.publishTraverse(request, nm)
             else:

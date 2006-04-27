@@ -16,17 +16,15 @@
 $Id: test_browserpublication.py 38357 2005-09-07 20:14:34Z srichter $
 """
 import unittest
-from zope.testing import doctest
 
-from zope.app.testing import placelesssetup, ztapi
+from zope.app.testing import ztapi
 from StringIO import StringIO
 
 from zope.security.interfaces import ForbiddenAttribute
 from zope.interface import Interface, implements
 
 from zope.publisher.publish import publish
-from zope.publisher.browser import TestRequest
-from zope.app.publisher.browser import BrowserView
+from zope.publisher.browser import TestRequest, BrowserView
 from zope.publisher.interfaces.browser import IBrowserPublisher
 
 from zope.proxy import getProxiedObject
@@ -316,10 +314,6 @@ def test_suite():
         unittest.makeSuite(BrowserPublicationTests, 'test'),
         unittest.makeSuite(BrowserDefaultTests, 'test'),
         unittest.makeSuite(HTTPPublicationRequestFactoryTests, 'test'),
-        doctest.DocTestSuite('zope.app.publication.browser',
-                             setUp=placelesssetup.setUp,
-                             tearDown=placelesssetup.tearDown),
-
         ))
 
 

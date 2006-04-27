@@ -23,7 +23,7 @@ from zope import component, interface
 from zope.publisher.browser import BrowserRequest
 from zope.publisher.http import HTTPRequest
 from zope.publisher.xmlrpc import XMLRPCRequest
-from zope.component.tests.placelesssetup import PlacelessSetup
+from zope.component.testing import PlacelessSetup
 
 from zope.app.publication.httpfactory import HTTPPublicationRequestFactory
 from zope.app.publication.browser import BrowserPublication

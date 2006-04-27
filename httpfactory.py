@@ -20,9 +20,9 @@ __docformat__ = 'restructuredtext'
 from zope import interface
 
 from zope.publisher.interfaces.browser import IBrowserRequest
+from zope.publisher.browser import setDefaultSkin
 
 from zope.app.publication import interfaces
-from zope.app.publication.browser import setDefaultSkin
 from zope.app.publication.requestpublicationregistry import factoryRegistry
 
 

@@ -21,7 +21,7 @@ from StringIO import StringIO
 
 from zope import component, interface
 from zope.interface.verify import verifyClass
-from zope.component.tests.placelesssetup import PlacelessSetup
+from zope.component.testing import PlacelessSetup
 
 from zope.configuration.exceptions import ConfigurationError
 from zope.app.publication import interfaces
