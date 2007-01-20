@@ -140,6 +140,9 @@ class BasePublicationTests(PlacelessSetup, unittest.TestCase):
         self.publication = ZopePublication(self.db)
 
     def tearDown(self):
+        # Close the request, otherwise a Cleanup object will start logging
+        # messages from its __del__ method at some inappropriate moment.
+        self.request.close()
         super(BasePublicationTests, self).tearDown()
 
     def testInterfacesVerify(self):
@@ -239,7 +242,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
             'SiteError ERROR\n'
             '  Error while reporting an error to the Error Reporting utility')
 
-        # Here we got a single log record, because we havdn't
+        # Here we got a single log record, because we haven't
         # installed an error reporting utility.  That's OK.
 
         handler.uninstall()
