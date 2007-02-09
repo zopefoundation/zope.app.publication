@@ -17,12 +17,19 @@ $Id$
 """
 import unittest
 from zope.app.testing import functional
+from zope.app.publication.testing import PublicationLayer
 
 def test_suite():
+    notfound = functional.FunctionalDocFileSuite('notfound.txt')
+    notfound.layer = PublicationLayer
+    methodnotallowed = functional.FunctionalDocFileSuite('methodnotallowed.txt')
+    methodnotallowed.layer = PublicationLayer
+    httpfactory = functional.FunctionalDocFileSuite('httpfactory.txt')
+    httpfactory.layer = PublicationLayer
     return unittest.TestSuite((
-        functional.FunctionalDocFileSuite('notfound.txt'),
-        functional.FunctionalDocFileSuite('methodnotallowed.txt'),
-        functional.FunctionalDocFileSuite('httpfactory.txt'),
+        notfound,
+        methodnotallowed,
+        httpfactory,
         ))
 
 if __name__ == '__main__':
