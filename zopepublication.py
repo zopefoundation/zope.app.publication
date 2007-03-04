@@ -162,9 +162,11 @@ class ZopePublication(PublicationTraverse):
 
     def afterCall(self, request, ob):
         txn = transaction.get()
-        self.annotateTransaction(txn, request, ob)
-
-        txn.commit()
+        if txn.isDoomed():
+            txn.abort()
+        else:
+            self.annotateTransaction(txn, request, ob)
+            txn.commit()
 
     def endRequest(self, request, ob):
         endInteraction()
