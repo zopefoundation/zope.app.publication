@@ -14,14 +14,14 @@ A regular GET, POST or HEAD
   ... GET / HTTP/1.1
   ... """)
   HTTP/1.1 200 Ok
-  Content-Length: 4402
+  Content-Length: 4322
   Content-Type: text/html;charset=utf-8
   ...
   >>> print http(r"""
   ... POST / HTTP/1.1
   ... """)
   HTTP/1.1 200 Ok
-  Content-Length: 4402
+  Content-Length: 4322
   Content-Type: text/html;charset=utf-8
   ...
   >>> print http(r"""
