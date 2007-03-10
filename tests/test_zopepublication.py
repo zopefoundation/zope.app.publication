@@ -206,8 +206,6 @@ class ZopePublicationErrorHandling(BasePublicationTests):
                          'in testRetryNotAllowed raise Retry'
                          ' Retry: None')
 
-
-
     def testViewOnException(self):
         from zope.interface import Interface
         class E1(Exception):
@@ -466,6 +464,23 @@ class ZopePublicationTests(BasePublicationTests):
         self.assert_(txn is not transaction.get())
         new_txn_info = self.db.undoInfo()[0]
         self.failIfEqual(last_txn_info, new_txn_info)
+
+    def testDoomedTransaction(self):
+        # Test that a doomed transaction is aborted without error in afterCall
+        root = self.db.open().root()
+        txn = transaction.get()
+        # we just need a change in the database to make the
+        # transaction notable in the undo log
+        root['foo'] = object()
+        last_txn_info = self.db.undoInfo()[0]
+        # doom the transaction
+        txn.doom()
+        self.publication.afterCall(self.request, self.object)
+        # assert that we get a new transaction
+        self.assert_(txn is not transaction.get())
+        new_txn_info = self.db.undoInfo()[0]
+        # No transaction should be committed
+        self.assertEqual(last_txn_info, new_txn_info)
 
     def testTransactionAnnotation(self):
         from zope.interface import directlyProvides
