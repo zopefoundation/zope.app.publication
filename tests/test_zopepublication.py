@@ -19,10 +19,6 @@ import unittest
 import sys
 from cStringIO import StringIO
 
-from persistent import Persistent
-from ZODB.interfaces import IDatabase
-from ZODB.DB import DB
-from ZODB.DemoStorage import DemoStorage
 import transaction
 
 import zope.component
@@ -47,10 +43,18 @@ from zope.app.security.principalregistry import principalRegistry
 from zope.app.security.interfaces import IUnauthenticatedPrincipal, IPrincipal
 from zope.app.publication.zopepublication import ZopePublication
 from zope.app.publication.interfaces import IResourceFactory
-from zope.app.zodb.app import ZODBApplicationFactory
 from zope.app.folder import Folder, rootFolder
 from zope.location import Location
 from zope.app.security.interfaces import IAuthenticationUtility
+
+class ResourceFactoryStub:
+    implements(IResourceFactory)
+
+    def __init__(self, app):
+        self.app = app
+
+    def __call__(self, request):
+        return self.app
 
 class Principal(object):
     implements(IPrincipal)
@@ -103,32 +107,19 @@ class TestRequest(TestRequest):
 
 class BasePublicationTests(PlacelessSetup, unittest.TestCase):
 
+    klass = ZopePublication
+
     def setUp(self):
         super(BasePublicationTests, self).setUp()
         from zope.security.management import endInteraction
         endInteraction()
         ztapi.provideAdapter(IHTTPRequest, IUserPreferredCharsets,
                              HTTPCharsets)
-        ztapi.provideAdapter(IDatabase, IResourceFactory,
-                             ZODBApplicationFactory)
         self.policy = setSecurityPolicy(
             simplepolicies.PermissiveSecurityPolicy
             )
-        self.storage = DemoStorage('test_storage')
-        self.db = db = DB(self.storage)
 
-        connection = db.open()
-        root = connection.root()
-        app = getattr(root, ZopePublication.root_name, None)
-
-        if app is None:
-            from zope.app.folder import rootFolder
-            app = rootFolder()
-            root[ZopePublication.root_name] = app
-            transaction.commit()
-
-        connection.close()
-        self.app = app
+        self.app = rootFolder()
 
         from zope.traversing.namespace import view, resource, etc
         ztapi.provideNamespaceHandler('view', view)
@@ -142,7 +133,8 @@ class BasePublicationTests(PlacelessSetup, unittest.TestCase):
         self.presentation_type = Interface
         self.request._presentation_type = self.presentation_type
         self.object = object()
-        self.publication = ZopePublication(self.db)
+        self.resource_factory = ResourceFactoryStub(self.app)
+        self.publication = self.klass(self.resource_factory)
 
     def tearDown(self):
         # Close the request, otherwise a Cleanup object will start logging
@@ -383,13 +375,17 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         self.assert_(txn is not transaction.get())
 
     def testAbortTransactionWithErrorReportingUtility(self):
+        self.committed = False
+        def hook(status, self):
+            self.committed = True
+        txn = transaction.get()
+        txn.addAfterCommitHook(hook, (self, ))
         # provide our fake error reporting utility
         zope.component.provideUtility(ErrorReportingUtility())
 
         class FooError(Exception):
             pass
 
-        last_txn_info = self.db.undoInfo()[0]
         try:
             raise FooError
         except FooError:
@@ -397,9 +393,10 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         self.publication.handleException(
             self.object, self.request, sys.exc_info(), retry_allowed=False)
 
-        # assert that the last transaction is NOT our transaction
-        new_txn_info = self.db.undoInfo()[0]
-        self.assertEqual(last_txn_info, new_txn_info)
+        # assert that we get a new transaction
+        self.assert_(txn is not transaction.get())
+        # No transaction should be committed
+        self.assertEqual(self.committed, False)
 
         # instead, we expect a message in our logging utility
         error_log = zope.component.getUtility(IErrorReportingUtility)
@@ -417,10 +414,8 @@ class ZopePublicationTests(BasePublicationTests):
         setup.setUpSiteManagerLookup()
         principalRegistry.defineDefaultPrincipal('anonymous', '')
 
-        root = self.db.open().root()
-        app = root[ZopePublication.root_name]
-        app['f1'] = rootFolder()
-        f1 = app['f1']
+        self.app['f1'] = rootFolder()
+        f1 = self.app['f1']
         f1['f2'] = Folder()
         sm1 = setup.createSiteManager(f1)
         setup.addUtility(sm1, '', IAuthenticationUtility, AuthUtility1())
@@ -459,62 +454,58 @@ class ZopePublicationTests(BasePublicationTests):
         self.assertEqual(queryInteraction(), None)
 
     def testTransactionCommitAfterCall(self):
-        root = self.db.open().root()
+        self.committed = False
+        def hook(status, self):
+            self.committed = True
         txn = transaction.get()
-        # we just need a change in the database to make the
-        # transaction notable in the undo log
-        root['foo'] = object()
-        last_txn_info = self.db.undoInfo()[0]
+        txn.addAfterCommitHook(hook, (self, ))
         self.publication.afterCall(self.request, self.object)
+        # Make sure we have a new transaction
         self.assert_(txn is not transaction.get())
-        new_txn_info = self.db.undoInfo()[0]
-        self.failIfEqual(last_txn_info, new_txn_info)
+        # and that the last one was committed
+        self.assertEqual(self.committed, True)
 
     def testDoomedTransaction(self):
-        # Test that a doomed transaction is aborted without error in afterCall
-        root = self.db.open().root()
+        self.committed = False
+        def hook(status, self):
+            self.committed = True
+        # start a new transaction
         txn = transaction.get()
-        # we just need a change in the database to make the
-        # transaction notable in the undo log
-        root['foo'] = object()
-        last_txn_info = self.db.undoInfo()[0]
+        txn.addAfterCommitHook(hook, (self, ))
         # doom the transaction
         txn.doom()
         self.publication.afterCall(self.request, self.object)
         # assert that we get a new transaction
         self.assert_(txn is not transaction.get())
-        new_txn_info = self.db.undoInfo()[0]
         # No transaction should be committed
-        self.assertEqual(last_txn_info, new_txn_info)
+        self.assertEqual(self.committed, False)
 
     def testTransactionAnnotation(self):
         from zope.interface import directlyProvides
         from zope.location.traversing import LocationPhysicallyLocatable
         from zope.location.interfaces import ILocation
         from zope.traversing.interfaces import IPhysicallyLocatable
-        from zope.traversing.interfaces import IContainmentRoot
         ztapi.provideAdapter(ILocation, IPhysicallyLocatable,
                              LocationPhysicallyLocatable)
 
-        root = self.db.open().root()
-        root['foo'] = foo = LocatableObject()
-        root['bar'] = bar = LocatableObject()
+        self.app['foo'] = foo = LocatableObject()
+        self.app['bar'] = bar = LocatableObject()
         bar.__name__ = 'bar'
         foo.__name__ = 'foo'
         bar.__parent__ = foo
-        foo.__parent__ = root
-        directlyProvides(root, IContainmentRoot)
+        foo.__parent__ = self.app
 
         from zope.publisher.interfaces import IRequest
         expected_path = "/foo/bar"
         expected_user = "/ " + self.user.id
         expected_request = IRequest.__module__ + '.' + IRequest.getName()
 
+        txn = transaction.get()
         self.publication.afterCall(self.request, bar)
-        txn_info = self.db.undoInfo()[0]
+        txn_info = txn._extension
         self.assertEqual(txn_info['location'], expected_path)
-        self.assertEqual(txn_info['user_name'], expected_user)
         self.assertEqual(txn_info['request_type'], expected_request)
+        self.assertEqual(txn.user, expected_user)
 
         # also, assert that we still get the right location when
         # passing an instance method as object.

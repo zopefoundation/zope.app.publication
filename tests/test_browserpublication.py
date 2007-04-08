@@ -117,7 +117,7 @@ class BrowserDefaultTests(BasePublicationTests):
         # so that the classes can be pickled.
         import transaction
 
-        pub = BrowserPublication(self.db)
+        pub = self.publication
 
         ztapi.browserView(I1, 'view', DummyView)
         ztapi.setDefaultViewName(I1, 'view')
@@ -131,13 +131,9 @@ class BrowserDefaultTests(BasePublicationTests):
 
         # now place our object inside the application
 
-        connection = self.db.open()
-        app = connection.root()['Application']
-        app.somepath = ob
-        transaction.commit()
-        connection.close()
+        self.app.somepath = ob
 
-        defineChecker(app.__class__, NamesChecker(somepath='xxx'))
+        defineChecker(self.app.__class__, NamesChecker(somepath='xxx'))
 
         req = self._createRequest(url, pub)
         response = req.response
@@ -174,7 +170,7 @@ class BrowserPublicationTests(BasePublicationTests):
         ob = mydict()
         ob['bruce'] = SimpleObject('bruce')
         ob['bruce2'] = SimpleObject('bruce2')
-        pub = self.klass(self.db)
+        pub = self.publication
         ob2 = pub.traverseName(self._createRequest('/bruce', pub), ob, 'bruce')
         self.assertRaises(ForbiddenAttribute, getattr, ob2, 'v')
         self.assertEqual(removeSecurityProxy(ob2).v, 'bruce')
@@ -193,14 +189,14 @@ class BrowserPublicationTests(BasePublicationTests):
         ob = mydict()
         ob['bruce'] = SimpleObject('bruce')
         ob['bruce2'] = SimpleObject('bruce2')
-        pub = self.klass(self.db)
+        pub = self.publication
         ob2, x = pub.getDefaultTraversal(self._createRequest('/bruce',pub), ob)
         self.assertEqual(x, 'dummy')
         self.assertRaises(ForbiddenAttribute, getattr, ob2, 'v')
         self.assertEqual(removeSecurityProxy(ob2).v, 'bruce')
 
     def testTraverseName(self):
-        pub = self.klass(self.db)
+        pub = self.publication
         class C(object):
             x = SimpleObject(1)
         ob = C()
@@ -211,7 +207,7 @@ class BrowserPublicationTests(BasePublicationTests):
         self.assertEqual(removeSecurityProxy(ob2).v, 1)
 
     def testTraverseNameView(self):
-        pub = self.klass(self.db)
+        pub = self.publication
         class I(Interface): pass
         class C(object):
             implements(I)
@@ -224,7 +220,7 @@ class BrowserPublicationTests(BasePublicationTests):
         self.assertEqual(ob2.__class__, V)
 
     def testTraverseNameSiteManager(self):
-        pub = self.klass(self.db)
+        pub = self.publication
         class C(object):
             def getSiteManager(self):
                 return SimpleObject(1)
@@ -234,21 +230,8 @@ class BrowserPublicationTests(BasePublicationTests):
         self.assertRaises(ForbiddenAttribute, getattr, ob2, 'v')
         self.assertEqual(removeSecurityProxy(ob2).v, 1)
 
-    def testTraverseNameApplicationControl(self):
-        from zope.app.applicationcontrol.applicationcontrol \
-             import applicationController, applicationControllerRoot
-        pub = self.klass(self.db)
-        r = self._createRequest('/++etc++process',pub)
-        ac = pub.traverseName(r,
-                              applicationControllerRoot,
-                              '++etc++process')
-        self.assertEqual(ac, applicationController)
-        r = self._createRequest('/++etc++process',pub)
-        app = r.publication.getApplication(r)
-        self.assertEqual(app, applicationControllerRoot)
-
     def testHEADFuxup(self):
-        pub = self.klass(self.db)
+        pub = self.publication
 
         class User(object):
             id = 'bob'
@@ -303,7 +286,7 @@ class HTTPPublicationRequestFactoryTests(BasePublicationTests):
         factoryRegistry.register('HEAD', '*', 'BROWSER', 10, BrowserFactory())
 
     def testGetBackSamePublication(self):
-        factory = HTTPPublicationRequestFactory(db=self.db)
+        factory = HTTPPublicationRequestFactory(db=self.resource_factory)
         args = (StringIO(''), {})
         self.assert_(id(factory(*args).publication) ==
                      id(factory(*args).publication))
