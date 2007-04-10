@@ -146,6 +146,18 @@ class BasePublicationTests(PlacelessSetup, unittest.TestCase):
         for interface in implementedBy(ZopePublication):
             verifyClass(interface, TestPublication)
 
+    def testZODBApplicationFactoryBBB(self):
+        from ZODB.DB import DB
+        from ZODB.DemoStorage import DemoStorage
+        from zope.app.zodb.app import ZODBApplicationFactory
+        import zope.deprecation
+        storage = DemoStorage('test_storage')
+        db = DB(storage)
+        zope.deprecation.__show__.off()
+        pub = self.klass(db)
+        zope.deprecation.__show__.on()
+        self.assert_(isinstance(pub.resource_factory, ZODBApplicationFactory))
+
 
 class ZopePublicationErrorHandling(BasePublicationTests):
 

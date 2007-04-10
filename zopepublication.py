@@ -76,10 +76,19 @@ class ZopePublication(PublicationTraverse):
     version_cookie = ROOT_NAME
 
     def __init__(self, resource_factory):
-        #BBB
         if not IResourceFactory.providedBy(resource_factory):
-            warnings.warn("This needs to be a more intelligent warning")
-            resource_factory = IResourceFactory(resource_factory)
+            #BBB we used to pass ZODB databases
+            import zope.deprecation
+            if zope.deprecation.__show__():
+                warnings.warn("Passing ZODB Database objects to this "
+                              "publication object is deprecated. Pass "
+                              "objects providing zope.app.publication."
+                              "interface.IResourceFactory instead. See "
+                              "zope.app.zodb for an implementation. This "
+                              "compatibiltiy will go away in Zope 3.6",
+                              DeprecationWarning)
+            from zope.app.zodb.app import ZODBApplicationFactory
+            resource_factory = ZODBApplicationFactory(resource_factory)
         self.resource_factory = resource_factory
 
     def beforeTraversal(self, request):
