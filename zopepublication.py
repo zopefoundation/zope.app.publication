@@ -24,6 +24,7 @@ from new import instancemethod
 from ZODB.POSException import ConflictError
 import transaction
 
+import zope.component
 from zope.event import notify
 from zope.security.interfaces import Unauthorized
 from zope.interface import implements, providedBy
@@ -36,6 +37,7 @@ from zope.security.proxy import removeSecurityProxy
 from zope.traversing.interfaces import IPhysicallyLocatable
 from zope.location import LocationProxy
 
+import zope.app.security.interfaces
 from zope.app import zapi
 from zope.app.applicationcontrol.applicationcontrol \
      import applicationControllerRoot
@@ -44,7 +46,6 @@ from zope.app.exception.interfaces import ISystemErrorView
 from zope.app.publication.interfaces import BeforeTraverseEvent
 from zope.app.publication.interfaces import EndRequestEvent
 from zope.app.publication.publicationtraverse import PublicationTraverse
-from zope.app.security.principalregistry import principalRegistry as prin_reg
 from zope.app.security.interfaces import IUnauthenticatedPrincipal
 from zope.app.security.interfaces import IAuthentication
 from zope.app.component.interfaces import ISite
@@ -79,9 +80,11 @@ class ZopePublication(PublicationTraverse):
 
     def beforeTraversal(self, request):
         # Try to authenticate against the default global registry.
-        p = prin_reg.authenticate(request)
+        auth = zope.component.getGlobalSiteManager().getUtility(
+            zope.app.security.interfaces.IAuthentication)
+        p = auth.authenticate(request)
         if p is None:
-            p = prin_reg.unauthenticatedPrincipal()
+            p = auth.unauthenticatedPrincipal()
             if p is None:
                 raise Unauthorized # If there's no default principal
 

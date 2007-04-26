@@ -29,6 +29,7 @@ from zope.interface.verify import verifyClass
 from zope.interface import implements, classImplements, implementedBy
 from zope.i18n.interfaces import IUserPreferredCharsets
 from zope.component.interfaces import ComponentLookupError
+from zope.location import Location
 from zope.publisher.base import TestPublication, TestRequest
 from zope.publisher.http import IHTTPRequest, HTTPCharsets
 from zope.publisher.interfaces import IRequest, IPublishTraverse
@@ -46,8 +47,10 @@ from zope.app.security.principalregistry import principalRegistry
 from zope.app.security.interfaces import IUnauthenticatedPrincipal, IPrincipal
 from zope.app.publication.zopepublication import ZopePublication
 from zope.app.folder import Folder, rootFolder
-from zope.location import Location
 from zope.app.security.interfaces import IAuthenticationUtility
+from zope.app.security.interfaces import IAuthentication
+from zope.app.security.principalregistry import principalRegistry
+
 
 class Principal(object):
     implements(IPrincipal)
@@ -111,6 +114,8 @@ class BasePublicationTests(PlacelessSetup, unittest.TestCase):
             )
         self.storage = DemoStorage('test_storage')
         self.db = db = DB(self.storage)
+
+        ztapi.provideUtility(IAuthentication, principalRegistry)
 
         connection = db.open()
         root = connection.root()
