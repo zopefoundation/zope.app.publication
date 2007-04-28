@@ -389,7 +389,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         class FooError(Exception):
             pass
 
-        last_txn_info = self.db.undoInfo()[0]
+        last_txn_info = self.storage.undoInfo()[0]
         try:
             raise FooError
         except FooError:
@@ -398,7 +398,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
             self.object, self.request, sys.exc_info(), retry_allowed=False)
 
         # assert that the last transaction is NOT our transaction
-        new_txn_info = self.db.undoInfo()[0]
+        new_txn_info = self.storage.undoInfo()[0]
         self.assertEqual(last_txn_info, new_txn_info)
 
         # instead, we expect a message in our logging utility
@@ -464,10 +464,10 @@ class ZopePublicationTests(BasePublicationTests):
         # we just need a change in the database to make the
         # transaction notable in the undo log
         root['foo'] = object()
-        last_txn_info = self.db.undoInfo()[0]
+        last_txn_info = self.storage.undoInfo()[0]
         self.publication.afterCall(self.request, self.object)
         self.assert_(txn is not transaction.get())
-        new_txn_info = self.db.undoInfo()[0]
+        new_txn_info = self.storage.undoInfo()[0]
         self.failIfEqual(last_txn_info, new_txn_info)
 
     def testDoomedTransaction(self):
@@ -477,13 +477,13 @@ class ZopePublicationTests(BasePublicationTests):
         # we just need a change in the database to make the
         # transaction notable in the undo log
         root['foo'] = object()
-        last_txn_info = self.db.undoInfo()[0]
+        last_txn_info = self.storage.undoInfo()[0]
         # doom the transaction
         txn.doom()
         self.publication.afterCall(self.request, self.object)
         # assert that we get a new transaction
         self.assert_(txn is not transaction.get())
-        new_txn_info = self.db.undoInfo()[0]
+        new_txn_info = self.storage.undoInfo()[0]
         # No transaction should be committed
         self.assertEqual(last_txn_info, new_txn_info)
 
@@ -511,7 +511,7 @@ class ZopePublicationTests(BasePublicationTests):
         expected_request = IRequest.__module__ + '.' + IRequest.getName()
 
         self.publication.afterCall(self.request, bar)
-        txn_info = self.db.undoInfo()[0]
+        txn_info = self.storage.undoInfo()[0]
         self.assertEqual(txn_info['location'], expected_path)
         self.assertEqual(txn_info['user_name'], expected_user)
         self.assertEqual(txn_info['request_type'], expected_request)
