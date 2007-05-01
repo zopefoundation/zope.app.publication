@@ -253,10 +253,13 @@ class ZopePublication(PublicationTraverse):
 
         # Convert ConflictErrors to Retry exceptions.
         if retry_allowed and isinstance(exc_info[1], ConflictError):
-            tryToLogWarning('ZopePublication',
-                'Competing writes/reads at %s' %
-                request.get('PATH_INFO', '???'),
-                exc_info=True)
+            tryToLogWarning(
+                'ZopePublication',
+                'Competing writes/reads at %s: %s'
+                % (request.get('PATH_INFO', '???'),
+                   exc_info[1],
+                   ),
+                )
             raise Retry(exc_info)
         # Are there any reasons why we'd want to let application-level error
         # handling determine whether a retry is allowed or not?
