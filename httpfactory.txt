@@ -13,21 +13,21 @@ A regular GET, POST or HEAD
   >>> print http(r"""
   ... GET / HTTP/1.1
   ... """)
-  HTTP/1.1 200 Ok
+  HTTP/1.1 200 OK
   Content-Length: 4322
   Content-Type: text/html;charset=utf-8
   ...
   >>> print http(r"""
   ... POST / HTTP/1.1
   ... """)
-  HTTP/1.1 200 Ok
+  HTTP/1.1 200 OK
   Content-Length: 4322
   Content-Type: text/html;charset=utf-8
   ...
   >>> print http(r"""
   ... HEAD / HTTP/1.1
   ... """)
-  HTTP/1.1 200 Ok
+  HTTP/1.1 200 OK
   Content-Length: 0
   Content-Type: text/html;charset=utf-8
   <BLANKLINE>
@@ -38,7 +38,7 @@ A text/xml POST request, wich is an xml-rpc call
   ... POST /RPC2 HTTP/1.0
   ... Content-Type: text/xml
   ... """)
-  HTTP/1.0 200 Ok
+  HTTP/1.0 200 OK
   Content-Length: ...
   Content-Type: text/xml;charset=utf-8
   ...
@@ -53,7 +53,7 @@ TODO need to create a real SOAP exchange test here
   ... Content-Type: text/xml
   ... HTTP_SOAPACTION: soap#action
   ... """)
-  HTTP/1.0 200 Ok
+  HTTP/1.0 200 OK
   Content-Length: ...
   Content-Type: text/xml;charset=utf-8
   ...
