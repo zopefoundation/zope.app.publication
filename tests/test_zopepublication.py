@@ -49,6 +49,7 @@ from zope.app.publication.zopepublication import ZopePublication
 from zope.app.folder import Folder, rootFolder
 from zope.app.security.interfaces import IAuthenticationUtility
 from zope.app.security.interfaces import IAuthentication
+from zope.app.security.interfaces import IFallbackUnauthenticatedPrincipal
 from zope.app.security.principalregistry import principalRegistry
 
 
@@ -83,6 +84,11 @@ class AuthUtility2(AuthUtility1):
 
     def getPrincipal(self, id):
         return Principal(id)
+
+class AuthUtility3(AuthUtility1):
+
+    def unauthenticatedPrincipal(self):
+        return None
 
 class ErrorReportingUtility(object):
     implements(IErrorReportingUtility)
@@ -411,6 +417,23 @@ class ZopePublicationErrorHandling(BasePublicationTests):
 
 
 class ZopePublicationTests(BasePublicationTests):
+
+    def testGlobalAuth(self):
+        # Replace the global registry with a stub that doesn't return an
+        # unauthenticated principal.
+        authentication = AuthUtility3()
+        ztapi.provideUtility(IAuthentication, authentication)
+
+        # We need a fallback unauthenticated principal, otherwise we'll get a
+        # ComponentLookupError:
+        self.assertRaises(ComponentLookupError,
+                          self.publication.beforeTraversal, self.request)
+
+        # Let's register an unauthenticated principal instance for the lookup:
+        principal = UnauthenticatedPrincipal('fallback')
+        ztapi.provideUtility(IFallbackUnauthenticatedPrincipal, principal)
+        self.publication.beforeTraversal(self.request)
+        self.failUnless(self.request.principal is principal)
 
     def testPlacefulAuth(self):
         setup.setUpTraversal()

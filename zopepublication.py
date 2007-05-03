@@ -47,6 +47,7 @@ from zope.app.publication.interfaces import BeforeTraverseEvent
 from zope.app.publication.interfaces import EndRequestEvent
 from zope.app.publication.publicationtraverse import PublicationTraverse
 from zope.app.security.interfaces import IUnauthenticatedPrincipal
+from zope.app.security.interfaces import IFallbackUnauthenticatedPrincipal
 from zope.app.security.interfaces import IAuthentication
 from zope.app.component.interfaces import ISite
 
@@ -79,16 +80,18 @@ class ZopePublication(PublicationTraverse):
         self.db = db
 
     def beforeTraversal(self, request):
-        # Try to authenticate against the default global registry.
+        # Try to authenticate against the root authentication utility.
         auth = zope.component.getGlobalSiteManager().getUtility(
             zope.app.security.interfaces.IAuthentication)
-        p = auth.authenticate(request)
-        if p is None:
-            p = auth.unauthenticatedPrincipal()
-            if p is None:
-                raise Unauthorized # If there's no default principal
+        principal = auth.authenticate(request)
+        if principal is None:
+            principal = auth.unauthenticatedPrincipal()
+            if principal is None:
+                # Get the fallback unauthenticated principal
+                principal = zope.component.getUtility(
+                    IFallbackUnauthenticatedPrincipal)
 
-        request.setPrincipal(p)
+        request.setPrincipal(principal)
         newInteraction(request)
         transaction.begin()
 
