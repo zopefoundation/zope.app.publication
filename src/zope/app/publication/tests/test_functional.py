@@ -15,16 +15,27 @@
 
 $Id$
 """
+
+import re
 import unittest
+from zope.testing import renormalizing
 from zope.app.testing import functional
 from zope.app.publication.testing import PublicationLayer
+
+
+checker = renormalizing.RENormalizing([
+    (re.compile(r"HTTP/1\.([01]) (\d\d\d) .*"), r"HTTP/1.\1 \2 <MESSAGE>"),
+    ])
+
 
 def test_suite():
     notfound = functional.FunctionalDocFileSuite('../notfound.txt')
     notfound.layer = PublicationLayer
-    methodnotallowed = functional.FunctionalDocFileSuite('../methodnotallowed.txt')
+    methodnotallowed = functional.FunctionalDocFileSuite(
+        '../methodnotallowed.txt')
     methodnotallowed.layer = PublicationLayer
-    httpfactory = functional.FunctionalDocFileSuite('../httpfactory.txt')
+    httpfactory = functional.FunctionalDocFileSuite(
+        '../httpfactory.txt', checker=checker)
     httpfactory.layer = PublicationLayer
     return unittest.TestSuite((
         notfound,
