@@ -28,7 +28,7 @@ from zope.app.publication.requestpublicationregistry import factoryRegistry
 
 def chooseClasses(method, environment):
     """Given the method and environment, choose the correct request and
-    publication factort."""
+    publication factory."""
     content_type = environment.get('CONTENT_TYPE', '')
     factory = factoryRegistry.lookup(method, content_type, environment)
     request_class, publication = factory()

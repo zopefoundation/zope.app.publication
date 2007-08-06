@@ -13,7 +13,7 @@
 ##############################################################################
 """A registry for Request-Publication factories.
 
-$Id: publicationfactories.py 38841 2005-10-07 04:34:09Z andreasjung $
+$Id$
 """
 __docformat__ = 'restructuredtext'
 
@@ -23,7 +23,7 @@ from zope.app.publication.interfaces import IRequestPublicationRegistry
 from zope.configuration.exceptions import ConfigurationError
 
 class RequestPublicationRegistry(object):
-    """The registry implements a three stage lookup for registred factories
+    """The registry implements a three stage lookup for registered factories
     that have to deal with requests::
 
       {method > { mimetype -> [{'priority' : some_int,
