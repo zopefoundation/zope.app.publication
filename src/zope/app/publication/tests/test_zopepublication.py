@@ -29,6 +29,7 @@ from zope.interface.verify import verifyClass
 from zope.interface import implements, classImplements, implementedBy
 from zope.i18n.interfaces import IUserPreferredCharsets
 from zope.component.interfaces import ComponentLookupError
+from zope.error.interfaces import IErrorReportingUtility
 from zope.location import Location
 from zope.publisher.base import TestPublication, TestRequest
 from zope.publisher.http import IHTTPRequest, HTTPCharsets
@@ -42,7 +43,6 @@ from zope.location.interfaces import ILocation
 from zope.app.testing.placelesssetup import PlacelessSetup
 from zope.app.testing import setup, ztapi
 
-from zope.app.error.interfaces import IErrorReportingUtility
 from zope.app.security.principalregistry import principalRegistry
 from zope.app.security.interfaces import IUnauthenticatedPrincipal, IPrincipal
 from zope.app.publication.zopepublication import ZopePublication
