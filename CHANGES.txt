@@ -2,6 +2,11 @@
 CHANGES
 =======
 
+Version 3.4.2 (2007/9/26)
+-------------------------
+
+- Added missing files to egg distribution
+
 Version 3.4.1 (2007/9/24)
 -------------------------
 
@@ -13,4 +18,4 @@ Version 3.4.0 (2007/9/25)
 
 - Initial documented release
 
-- Reflect changes form zope.app.error refactoring
+- Reflect changes form ``zope.app.error`` refactoring
