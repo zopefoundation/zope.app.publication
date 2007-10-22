@@ -13,11 +13,9 @@
 ##############################################################################
 """Tests for the HTTP Publication Request Factory.
 
-$Id: test_publicationfactories.py 38841 2005-10-07 04:34:09Z andreasjung $
+$Id$
 """
 from unittest import TestCase, TestSuite, main, makeSuite
-
-from StringIO import StringIO
 
 from zope import component, interface
 from zope.publisher.browser import BrowserRequest
@@ -25,11 +23,9 @@ from zope.publisher.http import HTTPRequest
 from zope.publisher.xmlrpc import XMLRPCRequest
 from zope.component.testing import PlacelessSetup
 
-from zope.app.publication.httpfactory import HTTPPublicationRequestFactory
 from zope.app.publication.browser import BrowserPublication
 from zope.app.publication.http import HTTPPublication
 from zope.app.publication.xmlrpc import XMLRPCPublication
-from zope.app.testing import ztapi
 from zope.app.publication import interfaces
 from zope.app.publication.requestpublicationfactories import \
      SOAPFactory, XMLRPCFactory, HTTPFactory, BrowserFactory

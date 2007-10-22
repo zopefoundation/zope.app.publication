@@ -15,7 +15,7 @@
 
 This module provides factories for tuples (request, publication).
 
-$Id: publicationfactories.py 38841 2005-10-07 04:34:09Z andreasjung $
+$Id$
 """
 __docformat__ = 'restructuredtext'
 
@@ -79,4 +79,3 @@ class BrowserFactory(object):
         request_class = component.queryUtility(
                 interfaces.IBrowserRequestFactory, default=BrowserRequest)
         return request_class, BrowserPublication
-
