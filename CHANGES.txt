@@ -2,25 +2,28 @@
 CHANGES
 =======
 
-Unreleased
-----------
+3.4.3 (2007-11-01)
+------------------
 
-- Removed unused imports
+- Removed unused imports.
 
-Version 3.4.2 (2007/9/26)
--------------------------
-
-- Added missing files to egg distribution
-
-Version 3.4.1 (2007/9/24)
--------------------------
-
-- Added missing files to egg distribution
+- Resolve ``ZopeSecurityPolicy`` deprecation warning.
 
 
-Version 3.4.0 (2007/9/25)
--------------------------
+3.4.2 (2007-09-26)
+------------------
 
-- Initial documented release
+- Added missing files to egg distribution.
 
-- Reflect changes form ``zope.app.error`` refactoring
+3.4.1 (2007-09-26)
+------------------
+
+- Added missing files to egg distribution.
+
+
+3.4.0 (2007-09-25)
+------------------
+
+- Initial documented release.
+
+- Reflect changes form ``zope.app.error`` refactoring.
