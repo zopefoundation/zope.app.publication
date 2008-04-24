@@ -16,10 +16,11 @@
 $Id$
 """
 __docformat__ = 'restructuredtext'
+import zope.component
+
 from zope.publisher.interfaces import NotFound
 from zope.publisher.publish import mapply
 
-from zope.app import zapi
 from zope.app.publication.zopepublication import ZopePublication
 
 
@@ -29,7 +30,9 @@ class FTPPublication(ZopePublication):
 
     def callObject(self, request, ob):
         method = request['command']
-        view = zapi.queryMultiAdapter((ob, request), name=method, default=self)
+        view = zope.component.queryMultiAdapter((ob, request),
+                                                name=method,
+                                                default=self)
         if view is self:
             raise NotFound(ob, method, request)
 

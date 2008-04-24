@@ -20,6 +20,7 @@ import unittest
 from zope.app.publication.tests.test_zopepublication import \
      BasePublicationTests
 from zope.app.publication.traversers import TestTraverser
+from zope.app.publication.traversers import SimpleComponentTraverser
 from zope.app.publication.xmlrpc import XMLRPCPublication
 from zope.interface import Interface, implements
 from zope.proxy import removeAllProxies
@@ -98,9 +99,6 @@ class XMLRPCPublicationTests(BasePublicationTests):
 
 
         # Register the simple traverser so we can traverse without @@
-        from zope.publisher.interfaces.xmlrpc import IXMLRPCPublisher
-        from zope.publisher.interfaces.xmlrpc import IXMLRPCRequest
-        from zope.app.publication.traversers import SimpleComponentTraverser
         ztapi.provideView(Interface, IXMLRPCRequest, IXMLRPCPublisher, '',
                           SimpleComponentTraverser)
 
@@ -108,10 +106,10 @@ class XMLRPCPublicationTests(BasePublicationTests):
         ztapi.provideView(I, IXMLRPCRequest, Interface, 'spam', V)
         ob2 = pub.traverseName(r, ob, '@@spam')
         self.assertEqual(removeAllProxies(ob2).__class__, V)
-        
+
         ob2 = pub.traverseName(r, ob, 'spam')
         self.assertEqual(removeAllProxies(ob2).__class__, V)
-        
+
 
     def testTraverseNameSiteManager(self):
         pub = self.klass(self.db)
@@ -122,7 +120,6 @@ class XMLRPCPublicationTests(BasePublicationTests):
         r = self._createRequest('/++etc++site',pub)
         ob2 = pub.traverseName(r, ob, '++etc++site')
         self.assertEqual(removeAllProxies(ob2).v, 1)
-
 
 def test_suite():
     return unittest.TestSuite((

@@ -20,7 +20,8 @@ __docformat__ = 'restructuredtext'
 
 from zope.publisher.publish import mapply
 
-from zope.app import zapi
+import zope.component
+
 from zope.interface import implements, Attribute
 from zope.interface.common.interfaces import IException
 from zope.app.http.interfaces import IHTTPException
@@ -66,7 +67,8 @@ class HTTPPublication(BaseHTTPPublication):
         # Exception handling, dont try to call request.method
         orig = ob
         if not IHTTPException.providedBy(ob):
-            ob = zapi.queryMultiAdapter((ob, request), name=request.method)
+            ob = zope.component.queryMultiAdapter((ob, request),
+                                                  name=request.method)
             ob = getattr(ob, request.method, None)
             if ob is None:
                 raise MethodNotAllowed(orig, request)

@@ -39,13 +39,13 @@ from zope.location import LocationProxy
 from zope.error.interfaces import IErrorReportingUtility
 
 import zope.app.security.interfaces
-from zope.app import zapi
 from zope.app.applicationcontrol.applicationcontrol \
      import applicationControllerRoot
 from zope.app.exception.interfaces import ISystemErrorView
 from zope.app.publication.interfaces import BeforeTraverseEvent
 from zope.app.publication.interfaces import EndRequestEvent
 from zope.app.publication.publicationtraverse import PublicationTraverse
+from zope.app.publisher.browser import queryDefaultViewName
 from zope.app.security.interfaces import IUnauthenticatedPrincipal
 from zope.app.security.interfaces import IFallbackUnauthenticatedPrincipal
 from zope.app.security.interfaces import IAuthentication
@@ -222,7 +222,7 @@ class ZopePublication(PublicationTraverse):
         self.beginErrorHandlingTransaction(request, object,
                                            'error reporting utility')
         try:
-            errUtility = zapi.getUtility(IErrorReportingUtility)
+            errUtility = zope.component.getUtility(IErrorReportingUtility)
 
             # It is important that an error in errUtility.raising
             # does not propagate outside of here. Otherwise, nothing
@@ -315,9 +315,9 @@ class ZopePublication(PublicationTraverse):
                 # Give the exception instance its location and look up the
                 # view.
                 exception = LocationProxy(exc_info[1], loc, '')
-                name = zapi.queryDefaultViewName(exception, request)
+                name = queryDefaultViewName(exception, request)
                 if name is not None:
-                    view = zapi.queryMultiAdapter(
+                    view = zope.component.queryMultiAdapter(
                         (exception, request), name=name)
             except:
                 # Problem getting a view for this exception. Log an error.

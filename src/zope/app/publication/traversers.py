@@ -17,11 +17,13 @@ $Id$
 """
 __docformat__ = 'restructuredtext'
 
-from zope.app import zapi
+import zope.component
+
 from zope.interface import providedBy, implements
 from zope.publisher.interfaces import Unauthorized, NotFound
 from zope.publisher.interfaces.browser import IBrowserPublisher
 from zope.publisher.interfaces.xmlrpc import IXMLRPCPublisher
+from zope.app.publisher.browser import getDefaultViewName
 
 class SimpleComponentTraverser(object):
     """Browser traverser for simple components that can only traverse to views
@@ -34,12 +36,12 @@ class SimpleComponentTraverser(object):
 
     def browserDefault(self, request):
         ob = self.context
-        view_name = zapi.getDefaultViewName(ob, request)
+        view_name = getDefaultViewName(ob, request)
         return ob, (view_name,)
 
     def publishTraverse(self, request, name):
         ob = self.context
-        view = zapi.queryMultiAdapter((ob, request), name=name)
+        view = zope.component.queryMultiAdapter((ob, request), name=name)
         if view is None:
             raise NotFound(ob, name)
         return view
@@ -55,7 +57,7 @@ class FileContentTraverser(SimpleComponentTraverser):
     def browserDefault(self, request):
         ob = self.context
 
-        view_name = zapi.getDefaultViewName(ob, request)
+        view_name = getDefaultViewName(ob, request)
         view = self.publishTraverse(request, view_name)
         if hasattr(view, 'browserDefault'):
             view, path = view.browserDefault(request)
@@ -81,7 +83,7 @@ class TestTraverser(object):
         ob = self.context
 
         if list(providedBy(ob)):
-            view_name = zapi.getDefaultViewName(ob, request)
+            view_name = getDefaultViewName(ob, request)
             return ob, (("@@%s" % view_name),)
 
         return ob, ()
@@ -89,7 +91,7 @@ class TestTraverser(object):
     def publishTraverse(self, request, name):
         ob = self.context
         if name.startswith('@@'):
-            return zapi.getMultiAdapter((ob, request), name=name[6:])
+            return zope.component.getMultiAdaptera((ob, request), name=name[6:])
 
         if name.startswith('_'):
             raise Unauthorized(name)
