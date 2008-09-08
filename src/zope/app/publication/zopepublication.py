@@ -72,7 +72,6 @@ class ZopePublication(PublicationTraverse):
     """Base Zope publication specification."""
     implements(IPublication)
 
-    version_cookie = 'Zope-Version'
     root_name = 'Application'
 
     def __init__(self, db):
@@ -146,8 +145,7 @@ class ZopePublication(PublicationTraverse):
             return applicationControllerRoot
 
         # Open the database.
-        version = request.get(self.version_cookie, '')
-        conn = self.db.open(version)
+        conn = self.db.open()
 
         cleanup = Cleanup(conn.close)
         request.hold(cleanup)  # Close the connection on request.close()
