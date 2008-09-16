@@ -150,6 +150,7 @@ class ZopePublication(PublicationTraverse):
         cleanup = Cleanup(conn.close)
         request.hold(cleanup)  # Close the connection on request.close()
 
+        request.annotations['ZODB.interfaces.IConnection'] = conn
         self.openedConnection(conn)
         #conn.setDebugInfo(getattr(request, 'environ', None), request.other)
 

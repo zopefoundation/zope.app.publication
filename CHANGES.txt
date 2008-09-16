@@ -2,6 +2,14 @@
 CHANGES
 =======
 
+3.5.0 (unreleased)
+------------------
+
+- Now ``zope.app.publication.zopepublication.ZopePublication`` annotates the
+  request with the connection to the main ZODB when ``getApplication`` is
+  called.
+
+
 3.4.3 (2007-11-01)
 ------------------
 

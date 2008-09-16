@@ -571,6 +571,17 @@ class ZopePublicationTests(BasePublicationTests):
         self.assertEqual(len(clear), 1)
         self.assertEqual(clear[0].object, ob2)
 
+    def testConnectionAnnotation(self):
+        """The request is annotated with the connection to the main ZODB.
+        """
+        self.assertRaises(
+            KeyError,
+            lambda: self.request.annotations['ZODB.interfaces.IConnection'])
+
+        app = self.publication.getApplication(self.request)
+        conn = self.request.annotations['ZODB.interfaces.IConnection']
+        self.assertEqual(conn.db(), self.db)
+
 
 def test_suite():
     return unittest.TestSuite((
