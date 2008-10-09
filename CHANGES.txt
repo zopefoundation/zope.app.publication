@@ -2,12 +2,14 @@
 CHANGES
 =======
 
-3.5.0 (unreleased)
+3.5.0 (2008-10-09)
 ------------------
 
 - Now ``zope.app.publication.zopepublication.ZopePublication`` annotates the
   request with the connection to the main ZODB when ``getApplication`` is
   called.
+
+- Removed support for non-existent Zope versions.
 
 
 3.4.3 (2007-11-01)
@@ -22,6 +24,7 @@ CHANGES
 ------------------
 
 - Added missing files to egg distribution.
+
 
 3.4.1 (2007-09-26)
 ------------------
