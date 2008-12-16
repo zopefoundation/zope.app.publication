@@ -49,7 +49,7 @@ from zope.app.publisher.browser import queryDefaultViewName
 from zope.app.security.interfaces import IUnauthenticatedPrincipal
 from zope.app.security.interfaces import IFallbackUnauthenticatedPrincipal
 from zope.app.security.interfaces import IAuthentication
-from zope.app.component.interfaces import ISite
+from zope.location.interfaces import ISite
 
 class Cleanup(object):
 

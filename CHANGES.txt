@@ -2,6 +2,11 @@
 CHANGES
 =======
 
+3.5.1 (unreleased)
+
+- Import ISite from zope.location.interfaces instead of deprecated place
+  in zope.app.component.interfaces.
+
 3.5.0 (2008-10-09)
 ------------------
 
