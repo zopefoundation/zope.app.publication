@@ -43,21 +43,8 @@ class HTTPPublicationRequestFactory(object):
         self._db = db
         self._publication_cache = {}
 
-    def __call__(self, input_stream, env, output_stream=None):
+    def __call__(self, input_stream, env):
         """See `zope.app.publication.interfaces.IPublicationRequestFactory`"""
-        # BBB: This is backward-compatibility support for the deprecated
-        # output stream.
-        try:
-            env.get
-        except AttributeError:
-            import warnings
-            warnings.warn("Can't pass output streams to requests anymore. "
-                          "This will go away in Zope 3.4.",
-                          DeprecationWarning,
-                          2)
-            env, output_stream = output_stream, env
-
-
         method = env.get('REQUEST_METHOD', 'GET').upper()
         request_class, publication_class = chooseClasses(method, env)
 

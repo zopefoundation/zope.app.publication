@@ -28,18 +28,6 @@ from zope.app.publication.publicationtraverse \
      import PublicationTraverser as PublicationTraverser_
 from zope.app.publication.http import BaseHTTPPublication
 
-##############################################################################
-# BBB 2006/04/03 - to be removed after 12 months
-
-import zope.deferredimport
-zope.deferredimport.deprecated(
-    "setDefaultSkin has been moved to zope.publisher.browser. This "
-    "reference will be removed in Zope 3.5.",
-    setDefaultSkin = 'zope.publisher.browser:setDefaultSkin',
-    )
-
-#
-##############################################################################
 
 class PublicationTraverser(PublicationTraverser_):
 

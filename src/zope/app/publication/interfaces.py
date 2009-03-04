@@ -23,7 +23,7 @@ import zope.component.interfaces
 class IPublicationRequestFactory(interface.Interface):
     """Publication request factory"""
 
-    def __call__(input_stream, output_steam, env):
+    def __call__(input_stream, env):
         """Create a request object to handle the given inputs
 
         A request is created and configured with a publication object.
@@ -59,7 +59,7 @@ class EndRequestEvent(object):
 
 class IRequestFactory(interface.Interface):
 
-    def __call__(input_stream, output_steam, env):
+    def __call__(input_stream, env):
         """Create a request object to handle input."""
 
 class ISOAPRequestFactory(IRequestFactory):
