@@ -16,8 +16,6 @@
 $Id$
 """
 __docformat__ = 'restructuredtext'
-
-import sets
 from zope.interface import implements
 from zope.app.publication.interfaces import IRequestPublicationRegistry
 from zope.configuration.exceptions import ConfigurationError
@@ -66,7 +64,7 @@ class RequestPublicationRegistry(object):
 
         # check if the priorities are unique
         priorities = [item['priority'] for item in l]
-        if len(sets.Set(priorities)) != len(l):
+        if len(set(priorities)) != len(l):
             raise ConfigurationError('All registered publishers for a given '
                                      'method+mimetype must have distinct '
                                      'priorities. Please check your ZCML '

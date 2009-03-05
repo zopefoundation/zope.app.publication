@@ -7,6 +7,9 @@ CHANGES
 
 - Remove deprecated code.
 
+- Use built-in set class instead of the deprecated sets.Set and thus
+  don't cause deprecation warning in Python 2.6.
+
 3.5.1 (2009-01-31)
 ------------------
 
