@@ -19,8 +19,8 @@ __docformat__ = 'restructuredtext'
 
 from zope import interface
 
-from zope.publisher.interfaces.browser import IBrowserRequest
-from zope.publisher.browser import setDefaultSkin
+from zope.publisher.interfaces import ISkinnable
+from zope.publisher.skinnable import setDefaultSkin
 
 from zope.app.publication import interfaces
 from zope.app.publication.requestpublicationregistry import factoryRegistry
@@ -55,7 +55,7 @@ class HTTPPublicationRequestFactory(object):
 
         request = request_class(input_stream, env)
         request.setPublication(publication)
-        if IBrowserRequest.providedBy(request):
-            # only browser requests have skins
+        if ISkinnable.providedBy(request):
+            # only ISkinnable requests have skins
             setDefaultSkin(request)
         return request

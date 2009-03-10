@@ -5,6 +5,10 @@ CHANGES
 3.5.2 (unreleased)
 ------------------
 
+- Use ISkinnable.providedBy(request) instead of IBrowserRequest as condition
+  for calling setDefaultSkin. This at the same time removes dependency to
+  the browser part of zope.publisher.
+
 - Remove deprecated code.
 
 - Use built-in set class instead of the deprecated sets.Set and thus
