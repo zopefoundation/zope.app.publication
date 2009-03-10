@@ -91,7 +91,7 @@ class TestTraverser(object):
     def publishTraverse(self, request, name):
         ob = self.context
         if name.startswith('@@'):
-            return zope.component.getMultiAdaptera((ob, request), name=name[6:])
+            return zope.component.getMultiAdapter((ob, request), name=name[6:])
 
         if name.startswith('_'):
             raise Unauthorized(name)
