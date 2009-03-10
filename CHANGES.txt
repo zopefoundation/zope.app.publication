@@ -2,7 +2,7 @@
 CHANGES
 =======
 
-3.5.2 (unreleased)
+3.5.2 (2009-03-10)
 ------------------
 
 - Use ISkinnable.providedBy(request) instead of IBrowserRequest as condition
