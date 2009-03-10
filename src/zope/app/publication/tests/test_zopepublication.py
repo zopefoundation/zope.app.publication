@@ -47,7 +47,6 @@ from zope.app.security.principalregistry import principalRegistry
 from zope.app.security.interfaces import IUnauthenticatedPrincipal, IPrincipal
 from zope.app.publication.zopepublication import ZopePublication
 from zope.app.folder import Folder, rootFolder
-from zope.app.security.interfaces import IAuthenticationUtility
 from zope.app.security.interfaces import IAuthentication
 from zope.app.security.interfaces import IFallbackUnauthenticatedPrincipal
 from zope.app.security.principalregistry import principalRegistry
@@ -446,11 +445,11 @@ class ZopePublicationTests(BasePublicationTests):
         f1 = app['f1']
         f1['f2'] = Folder()
         sm1 = setup.createSiteManager(f1)
-        setup.addUtility(sm1, '', IAuthenticationUtility, AuthUtility1())
+        setup.addUtility(sm1, '', IAuthentication, AuthUtility1())
 
         f2 = f1['f2']
         sm2 = setup.createSiteManager(f2)
-        setup.addUtility(sm2, '', IAuthenticationUtility, AuthUtility2())
+        setup.addUtility(sm2, '', IAuthentication, AuthUtility2())
         transaction.commit()
 
         from zope.app.container.interfaces import ISimpleReadContainer
