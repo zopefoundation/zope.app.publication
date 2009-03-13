@@ -25,7 +25,7 @@ from zope.app.publication.xmlrpc import XMLRPCPublication
 from zope.interface import Interface, implements
 from zope.proxy import removeAllProxies
 from zope.publisher.interfaces import NotFound
-from zope.app.publisher.interfaces.xmlrpc import IXMLRPCPresentation
+from zope.app.publisher.interfaces.xmlrpc import IXMLRPCView
 from zope.publisher.interfaces.xmlrpc import IXMLRPCRequest
 from zope.publisher.interfaces.xmlrpc import IXMLRPCPublisher
 from zope.publisher.xmlrpc import TestRequest
@@ -71,13 +71,13 @@ class XMLRPCPublicationTests(BasePublicationTests):
         class V(object):
             def __init__(self, context, request):
                 pass
-            implements(IXMLRPCPresentation)
+            implements(IXMLRPCView)
 
         ob = C()
         r = self._createRequest('/foo', pub)
 
-        ztapi.provideView(I, IXMLRPCPresentation, Interface, 'view', V)
-        ztapi.setDefaultViewName(I, 'view', type=IXMLRPCPresentation)
+        ztapi.provideView(I, IXMLRPCView, Interface, 'view', V)
+        ztapi.setDefaultViewName(I, 'view', type=IXMLRPCView)
         self.assertRaises(NotFound, pub.traverseName, r, ob, 'foo')
 
 
@@ -95,7 +95,7 @@ class XMLRPCPublicationTests(BasePublicationTests):
         class V(object):
             def __init__(self, context, request):
                 pass
-            implements(IXMLRPCPresentation)
+            implements(IXMLRPCView)
 
 
         # Register the simple traverser so we can traverse without @@

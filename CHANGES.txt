@@ -5,7 +5,8 @@ CHANGES
 3.5.3 (unreleased)
 ------------------
 
-- ...
+- Adapt to the removal of IXMLPresentation from zope.app.publisher which
+  was removed to adapt to removal of deprecated interfaces from zope.component.
 
 3.5.2 (2009-03-10)
 ------------------
