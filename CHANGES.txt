@@ -2,7 +2,12 @@
 CHANGES
 =======
 
-3.5.3 (unreleased)
+3.5.4 (unreleased)
+------------------
+
+- ...
+
+3.5.3 (2009-03-13)
 ------------------
 
 - Adapt to the removal of IXMLPresentation from zope.app.publisher which
