@@ -43,13 +43,13 @@ from zope.location.interfaces import ILocation
 from zope.app.testing.placelesssetup import PlacelessSetup
 from zope.app.testing import setup, ztapi
 
-from zope.app.security.principalregistry import principalRegistry
-from zope.app.security.interfaces import IUnauthenticatedPrincipal, IPrincipal
+from zope.authentication.interfaces import IAuthentication
+from zope.authentication.interfaces import IFallbackUnauthenticatedPrincipal
+from zope.authentication.interfaces import IUnauthenticatedPrincipal
+from zope.security.interfaces import IPrincipal
+from zope.principalregistry.principalregistry import principalRegistry
 from zope.app.publication.zopepublication import ZopePublication
 from zope.app.folder import Folder, rootFolder
-from zope.app.security.interfaces import IAuthentication
-from zope.app.security.interfaces import IFallbackUnauthenticatedPrincipal
-from zope.app.security.principalregistry import principalRegistry
 
 
 class Principal(object):

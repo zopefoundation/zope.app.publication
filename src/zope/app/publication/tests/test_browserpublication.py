@@ -13,7 +13,7 @@
 ##############################################################################
 """Browser Publication Tests
 
-$Id: test_browserpublication.py 38357 2005-09-07 20:14:34Z srichter $
+$Id$
 """
 import unittest
 
@@ -31,7 +31,7 @@ from zope.proxy import getProxiedObject
 from zope.security.proxy import Proxy, removeSecurityProxy
 from zope.security.checker import defineChecker, NamesChecker
 
-from zope.app.security.principalregistry import principalRegistry
+from zope.principalregistry.principalregistry import principalRegistry
 
 from zope.app.publication.browser import BrowserPublication
 from zope.app.publication.httpfactory import HTTPPublicationRequestFactory

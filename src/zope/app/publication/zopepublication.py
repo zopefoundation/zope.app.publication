@@ -38,7 +38,7 @@ from zope.traversing.interfaces import IPhysicallyLocatable
 from zope.location import LocationProxy
 from zope.error.interfaces import IErrorReportingUtility
 
-import zope.app.security.interfaces
+import zope.authentication.interfaces
 from zope.app.applicationcontrol.applicationcontrol \
      import applicationControllerRoot
 from zope.app.exception.interfaces import ISystemErrorView
@@ -46,9 +46,9 @@ from zope.app.publication.interfaces import BeforeTraverseEvent
 from zope.app.publication.interfaces import EndRequestEvent
 from zope.app.publication.publicationtraverse import PublicationTraverse
 from zope.app.publisher.browser import queryDefaultViewName
-from zope.app.security.interfaces import IUnauthenticatedPrincipal
-from zope.app.security.interfaces import IFallbackUnauthenticatedPrincipal
-from zope.app.security.interfaces import IAuthentication
+from zope.authentication.interfaces import IUnauthenticatedPrincipal
+from zope.authentication.interfaces import IFallbackUnauthenticatedPrincipal
+from zope.authentication.interfaces import IAuthentication
 from zope.location.interfaces import ISite
 
 class Cleanup(object):
@@ -81,7 +81,7 @@ class ZopePublication(PublicationTraverse):
     def beforeTraversal(self, request):
         # Try to authenticate against the root authentication utility.
         auth = zope.component.getGlobalSiteManager().getUtility(
-            zope.app.security.interfaces.IAuthentication)
+            zope.authentication.interfaces.IAuthentication)
         principal = auth.authenticate(request)
         if principal is None:
             principal = auth.unauthenticatedPrincipal()
