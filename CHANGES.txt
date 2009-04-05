@@ -5,6 +5,9 @@ CHANGES
 3.5.4 (unreleased)
 ------------------
 
+- Use zope:adpater ZCML directive instead of zope:view.
+  This avoid dependency on zope.app.component
+
 - Update imports from zope.app.security to zope.authentication and
   zope.principalregistry.
 
