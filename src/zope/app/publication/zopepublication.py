@@ -41,7 +41,7 @@ from zope.error.interfaces import IErrorReportingUtility
 import zope.authentication.interfaces
 from zope.app.applicationcontrol.applicationcontrol \
      import applicationControllerRoot
-from zope.app.exception.interfaces import ISystemErrorView
+from zope.browser.interfaces import ISystemErrorView
 from zope.app.publication.interfaces import BeforeTraverseEvent
 from zope.app.publication.interfaces import EndRequestEvent
 from zope.app.publication.publicationtraverse import PublicationTraverse

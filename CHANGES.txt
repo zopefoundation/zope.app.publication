@@ -2,14 +2,19 @@
 CHANGES
 =======
 
-3.5.4 (unreleased)
+3.6.0 (unreleased)
 ------------------
 
-- Use zope:adpater ZCML directive instead of zope:view.
-  This avoid dependency on zope.app.component
+- Use ``zope:adpater`` ZCML directive instead of ``zope:view``.
+  This avoid dependency on ``zope.app.component``.
 
-- Update imports from zope.app.security to zope.authentication and
-  zope.principalregistry.
+- Update imports from ``zope.app.security`` to ``zope.authentication`` and
+  ``zope.principalregistry``.
+
+- Use ``zope.browser.interfaces.ISystemError`` to avoid dependency on
+  ``zope.app.exception``.
+
+- Refactored tests so they can run successfully with ZODB 3.8 and 3.9.
 
 3.5.3 (2009-03-13)
 ------------------

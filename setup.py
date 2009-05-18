@@ -21,8 +21,10 @@ from setuptools import setup, find_packages
 def read(*rnames):
     return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
 
+version = '3.6.0dev',
+
 setup(name='zope.app.publication',
-    version = '3.5.4dev',
+    version=version,
     author='Zope Corporation and Contributors',
     author_email='zope-dev@zope.org',
     description='Zope publication',
@@ -50,7 +52,7 @@ setup(name='zope.app.publication',
     extras_require = dict(
         test=['zope.app.testing',
               'zope.app.securitypolicy',
-              'zope.app.zcmlfiles',
+              'zope.app.zcmlfiles>=3.5.4',
               'zope.app.dav',
               'zope.app.zptpage',
               'zope.principalregistry',
@@ -63,7 +65,7 @@ setup(name='zope.app.publication',
                       'zope.i18n',
                       'zope.app.http',
                       'zope.app.applicationcontrol',
-                      'zope.app.exception',
+                      'zope.browser>=1.2',
                       'zope.app.publisher',
                       'setuptools',
                       ],
