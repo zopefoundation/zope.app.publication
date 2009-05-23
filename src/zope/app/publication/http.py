@@ -18,35 +18,22 @@ $Id$
 
 __docformat__ = 'restructuredtext'
 
+from zope.interface import Attribute
+from zope.interface import implements
+from zope.publisher.interfaces.http import IHTTPException
+from zope.publisher.interfaces.http import MethodNotAllowed
 from zope.publisher.publish import mapply
-
 import zope.component
+import zope.deferredimport
 
-from zope.interface import implements, Attribute
-from zope.interface.common.interfaces import IException
-from zope.app.http.interfaces import IHTTPException
 from zope.app.publication.zopepublication import ZopePublication
 
-
-class IMethodNotAllowed(IException):
-    """An exception that signals the 405 Method Not Allowed HTTP error"""
-
-    object = Attribute("""The object on which the error occurred""")
-
-    request = Attribute("""The request in which the error occurred""")
-
-
-class MethodNotAllowed(Exception):
-    """An exception that signals the 405 Method Not Allowed HTTP error"""
-
-    implements(IMethodNotAllowed)
-
-    def __init__(self, object, request):
-        self.object = object
-        self.request = request
-
-    def __str__(self):
-        return "%r, %r" % (self.object, self.request)
+zope.deferredimport.deprecatedFrom(
+    "This import has moved to zope.publisher.interfaces.http. "
+    "This import will stop working in the future.",
+    'zope.publisher.interfaces.http',
+    'IMethodNotAllowed',
+    )
 
 
 class BaseHTTPPublication(ZopePublication):
@@ -61,7 +48,7 @@ class BaseHTTPPublication(ZopePublication):
 
 
 class HTTPPublication(BaseHTTPPublication):
-    """HTTP-specific publication"""
+    """Non-browser HTTP publication"""
 
     def callObject(self, request, ob):
         # Exception handling, dont try to call request.method

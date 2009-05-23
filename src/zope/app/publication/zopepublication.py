@@ -44,7 +44,7 @@ from zope.app.applicationcontrol.applicationcontrol \
 from zope.browser.interfaces import ISystemErrorView
 from zope.app.publication.interfaces import BeforeTraverseEvent
 from zope.app.publication.interfaces import EndRequestEvent
-from zope.app.publication.publicationtraverse import PublicationTraverse
+from zope.traversing.publicationtraverse import PublicationTraverse
 from zope.app.publisher.browser import queryDefaultViewName
 from zope.authentication.interfaces import IUnauthenticatedPrincipal
 from zope.authentication.interfaces import IFallbackUnauthenticatedPrincipal

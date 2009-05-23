@@ -9,6 +9,8 @@ CHANGES
   zope.app.publisher -> zope.app.publication dependency (which was a
   cycle).
 
+- Moved IHTTPException to zope.publisher, removing the dependency
+  on zope.app.http.
 
 3.6.0 (2009-05-18)
 ------------------
