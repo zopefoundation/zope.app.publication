@@ -5,4 +5,12 @@
         schema=".metadirectives.IRequestPublicationDirective"
         handler=".metaconfigure.publisher"
         />
+
+  <meta:directive
+        namespace="http://namespaces.zope.org/browser"
+        name="defaultView"
+        schema=".metadirectives.IDefaultViewDirective"
+        handler=".metaconfigure.defaultView"
+        />
+
 </configure>

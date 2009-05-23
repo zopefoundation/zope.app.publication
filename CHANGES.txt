@@ -16,6 +16,10 @@ CHANGES
   zope.app.publication, removing the dependency on
   zope.app.publisher except for testing purposes.
 
+- Moved the <browser:defaultView> directive handler to
+  zope.app.publication, since zope.app.publication is what
+  uses the registration.
+
 3.6.0 (2009-05-18)
 ------------------
 
