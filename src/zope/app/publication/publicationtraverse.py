@@ -24,8 +24,16 @@ zope.deferredimport.deprecatedFrom(
     "This module has moved to zope.traversing. This import will stop "
     "working in the future.",
     'zope.traversing.publicationtraverse',
-    'DuplicateNamespaces',
-    'UnknownNamespace',
     'PublicationTraverse',
     'PublicationTraverser',
     )
+
+# AFAICT, no one depends on the exception types defined below,
+# nor should they!  - 2009-05-23
+
+class DuplicateNamespaces(Exception):
+    """More than one namespace was specified in a request"""
+
+class UnknownNamespace(Exception):
+    """A parameter specified an unknown namespace"""
+
