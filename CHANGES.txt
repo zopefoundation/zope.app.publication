@@ -2,16 +2,18 @@
 CHANGES
 =======
 
-3.6.1 (unreleased)
+3.7.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Moved the publicationtraverse module to zope.traversing, removing the
+  zope.app.publisher -> zope.app.publication dependency (which was a
+  cycle).
 
 
 3.6.0 (2009-05-18)
 ------------------
 
-- Use ``zope:adpater`` ZCML directive instead of ``zope:view``.
+- Use ``zope:adapter`` ZCML directive instead of ``zope:view``.
   This avoid dependency on ``zope.app.component``.
 
 - Update imports from ``zope.app.security`` to ``zope.authentication`` and

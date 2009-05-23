@@ -21,7 +21,7 @@ from setuptools import setup, find_packages
 def read(*rnames):
     return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
 
-version = '3.6.1dev'
+version = '3.7.0'
 
 setup(name='zope.app.publication',
     version=version,
@@ -68,6 +68,7 @@ setup(name='zope.app.publication',
                       'zope.app.applicationcontrol',
                       'zope.browser>=1.2',
                       'zope.publisher',
+                      'zope.traversing>=3.7.0',
                       'zope.app.publisher',
                       'setuptools',
                       ],
