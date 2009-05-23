@@ -21,7 +21,7 @@ in order to implement SOAP support. If no utility is registered
 for this interface, SOAP requests are handled as if they were
 browser requests.
 
-$Id: $
+$Id$
 """
 
 from zope.app.publication.http import BaseHTTPPublication

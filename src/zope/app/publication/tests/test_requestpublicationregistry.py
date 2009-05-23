@@ -13,7 +13,7 @@
 ##############################################################################
 """Tests for the HTTP Publication Request Factory.
 
-$Id: test_publicationfactories.py 38841 2005-10-07 04:34:09Z andreasjung $
+$Id$
 """
 from unittest import TestCase, TestSuite, main, makeSuite
 
