@@ -18,15 +18,8 @@ $Id$
 """
 __docformat__ = 'restructuredtext'
 
-import zope.deferredimport
-
-zope.deferredimport.deprecatedFrom(
-    "This module has moved to zope.traversing. This import will stop "
-    "working in the future.",
-    'zope.traversing.publicationtraverse',
-    'PublicationTraverse',
-    'PublicationTraverser',
-    )
+from zope.deprecation import moved
+moved('zope.traversing.publicationtraverse')
 
 # AFAICT, no one depends on the exception types defined below,
 # nor should they!  - 2009-05-23

@@ -24,16 +24,13 @@ from zope.publisher.interfaces.http import IHTTPException
 from zope.publisher.interfaces.http import MethodNotAllowed
 from zope.publisher.publish import mapply
 import zope.component
-import zope.deferredimport
 
 from zope.app.publication.zopepublication import ZopePublication
 
-zope.deferredimport.deprecatedFrom(
-    "This import has moved to zope.publisher.interfaces.http. "
-    "This import will stop working in the future.",
-    'zope.publisher.interfaces.http',
-    'IMethodNotAllowed',
-    )
+from zope.publisher.interfaces.http import IMethodNotAllowed
+from zope.deprecation import deprecated
+deprecated(
+    "IMethodNotAllowed", "moved to zope.publisher.interfaces")
 
 
 class BaseHTTPPublication(ZopePublication):
