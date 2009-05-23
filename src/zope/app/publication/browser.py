@@ -24,26 +24,16 @@ from zope.component import queryMultiAdapter
 from zope.publisher.interfaces.browser import IBrowserPublisher
 from zope.security.checker import ProxyFactory
 
-from zope.app.publication.publicationtraverse \
-     import PublicationTraverser as PublicationTraverser_
 from zope.app.publication.http import BaseHTTPPublication
 
+import zope.deferredimport
 
-class PublicationTraverser(PublicationTraverser_):
-
-    def traverseRelativeURL(self, request, ob, path):
-        ob = self.traversePath(request, ob, path)
-
-        while True:
-            adapter = IBrowserPublisher(ob, None)
-            if adapter is None:
-                return ob
-            ob, path = adapter.browserDefault(request)
-            ob = ProxyFactory(ob)
-            if not path:
-                return ob
-
-            ob = self.traversePath(request, ob, path)
+zope.deferredimport.deprecatedFrom(
+    "This import has moved to zope.traversing.publicationtraverse. "
+    "This import will stop working in the future.",
+    'zope.traversing.publicationtraverse',
+    'PublicationTraverser',
+    )
 
 class BrowserPublication(BaseHTTPPublication):
     """Web browser publication handling."""
