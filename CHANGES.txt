@@ -12,6 +12,10 @@ CHANGES
 - Moved IHTTPException to zope.publisher, removing the dependency
   on zope.app.http.
 
+- Moved the DefaultViewName API from zope.app.publisher to
+  zope.app.publication, removing the dependency on
+  zope.app.publisher except for testing purposes.
+
 3.6.0 (2009-05-18)
 ------------------
 

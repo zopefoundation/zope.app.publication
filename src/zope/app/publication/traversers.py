@@ -23,7 +23,7 @@ from zope.interface import providedBy, implements
 from zope.publisher.interfaces import Unauthorized, NotFound
 from zope.publisher.interfaces.browser import IBrowserPublisher
 from zope.publisher.interfaces.xmlrpc import IXMLRPCPublisher
-from zope.app.publisher.browser import getDefaultViewName
+from zope.app.publication.defaultview import getDefaultViewName
 
 class SimpleComponentTraverser(object):
     """Browser traverser for simple components that can only traverse to views
