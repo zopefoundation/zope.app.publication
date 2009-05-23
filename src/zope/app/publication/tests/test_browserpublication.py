@@ -237,6 +237,8 @@ class BrowserPublicationTests(BasePublicationTests):
     def testTraverseNameApplicationControl(self):
         from zope.app.applicationcontrol.applicationcontrol \
              import applicationController, applicationControllerRoot
+        from zope.traversing.interfaces import IEtcNamespace
+        ztapi.provideUtility(IEtcNamespace, applicationController, 'process')
         pub = self.klass(self.db)
         r = self._createRequest('/++etc++process',pub)
         ac = pub.traverseName(r,

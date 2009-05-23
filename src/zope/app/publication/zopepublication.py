@@ -35,12 +35,11 @@ from zope.security.management import newInteraction, endInteraction
 from zope.security.checker import ProxyFactory
 from zope.security.proxy import removeSecurityProxy
 from zope.traversing.interfaces import IPhysicallyLocatable
+from zope.traversing.interfaces import IEtcNamespace
 from zope.location import LocationProxy
 from zope.error.interfaces import IErrorReportingUtility
 
 import zope.authentication.interfaces
-from zope.app.applicationcontrol.applicationcontrol \
-     import applicationControllerRoot
 from zope.browser.interfaces import ISystemErrorView
 from zope.app.publication.interfaces import BeforeTraverseEvent
 from zope.app.publication.interfaces import EndRequestEvent
@@ -137,12 +136,14 @@ class ZopePublication(PublicationTraverse):
         pass
 
     def getApplication(self, request):
-        # If the first name is '++etc++process', then we should
-        # get it rather than look in the database!
+        # If '++etc++process' is in the path, then we should
+        # get the parent of the application controller rather than
+        # open the database.
         stack = request.getTraversalStack()
 
         if '++etc++process' in stack:
-            return applicationControllerRoot
+            obj = zope.component.getUtility(IEtcNamespace, 'process')
+            return obj.__parent__
 
         # Open the database.
         conn = self.db.open()
