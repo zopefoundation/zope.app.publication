@@ -10,6 +10,14 @@
       permission="zope.Public"
       />
 
+  <view
+      for="zope.interface.Interface"
+      type="zope.publisher.interfaces.xmlrpc.IXMLRPCRequest"
+      provides="zope.publisher.interfaces.xmlrpc.IXMLRPCPublisher"
+      factory="zope.app.publication.traversers.SimpleComponentTraverser"
+      permission="zope.Public"
+      />
+
   <adapter
       for="types.MethodType zope.publisher.interfaces.browser.IBrowserRequest"
       provides="zope.publisher.interfaces.browser.IBrowserPublisher"
