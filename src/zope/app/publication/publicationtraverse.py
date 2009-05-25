@@ -18,15 +18,14 @@ $Id$
 """
 __docformat__ = 'restructuredtext'
 
-from zope.deprecation import moved
-moved('zope.traversing.publicationtraverse')
+from zope.traversing.publicationtraverse import PublicationTraverse #BBB import
+from zope.traversing.publicationtraverse import PublicationTraverser #BBB import
 
-# AFAICT, no one depends on the exception types defined below,
-# nor should they!  - 2009-05-23
-
+#BBB: do not use
 class DuplicateNamespaces(Exception):
     """More than one namespace was specified in a request"""
 
+#BBB: do not use
 class UnknownNamespace(Exception):
     """A parameter specified an unknown namespace"""
 

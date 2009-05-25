@@ -26,10 +26,7 @@ from zope.security.checker import ProxyFactory
 
 from zope.app.publication.http import BaseHTTPPublication
 
-from zope.traversing.publicationtraverse import PublicationTraverser
-from zope.deprecation import deprecated
-deprecated("PublicationTraverser",
-    "moved to zope.traversing.publicationtraverse")
+from zope.traversing.publicationtraverse import PublicationTraverser #BBB import
 
 class BrowserPublication(BaseHTTPPublication):
     """Web browser publication handling."""

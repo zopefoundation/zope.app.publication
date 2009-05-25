@@ -27,10 +27,7 @@ import zope.component
 
 from zope.app.publication.zopepublication import ZopePublication
 
-from zope.publisher.interfaces.http import IMethodNotAllowed
-from zope.deprecation import deprecated
-deprecated(
-    "IMethodNotAllowed", "moved to zope.publisher.interfaces")
+from zope.publisher.interfaces.http import IMethodNotAllowed #BBB import
 
 
 class BaseHTTPPublication(ZopePublication):
