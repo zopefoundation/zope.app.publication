@@ -11,17 +11,14 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Setup for zope.app.publication package
 
-$Id$
-"""
+version = '0'
+
 import os
 from setuptools import setup, find_packages
 
 def read(*rnames):
     return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
-
-version = '3.7.1dev'
 
 setup(name='zope.app.publication',
     version=version,
