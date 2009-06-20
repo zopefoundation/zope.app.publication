@@ -2,10 +2,13 @@
 CHANGES
 =======
 
-3.7.1 (unreleased)
+3.8.0 (2009-06-20)
 ------------------
 
-- Replaced zope.deprecation dependency with BBB imports
+- Added a proxy method that can be overridden in subclasses to control
+  how/if security proxies are created.
+
+- Replaced zope.deprecation dependency with backward-compatible imports
 
 3.7.0 (2009-05-23)
 ------------------

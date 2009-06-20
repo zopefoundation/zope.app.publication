@@ -77,6 +77,14 @@ class ZopePublication(PublicationTraverse):
         # db is a ZODB.DB.DB object.
         self.db = db
 
+    def proxy(self, ob):
+        """Security-proxy an object
+
+        Subclasses may override this to use a different proxy (or
+        checker) implementation or to not proxy at all.
+        """
+        return ProxyFactory(ob)
+
     def beforeTraversal(self, request):
         # Try to authenticate against the root authentication utility.
         auth = zope.component.getGlobalSiteManager().getUtility(
@@ -161,7 +169,7 @@ class ZopePublication(PublicationTraverse):
         if app is None:
             raise SystemError("Zope Application Not Found")
 
-        return ProxyFactory(app)
+        return self.proxy(app)
 
     def callObject(self, request, ob):
         return mapply(ob, request.getPositionalArguments(), request)
@@ -310,7 +318,7 @@ class ZopePublication(PublicationTraverse):
                     loc = getattr(loc, 'im_self', loc)
                     loc = getattr(loc, '__self__', loc)
                     # Protect the location with a security proxy
-                    loc = ProxyFactory(loc)
+                    loc = self.proxy(loc)
 
                 # Give the exception instance its location and look up the
                 # view.

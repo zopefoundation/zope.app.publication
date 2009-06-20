@@ -22,7 +22,6 @@ __docformat__ = 'restructuredtext'
 
 from zope.component import queryMultiAdapter
 from zope.publisher.interfaces.browser import IBrowserPublisher
-from zope.security.checker import ProxyFactory
 
 from zope.app.publication.http import BaseHTTPPublication
 
@@ -39,7 +38,7 @@ class BrowserPublication(BaseHTTPPublication):
             adapter = queryMultiAdapter((ob, request), IBrowserPublisher)
             if adapter is not None:
                 ob, path = adapter.browserDefault(request)
-                ob = ProxyFactory(ob)
+                ob = self.proxy(ob)
                 return ob, path
             else:
                 # ob is already proxied
