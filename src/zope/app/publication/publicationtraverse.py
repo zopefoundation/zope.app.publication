@@ -11,21 +11,14 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Backwards compatibility: moved this module to
-`zope.traversing.publicationtraverse`.
-
-$Id$
-"""
-__docformat__ = 'restructuredtext'
-
 import warnings
 
-warnings.warn("""zope.app.publicationtraverse is deprecated
+warnings.warn("""%s is deprecated
 
 If you want PublicationTraverser, it's now in
 zope.traversing.publicationtraverse.  Anything else that was here is
 deprecated.
-""", DeprecationWarning, stacklevel=1)
+""" % __name__, DeprecationWarning, stacklevel=1)
 
 
 from zope.traversing.publicationtraverse import PublicationTraverse #BBB import
@@ -38,4 +31,3 @@ class DuplicateNamespaces(Exception):
 #BBB: do not use
 class UnknownNamespace(Exception):
     """A parameter specified an unknown namespace"""
-
