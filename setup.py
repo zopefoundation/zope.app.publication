@@ -12,7 +12,7 @@
 #
 ##############################################################################
 
-version = '0'
+version = '3.8.1'
 
 import os
 from setuptools import setup, find_packages
