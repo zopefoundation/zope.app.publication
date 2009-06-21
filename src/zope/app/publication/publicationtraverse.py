@@ -18,6 +18,16 @@ $Id$
 """
 __docformat__ = 'restructuredtext'
 
+import warnings
+
+warnings.warn("""zope.app.publicationtraverse is deprecated
+
+If you want PublicationTraverser, it's now in
+zope.traversing.publicationtraverse.  Anything else that was here is
+deprecated.
+""", DeprecationWarning, stacklevel=1)
+
+
 from zope.traversing.publicationtraverse import PublicationTraverse #BBB import
 from zope.traversing.publicationtraverse import PublicationTraverser #BBB import
 
