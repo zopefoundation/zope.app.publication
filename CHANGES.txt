@@ -2,6 +2,12 @@
 CHANGES
 =======
 
+3.8.1 (2009-06-21)
+------------------
+
+- Bug fix: The publication traverseName methoid used ProxyFactory
+  rather than the publication proxy method.
+
 3.8.0 (2009-06-20)
 ------------------
 

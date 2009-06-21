@@ -25,17 +25,21 @@ from ZODB.POSException import ConflictError
 import transaction
 
 import zope.component
+from zope.component import queryMultiAdapter
 from zope.event import notify
 from zope.security.interfaces import Unauthorized
 from zope.interface import implements, providedBy
 from zope.publisher.publish import mapply
-from zope.publisher.interfaces import Retry, IExceptionSideEffects, IHeld
-from zope.publisher.interfaces import IRequest, IPublication
+from zope.publisher.interfaces import IExceptionSideEffects, IHeld
+from zope.publisher.interfaces import IPublication, IPublishTraverse, IRequest
+from zope.publisher.interfaces import NotFound, Retry
 from zope.security.management import newInteraction, endInteraction
 from zope.security.checker import ProxyFactory
 from zope.security.proxy import removeSecurityProxy
 from zope.traversing.interfaces import IPhysicallyLocatable
 from zope.traversing.interfaces import IEtcNamespace
+from zope.traversing.interfaces import TraversalError
+from zope.traversing.namespace import namespaceLookup, nsParse
 from zope.location import LocationProxy
 from zope.error.interfaces import IErrorReportingUtility
 
@@ -67,7 +71,7 @@ class Cleanup(object):
                 "Cleanup without request close")
             self._f()
 
-class ZopePublication(PublicationTraverse):
+class ZopePublication(object):
     """Base Zope publication specification."""
     implements(IPublication)
 
@@ -170,6 +174,36 @@ class ZopePublication(PublicationTraverse):
             raise SystemError("Zope Application Not Found")
 
         return self.proxy(app)
+
+    def traverseName(self, request, ob, name):
+        nm = name # the name to look up the object with
+
+        if name and name[:1] in '@+':
+            # Process URI segment parameters.
+            ns, nm = nsParse(name)
+            if ns:
+                try:
+                    ob2 = namespaceLookup(ns, nm, ob, request)
+                except TraversalError:
+                    raise NotFound(ob, name)
+
+                return self.proxy(ob2)
+
+        if nm == '.':
+            return ob
+
+        if IPublishTraverse.providedBy(ob):
+            ob2 = ob.publishTraverse(request, nm)
+        else:
+            # self is marker
+            adapter = queryMultiAdapter((ob, request), IPublishTraverse,
+                                        default=self)
+            if adapter is not self:
+                ob2 = adapter.publishTraverse(request, nm)
+            else:
+                raise NotFound(ob, name, request)
+
+        return self.proxy(ob2)
 
     def callObject(self, request, ob):
         return mapply(ob, request.getPositionalArguments(), request)

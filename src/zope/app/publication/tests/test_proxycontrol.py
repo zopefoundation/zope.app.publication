@@ -15,7 +15,9 @@ from zope.testing import doctest, cleanup
 import unittest
 import zope.app.publication.browser
 import zope.component
+import zope.interface
 import zope.publisher.interfaces.browser
+import zope.traversing.namespace
 
 class Proxy:
 
@@ -64,8 +66,16 @@ class DB:
 
 class Publisher:
 
+    zope.interface.implements(
+        zope.publisher.interfaces.browser.IBrowserPublisher)
+
     def __init__(self, context, request):
         self.context = context
+
+    def publishTraverse(self, request, name):
+        result = Sample()
+        result.__name__ = name
+        return result
 
     def browserDefault(self, request):
         return self.context, ['foo']
@@ -78,9 +88,10 @@ def proxy_control():
 
     >>> cleanup.cleanUp()
 
-    >>> zope.component.provideAdapter(
-    ...     Publisher, (Sample, Request),
-    ...     zope.publisher.interfaces.browser.IBrowserPublisher)
+    >>> zope.component.provideAdapter(Publisher, (Sample, Request))
+    >>> zope.component.provideAdapter(Publisher, (Sample, Request), name='foo')
+    >>> zope.component.provideAdapter(zope.traversing.namespace.view,
+    ...                               (Sample, Request), name='view')
 
     >>> pub = Publication(DB())
     >>> request = Request()
@@ -91,6 +102,17 @@ def proxy_control():
     True
 
     >>> sample = Sample()
+
+    >>> ob = pub.traverseName(request, sample, 'x')
+    Proxy called
+    >>> isinstance(ob, Proxy) and ob.context.__name__ == 'x'
+    True
+
+    >>> ob = pub.traverseName(request, sample, '@@foo')
+    Proxy called
+    >>> isinstance(ob, Proxy) and isinstance(ob.context, Publisher)
+    True
+
     >>> ob, path = pub.getDefaultTraversal(request, sample)
     Proxy called
     >>> isinstance(ob, Proxy) and ob.context == sample and path == ['foo']
