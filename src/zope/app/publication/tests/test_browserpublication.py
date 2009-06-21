@@ -209,6 +209,7 @@ class BrowserPublicationTests(BasePublicationTests):
         ob2 = pub.traverseName(r, ob, 'x')
         self.assertRaises(ForbiddenAttribute, getattr, ob2, 'v')
         self.assertEqual(removeSecurityProxy(ob2).v, 1)
+        self.assert_(pub.traverseName(r, ob, '.') is ob)
 
     def testTraverseNameView(self):
         pub = self.klass(self.db)
