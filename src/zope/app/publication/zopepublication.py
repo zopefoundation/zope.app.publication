@@ -285,7 +285,12 @@ class ZopePublication(object):
     def handleException(self, object, request, exc_info, retry_allowed=True):
         # This transaction had an exception that reached the publisher.
         # It must definitely be aborted.
-        transaction.abort()
+        try:
+            transaction.abort()
+        except:
+            # Hm, a catastrophe.  We might want to know what preceded it.
+            self._logErrorWithErrorReportingUtility(object, request, exc_info)
+            raise
 
         # Reraise Retry exceptions for the publisher to deal with.
         if retry_allowed and isinstance(exc_info[1], Retry):
@@ -305,7 +310,7 @@ class ZopePublication(object):
         # handling determine whether a retry is allowed or not?
         # Assume not for now.
 
-        # Record the error with the ErrorReportingUtility
+        # Record the error with the ErrorReportingUtility.
         self._logErrorWithErrorReportingUtility(object, request, exc_info)
 
         response = request.response

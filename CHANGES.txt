@@ -2,10 +2,16 @@
 CHANGES
 =======
 
+3.8.2 (unreleased)
+------------------
+
+- An abort within handleExceptions could have failed without logging what
+  caused the error. It now logs the original problem.
+
 3.8.1 (2009-06-21)
 ------------------
 
-- Bug fix: The publication traverseName methoid used ProxyFactory
+- Bug fix: The publication traverseName method used ProxyFactory
   rather than the publication proxy method.
 
 3.8.0 (2009-06-20)
