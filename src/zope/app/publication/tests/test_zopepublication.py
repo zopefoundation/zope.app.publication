@@ -415,6 +415,45 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         self.assert_(isinstance(error_info[1], FooError))
         self.assert_(request is self.request)
 
+    def testLogBeforeAbort(self):
+        # If we get an exception, and then (a catastrophe, but one that has
+        # been experienced) transaction.abort fails, we really want to know
+        # what happened before that abort.
+        # (Set up:)
+        zope.component.provideUtility(ErrorReportingUtility())
+        abort = transaction.abort
+        class AbortError(Exception):
+            pass
+        class AnEarlierError(Exception):
+            pass
+        def faux_abort():
+            raise AbortError
+        try:
+            raise AnEarlierError()
+        except AnEarlierError:
+            pass
+        transaction.abort = faux_abort
+        try:
+            # (Test:)
+            try:
+                self.publication.handleException(
+                    self.object, self.request, sys.exc_info(),
+                    retry_allowed=False)
+            except AbortError:
+                pass
+            else:
+                self.fail('Aborting should have failed')
+            # we expect a message in our logging utility
+            error_log = zope.component.getUtility(IErrorReportingUtility)
+            self.assertEqual(len(error_log.exceptions), 1)
+            error_info, request = error_log.exceptions[0]
+            self.assertEqual(error_info[0], AnEarlierError)
+            self.failUnless(isinstance(error_info[1], AnEarlierError))
+            self.failUnless(request is self.request)
+        finally:
+            # (Tear down:)
+            transaction.abort = abort
+
 
 class ZopePublicationTests(BasePublicationTests):
 

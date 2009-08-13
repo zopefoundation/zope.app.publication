@@ -2,6 +2,13 @@
 CHANGES
 =======
 
+3.4.4 (2009-08-12)
+------------------
+
+- An abort within handleExceptions could have failed without logging what
+  caused the error. It now logs the original problem.  This is a back-port
+  from trunk (what is currently slated for 3.8.2).
+
 3.4.3 (2007-11-01)
 ------------------
 
