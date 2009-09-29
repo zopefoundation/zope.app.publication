@@ -37,10 +37,14 @@ def test_suite():
     httpfactory = functional.FunctionalDocFileSuite(
         '../httpfactory.txt', checker=checker)
     httpfactory.layer = PublicationLayer
+    site = functional.FunctionalDocFileSuite(
+        '../site.txt')
+    site.layer = PublicationLayer
     return unittest.TestSuite((
         notfound,
         methodnotallowed,
         httpfactory,
+        site,
         ))
 
 if __name__ == '__main__':

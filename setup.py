@@ -17,7 +17,7 @@
 # Zope Toolkit policies as described by this documentation.
 ##############################################################################
 
-version = '0'
+version = '3.9.0dev'
 
 import os
 from setuptools import setup, find_packages
@@ -60,6 +60,7 @@ setup(name='zope.app.publication',
               'zope.app.zptpage',
               'zope.principalregistry',
               'zope.app.applicationcontrol>=3.5.0',
+              'zope.site',
               ]),
     install_requires=['zope.interface',
                       'ZODB3',

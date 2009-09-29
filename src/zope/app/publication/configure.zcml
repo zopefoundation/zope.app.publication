@@ -1,6 +1,7 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
     xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:zcml="http://namespaces.zope.org/zcml"
     >
 
   <adapter
@@ -8,6 +9,19 @@
       provides="zope.publisher.interfaces.browser.IBrowserPublisher"
       factory="zope.app.publication.traversers.SimpleComponentTraverser"
       permission="zope.Public"
+      />
+
+  <subscriber
+      zcml:condition="installed zope.site"
+      for="zope.location.interfaces.ISite
+           zope.app.publication.interfaces.IBeforeTraverseEvent"
+      handler="zope.site.threadSiteSubscriber"
+      />
+
+  <subscriber
+      zcml:condition="installed zope.site"
+      for="zope.app.publication.interfaces.IEndRequestEvent"
+      handler="zope.site.clearThreadSiteSubscriber"
       />
 
   <view

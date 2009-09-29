@@ -2,11 +2,14 @@
 CHANGES
 =======
 
-3.8.2 (unreleased)
+3.9.0 (unreleased)
 ------------------
 
 - An abort within handleExceptions could have failed without logging what
   caused the error. It now logs the original problem.
+
+- Moved registration of and tests for two publication-specific event handlers
+  here from zope.site in order to invert the package dependency.
 
 3.8.1 (2009-06-21)
 ------------------
