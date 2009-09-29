@@ -2,7 +2,7 @@
 CHANGES
 =======
 
-3.9.0 (unreleased)
+3.9.0 (2009-09-29)
 ------------------
 
 - An abort within handleExceptions could have failed without logging what
