@@ -11,6 +11,8 @@ CHANGES
 - Moved registration of and tests for two publication-specific event handlers
   here from zope.site in order to invert the package dependency.
 
+- Declared the missing dependency on zope.location.
+
 3.8.1 (2009-06-21)
 ------------------
 
