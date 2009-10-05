@@ -27,12 +27,10 @@ import transaction
 import zope.component
 from zope.interface.verify import verifyClass
 from zope.interface import implements, classImplements, implementedBy
-from zope.i18n.interfaces import IUserPreferredCharsets
 from zope.component.interfaces import ComponentLookupError
 from zope.error.interfaces import IErrorReportingUtility
 from zope.location import Location
 from zope.publisher.base import TestPublication, TestRequest
-from zope.publisher.http import IHTTPRequest, HTTPCharsets
 from zope.publisher.interfaces import IRequest, IPublishTraverse
 from zope.security import simplepolicies
 from zope.security.management import setSecurityPolicy, queryInteraction
@@ -112,8 +110,6 @@ class BasePublicationTests(PlacelessSetup, unittest.TestCase):
         super(BasePublicationTests, self).setUp()
         from zope.security.management import endInteraction
         endInteraction()
-        ztapi.provideAdapter(IHTTPRequest, IUserPreferredCharsets,
-                             HTTPCharsets)
         self.policy = setSecurityPolicy(
             simplepolicies.PermissiveSecurityPolicy
             )
