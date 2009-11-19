@@ -7,6 +7,11 @@ CHANGES
 
 - Removed dependency on zope.i18n.
 
+- Import hooks functionality from zope.component after it was moved there from
+  zope.site.
+
+- Import ISite from zope.component after it was moved there from
+  zope.location.
 
 3.9.0 (2009-09-29)
 ------------------

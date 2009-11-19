@@ -21,6 +21,7 @@ from ZODB.POSException import ConflictError
 import transaction
 
 import zope.component
+import zope.component.interfaces
 from zope.component import queryMultiAdapter
 from zope.event import notify
 from zope.security.interfaces import Unauthorized
@@ -47,7 +48,7 @@ from zope.publisher.defaultview import queryDefaultViewName
 from zope.authentication.interfaces import IUnauthenticatedPrincipal
 from zope.authentication.interfaces import IFallbackUnauthenticatedPrincipal
 from zope.authentication.interfaces import IAuthentication
-from zope.location.interfaces import ISite
+
 
 class Cleanup(object):
 
@@ -106,7 +107,7 @@ class ZopePublication(object):
             # Note that beforeTraversal guarentees that user is not None.
             return
 
-        if not ISite.providedBy(ob):
+        if not zope.component.interfaces.ISite.providedBy(ob):
             # We won't find an authentication utility here, so give up.
             return
 

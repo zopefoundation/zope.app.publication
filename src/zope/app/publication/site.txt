@@ -5,7 +5,7 @@ Using the site manager
 This test ensures that the site is correctly set and cleared in a thread
 during traversal using event subscribers. Before we start, no site is set:
 
-  >>> from zope.site import hooks
+  >>> from zope.component import hooks
   >>> hooks.getSite() is None
   True
 
