@@ -17,7 +17,7 @@
 # Zope Toolkit policies as described by this documentation.
 ##############################################################################
 
-version = '3.9.1dev'
+version = '3.10.0dev'
 
 import os
 from setuptools import setup, find_packages
@@ -56,7 +56,6 @@ setup(name='zope.app.publication',
               'zope.app.securitypolicy',
               'zope.app.zcmlfiles>=3.5.4',
               'zope.app.dav',
-              'zope.app.publisher',
               'zope.app.zptpage',
               'zope.principalregistry',
               'zope.app.applicationcontrol>=3.5.0',
