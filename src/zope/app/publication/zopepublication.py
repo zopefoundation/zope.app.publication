@@ -33,6 +33,7 @@ from zope.publisher.interfaces import NotFound, Retry
 from zope.security.management import newInteraction, endInteraction
 from zope.security.checker import ProxyFactory
 from zope.security.proxy import removeSecurityProxy
+from zope.traversing.interfaces import BeforeTraverseEvent
 from zope.traversing.interfaces import IPhysicallyLocatable
 from zope.traversing.interfaces import IEtcNamespace
 from zope.traversing.interfaces import TraversalError
@@ -42,7 +43,6 @@ from zope.error.interfaces import IErrorReportingUtility
 
 import zope.authentication.interfaces
 from zope.browser.interfaces import ISystemErrorView
-from zope.app.publication.interfaces import BeforeTraverseEvent
 from zope.app.publication.interfaces import EndRequestEvent
 from zope.publisher.defaultview import queryDefaultViewName
 from zope.authentication.interfaces import IUnauthenticatedPrincipal

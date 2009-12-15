@@ -21,7 +21,8 @@ On the other hand, if a site is traversed,
   >>> mysite = CustomFolder('mysite')
   >>> mysite.setSiteManager(sm)
 
-  >>> ev = interfaces.BeforeTraverseEvent(mysite, request)
+  >>> from zope.traversing.interfaces import BeforeTraverseEvent
+  >>> ev = BeforeTraverseEvent(mysite, request)
   >>> site.threadSiteSubscriber(mysite, ev)
 
   >>> hooks.getSite()

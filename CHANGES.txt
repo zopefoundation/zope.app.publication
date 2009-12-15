@@ -5,6 +5,8 @@ CHANGES
 3.10.0 (unreleased)
 ------------------
 
+- Moved BeforeTraverseEvent and IBeforeTraverseEvent to zope.traversing.
+
 - Removed dependency on zope.i18n.
 
 - Import hooks functionality from zope.component after it was moved there from

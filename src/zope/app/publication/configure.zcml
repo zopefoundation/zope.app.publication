@@ -14,7 +14,7 @@
   <subscriber
       zcml:condition="installed zope.site"
       for="zope.component.interfaces.ISite
-           zope.app.publication.interfaces.IBeforeTraverseEvent"
+           zope.traversing.interfaces.IBeforeTraverseEvent"
       handler="zope.site.threadSiteSubscriber"
       />
 
