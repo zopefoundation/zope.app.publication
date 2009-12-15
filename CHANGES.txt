@@ -5,6 +5,8 @@ CHANGES
 3.10.0 (unreleased)
 ------------------
 
+- Moved EndRequestEvent and IEndRequestEvent to zope.publisher.
+
 - Moved BeforeTraverseEvent and IBeforeTraverseEvent to zope.traversing.
 
 - Removed dependency on zope.i18n.

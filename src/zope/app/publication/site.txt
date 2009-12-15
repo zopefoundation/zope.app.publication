@@ -30,7 +30,8 @@ On the other hand, if a site is traversed,
 
 Once the request is completed,
 
-  >>> ev = interfaces.EndRequestEvent(mysite, request)
+  >>> from zope.publisher.interfaces import EndRequestEvent
+  >>> ev = EndRequestEvent(mysite, request)
   >>> site.clearThreadSiteSubscriber(ev)
 
 the site assignment is cleared again:

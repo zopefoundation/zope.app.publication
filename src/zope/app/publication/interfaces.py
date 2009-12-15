@@ -18,9 +18,10 @@ $Id$
 __docformat__ = 'restructuredtext'
 
 from zope import interface
-import zope.component.interfaces
 
 # BBB: Re-import symbols to their old location.
+from zope.publisher.interfaces import IEndRequestEvent
+from zope.publisher.interfaces import EndRequestEvent
 from zope.traversing.interfaces import IBeforeTraverseEvent
 from zope.traversing.interfaces import BeforeTraverseEvent
 
@@ -33,20 +34,6 @@ class IPublicationRequestFactory(interface.Interface):
 
         A request is created and configured with a publication object.
         """
-
-
-class IEndRequestEvent(interface.Interface):
-    """An event which gets sent when the publication is ended"""
-
-
-class EndRequestEvent(object):
-    """An event which gets sent when the publication is ended"""
-
-    interface.implements(IEndRequestEvent)
-
-    def __init__(self, ob, request):
-        self.object = ob
-        self.request = request
 
 class IRequestFactory(interface.Interface):
 

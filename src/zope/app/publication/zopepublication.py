@@ -43,8 +43,8 @@ from zope.error.interfaces import IErrorReportingUtility
 
 import zope.authentication.interfaces
 from zope.browser.interfaces import ISystemErrorView
-from zope.app.publication.interfaces import EndRequestEvent
 from zope.publisher.defaultview import queryDefaultViewName
+from zope.publisher.interfaces import EndRequestEvent
 from zope.authentication.interfaces import IUnauthenticatedPrincipal
 from zope.authentication.interfaces import IFallbackUnauthenticatedPrincipal
 from zope.authentication.interfaces import IAuthentication

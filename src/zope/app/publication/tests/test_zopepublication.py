@@ -593,8 +593,8 @@ class ZopePublicationTests(BasePublicationTests):
         self.assertEqual(txn_info['location'], expected_path)
 
     def testSiteEvents(self):
+        from zope.publisher.interfaces import IEndRequestEvent
         from zope.traversing.interfaces import IBeforeTraverseEvent
-        from zope.app.publication.interfaces import IEndRequestEvent
 
         set = []
         clear = []
