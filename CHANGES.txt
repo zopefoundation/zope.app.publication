@@ -2,8 +2,8 @@
 CHANGES
 =======
 
-3.10.0 (unreleased)
-------------------
+3.10.0 (2009-12-15)
+-------------------
 
 - Moved EndRequestEvent and IEndRequestEvent to zope.publisher.
 
