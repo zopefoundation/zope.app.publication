@@ -5,6 +5,7 @@ CHANGES
 3.10.1 (unreleased)
 -------------------
 
+- make zope.testing an optional (test) dependency
 
 3.10.0 (2009-12-15)
 -------------------

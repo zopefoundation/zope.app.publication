@@ -110,5 +110,9 @@ class RequestPublicationRegistry(object):
 
 factoryRegistry = RequestPublicationRegistry()
 
-from zope.testing import cleanup
-cleanup.addCleanUp(lambda : factoryRegistry.__init__())
+try:
+    import zope.testing.cleanup
+except ImportError:
+    pass
+else:
+    zope.testing.cleanup.addCleanUp(lambda : factoryRegistry.__init__())
