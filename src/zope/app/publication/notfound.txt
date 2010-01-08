@@ -12,9 +12,8 @@ to an object that doesn't exist, as in:
     The page that you are trying to access is not available
   ...
 
-On the other hand, if we create a template that refers to something
-that doesn't exist:
-
+On the other hand, if we create something that raises an exception
+inside we should get an internal server error:
 
   >>> print http(r"""
   ... POST /+/zope.app.zptpage.ZPTPage%3D HTTP/1.1

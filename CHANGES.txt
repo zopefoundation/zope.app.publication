@@ -5,7 +5,7 @@ CHANGES
 3.10.2 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Lift the test dependency on zope.app.zptpage.
 
 
 3.10.1 (2010-01-08)

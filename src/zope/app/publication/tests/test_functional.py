@@ -29,8 +29,6 @@ checker = renormalizing.RENormalizing([
 
 
 def test_suite():
-    notfound = functional.FunctionalDocFileSuite('../notfound.txt')
-    notfound.layer = PublicationLayer
     methodnotallowed = functional.FunctionalDocFileSuite(
         '../methodnotallowed.txt')
     methodnotallowed.layer = PublicationLayer
@@ -41,7 +39,6 @@ def test_suite():
         '../site.txt')
     site.layer = PublicationLayer
     return unittest.TestSuite((
-        notfound,
         methodnotallowed,
         httpfactory,
         site,
