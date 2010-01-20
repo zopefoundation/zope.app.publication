@@ -17,16 +17,16 @@ $Id$
 """
 import unittest
 
-from zope.app.testing import ztapi
 from StringIO import StringIO
 
+from zope import component
 from zope.security.interfaces import ForbiddenAttribute
 from zope.interface import Interface, implements
 
 from zope.publisher.publish import publish
 from zope.publisher.browser import TestRequest, BrowserView
-from zope.publisher.interfaces.browser import IBrowserPublisher
-
+from zope.publisher.interfaces.browser import (IBrowserPublisher,
+                                               IDefaultBrowserLayer)
 from zope.proxy import getProxiedObject
 from zope.security.proxy import Proxy, removeSecurityProxy
 from zope.security.checker import defineChecker, NamesChecker
@@ -38,6 +38,7 @@ from zope.app.publication.httpfactory import HTTPPublicationRequestFactory
 from zope.app.publication.traversers import TestTraverser
 from zope.app.publication.tests.test_zopepublication \
      import BasePublicationTests as BasePublicationTests_
+from zope.app.publication.tests import support
 
 from persistent import Persistent
 
@@ -119,9 +120,12 @@ class BrowserDefaultTests(BasePublicationTests):
 
         pub = BrowserPublication(self.db)
 
-        ztapi.browserView(I1, 'view', DummyView)
-        ztapi.setDefaultViewName(I1, 'view')
-        ztapi.browserViewProviding(None, TestTraverser, IBrowserPublisher)
+        component.provideAdapter(DummyView, (I1, IDefaultBrowserLayer),
+                                 Interface, name='view')
+        
+        support.setDefaultViewName(I1, 'view')
+        component.provideAdapter(TestTraverser, (None, IDefaultBrowserLayer),
+                                 IBrowserPublisher)
 
         ob = O1()
 
@@ -170,7 +174,9 @@ class BrowserPublicationTests(BasePublicationTests):
                 self.counter += 1
                 return self.context[name]
 
-        ztapi.browserViewProviding(I1, Adapter, IBrowserPublisher)
+        component.provideAdapter(Adapter, (I1, IDefaultBrowserLayer),
+                                 IBrowserPublisher)
+
         ob = mydict()
         ob['bruce'] = SimpleObject('bruce')
         ob['bruce2'] = SimpleObject('bruce2')
@@ -189,7 +195,10 @@ class BrowserPublicationTests(BasePublicationTests):
             def browserDefault(self, request):
                 return (self.context['bruce'], 'dummy')
 
-        ztapi.browserViewProviding(I1, Adapter, IBrowserPublisher)
+        component.provideAdapter(Adapter,
+                                 (I1, IDefaultBrowserLayer),
+                                 IBrowserPublisher)
+
         ob = mydict()
         ob['bruce'] = SimpleObject('bruce')
         ob['bruce2'] = SimpleObject('bruce2')
@@ -205,7 +214,9 @@ class BrowserPublicationTests(BasePublicationTests):
             x = SimpleObject(1)
         ob = C()
         r = self._createRequest('/x',pub)
-        ztapi.browserViewProviding(None, TestTraverser, IBrowserPublisher)
+        component.provideAdapter(TestTraverser,
+                                 (None, IDefaultBrowserLayer),
+                                 IBrowserPublisher)
         ob2 = pub.traverseName(r, ob, 'x')
         self.assertRaises(ForbiddenAttribute, getattr, ob2, 'v')
         self.assertEqual(removeSecurityProxy(ob2).v, 1)
@@ -220,7 +231,8 @@ class BrowserPublicationTests(BasePublicationTests):
         class V(object):
             def __init__(self, context, request): pass
         r = self._createRequest('/@@spam',pub)
-        ztapi.browserView(I, 'spam', V)
+        component.provideAdapter(V, (I, IDefaultBrowserLayer), Interface,
+                                 name='spam')
         ob2 = pub.traverseName(r, ob, '@@spam')
         self.assertEqual(ob2.__class__, V)
 
@@ -239,7 +251,9 @@ class BrowserPublicationTests(BasePublicationTests):
         from zope.app.applicationcontrol.applicationcontrol \
              import applicationController, applicationControllerRoot
         from zope.traversing.interfaces import IEtcNamespace
-        ztapi.provideUtility(IEtcNamespace, applicationController, 'process')
+        component.provideUtility(applicationController,
+                                 IEtcNamespace, name='process')
+        
         pub = self.klass(self.db)
         r = self._createRequest('/++etc++process',pub)
         ac = pub.traverseName(r,

@@ -21,7 +21,7 @@ from zope.interface import Interface, directlyProvides
 
 from zope.app.publication.traversers import SimpleComponentTraverser
 from zope.app.testing.placelesssetup import PlacelessSetup
-from zope.app.testing import ztapi
+from zope import component
 
 class I(Interface):
     pass
@@ -69,7 +69,8 @@ class Test(PlacelessSetup, unittest.TestCase):
         req = Request(I)
 
         T = SimpleComponentTraverser(c, req)
-        ztapi.provideView(None, I, Interface, 'foo', View)
+        component.provideAdapter(View, (None, I), Interface,
+                                 name='foo')
 
         self.failUnless(T.publishTraverse(req, 'foo').__class__ is View)
 

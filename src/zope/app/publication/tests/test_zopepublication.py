@@ -24,7 +24,6 @@ from ZODB.DB import DB
 from ZODB.DemoStorage import DemoStorage
 import transaction
 
-import zope.component
 from zope.interface.verify import verifyClass
 from zope.interface import implements, classImplements, implementedBy
 from zope.component.interfaces import ComponentLookupError
@@ -39,7 +38,9 @@ from zope.traversing.interfaces import IPhysicallyLocatable
 from zope.location.interfaces import ILocation
 
 from zope.app.testing.placelesssetup import PlacelessSetup
-from zope.app.testing import setup, ztapi
+from zope.app.testing import setup
+from zope import component
+from zope.app.publication.tests import support
 
 from zope.authentication.interfaces import IAuthentication
 from zope.authentication.interfaces import IFallbackUnauthenticatedPrincipal
@@ -116,7 +117,7 @@ class BasePublicationTests(PlacelessSetup, unittest.TestCase):
         self.storage = DemoStorage('test_storage')
         self.db = db = DB(self.storage)
 
-        ztapi.provideUtility(IAuthentication, principalRegistry)
+        component.provideUtility(principalRegistry, IAuthentication)
 
         connection = db.open()
         root = connection.root()
@@ -132,9 +133,10 @@ class BasePublicationTests(PlacelessSetup, unittest.TestCase):
         self.app = app
 
         from zope.traversing.namespace import view, resource, etc
-        ztapi.provideNamespaceHandler('view', view)
-        ztapi.provideNamespaceHandler('resource', resource)
-        ztapi.provideNamespaceHandler('etc', etc)
+
+        support.provideNamespaceHandler('view', view)
+        support.provideNamespaceHandler('resource', resource)
+        support.provideNamespaceHandler('etc', etc)
 
         self.request = TestRequest('/f1/f2')
         self.user = Principal('test.principal')
@@ -217,12 +219,17 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         class E1(Exception):
             pass
 
-        ztapi.setDefaultViewName(E1, 'name',
-                                 layer=None,
-                                 type=self.presentation_type)
+        support.setDefaultViewName(E1, 'name',
+                                   layer=None,
+                                   type=self.presentation_type)
         view_text = 'You had a conflict error'
-        ztapi.provideView(E1, self.presentation_type, Interface,
-                          'name', lambda obj, request: lambda: view_text)
+
+        def _view(obj, request):
+            return lambda: view_text
+    
+        component.provideAdapter(_view, (E1, self.presentation_type),
+                                 Interface, name='name')
+        
         try:
             raise E1
         except:
@@ -259,9 +266,9 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         class E2(Exception):
             pass
 
-        ztapi.setDefaultViewName(E2, 'name',
-                                 layer=self.presentation_type,
-                                 type=self.presentation_type)
+        support.setDefaultViewName(E2, 'name',
+                                   layer=self.presentation_type,
+                                   type=self.presentation_type)
         view_text = 'You had a conflict error'
 
         from zope.browser.interfaces import ISystemErrorView
@@ -276,8 +283,9 @@ class ZopePublicationErrorHandling(BasePublicationTests):
             def __call__(self):
                 return view_text
 
-        ztapi.provideView(E2, self.presentation_type, Interface,
-                          'name', MyView)
+        component.provideAdapter(MyView, (E2, self.presentation_type),
+                                 Interface, name='name')
+                                 
         try:
             raise E2
         except:
@@ -305,10 +313,14 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         class IClassicError(Interface):
             pass
         classImplements(ClassicError, IClassicError)
-        ztapi.setDefaultViewName(IClassicError, 'name', self.presentation_type)
+        support.setDefaultViewName(IClassicError, 'name',
+                                   self.presentation_type)
         view_text = 'You made a classic error ;-)'
-        ztapi.provideView(IClassicError, self.presentation_type, Interface,
-                          'name', lambda obj,request: lambda: view_text)
+        def _view(obj, request):
+            return lambda: view_text
+        component.provideAdapter(
+            _view, (ClassicError, self.presentation_type), Interface,
+            name='name')
         try:
             raise ClassicError
         except:
@@ -341,7 +353,8 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         class IConflictError(Interface):
             pass
         classImplements(ConflictError, IConflictError)
-        ztapi.provideAdapter(IConflictError, IExceptionSideEffects, factory)
+        component.provideAdapter(factory, (IConflictError,),
+                                 IExceptionSideEffects)
         exception = ConflictError()
         try:
             raise exception
@@ -385,7 +398,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
 
     def testAbortTransactionWithErrorReportingUtility(self):
         # provide our fake error reporting utility
-        zope.component.provideUtility(ErrorReportingUtility())
+        component.provideUtility(ErrorReportingUtility())
 
         class FooError(Exception):
             pass
@@ -403,7 +416,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         self.assertEqual(last_txn_info, new_txn_info)
 
         # instead, we expect a message in our logging utility
-        error_log = zope.component.getUtility(IErrorReportingUtility)
+        error_log = component.getUtility(IErrorReportingUtility)
         self.assertEqual(len(error_log.exceptions), 1)
         error_info, request = error_log.exceptions[0]
         self.assertEqual(error_info[0], FooError)
@@ -415,7 +428,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         # been experienced) transaction.abort fails, we really want to know
         # what happened before that abort.
         # (Set up:)
-        zope.component.provideUtility(ErrorReportingUtility())
+        component.provideUtility(ErrorReportingUtility())
         abort = transaction.abort
         class AbortError(Exception):
             pass
@@ -439,7 +452,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
             else:
                 self.fail('Aborting should have failed')
             # we expect a message in our logging utility
-            error_log = zope.component.getUtility(IErrorReportingUtility)
+            error_log = component.getUtility(IErrorReportingUtility)
             self.assertEqual(len(error_log.exceptions), 1)
             error_info, request = error_log.exceptions[0]
             self.assertEqual(error_info[0], AnEarlierError)
@@ -456,8 +469,8 @@ class ZopePublicationTests(BasePublicationTests):
         # Replace the global registry with a stub that doesn't return an
         # unauthenticated principal.
         authentication = AuthUtility3()
-        ztapi.provideUtility(IAuthentication, authentication)
-
+        component.provideUtility(authentication, IAuthentication)
+    
         # We need a fallback unauthenticated principal, otherwise we'll get a
         # ComponentLookupError:
         self.assertRaises(ComponentLookupError,
@@ -465,7 +478,8 @@ class ZopePublicationTests(BasePublicationTests):
 
         # Let's register an unauthenticated principal instance for the lookup:
         principal = UnauthenticatedPrincipal('fallback')
-        ztapi.provideUtility(IFallbackUnauthenticatedPrincipal, principal)
+        component.provideUtility(principal, IFallbackUnauthenticatedPrincipal)
+
         self.publication.beforeTraversal(self.request)
         self.failUnless(self.request.principal is principal)
 
@@ -490,9 +504,10 @@ class ZopePublicationTests(BasePublicationTests):
         from zope.app.container.interfaces import ISimpleReadContainer
         from zope.app.container.traversal import ContainerTraverser
 
-        ztapi.provideView(ISimpleReadContainer, IRequest, IPublishTraverse,
-                          '', ContainerTraverser)
-
+        component.provideAdapter(ContainerTraverser,
+                                 (ISimpleReadContainer, IRequest),
+                                 IPublishTraverse, name='')
+        
         from zope.app.folder.interfaces import IFolder
         from zope.security.checker import defineChecker, InterfaceChecker
         defineChecker(Folder, InterfaceChecker(IFolder))
@@ -550,8 +565,8 @@ class ZopePublicationTests(BasePublicationTests):
         from zope.location.interfaces import ILocation
         from zope.traversing.interfaces import IPhysicallyLocatable
         from zope.traversing.interfaces import IContainmentRoot
-        ztapi.provideAdapter(ILocation, IPhysicallyLocatable,
-                             LocationPhysicallyLocatable)
+        component.provideAdapter(LocationPhysicallyLocatable,
+                                 (ILocation,), IPhysicallyLocatable)
 
         def get_txn_info():
             if hasattr(self.storage, 'iterator'):
@@ -598,9 +613,10 @@ class ZopePublicationTests(BasePublicationTests):
 
         set = []
         clear = []
-        ztapi.subscribe([IBeforeTraverseEvent], None, set.append)
-        ztapi.subscribe([IEndRequestEvent], None, clear.append)
 
+        component.provideHandler(set.append, (IBeforeTraverseEvent,))
+        component.provideHandler(clear.append, (IEndRequestEvent,))
+        
         ob = object()
 
         # This should fire the BeforeTraverseEvent

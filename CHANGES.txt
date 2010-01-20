@@ -2,10 +2,10 @@
 CHANGES
 =======
 
-3.10.3 (unreleased)
--------------------
+3.11 (unreleased)
+-----------------
 
-- Nothing changed yet.
+- Don't depend on zope.app.testing.ztapi anymore in the tests.
 
 
 3.10.2 (2010-01-08)

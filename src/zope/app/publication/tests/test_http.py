@@ -23,7 +23,7 @@ from zope.publisher.http import HTTPRequest
 from zope.publisher.interfaces.http import IHTTPRequest
 
 import zope.app.publication.http
-from zope.app.testing import ztapi
+from zope import component
 from zope.app.testing.placelesssetup import PlacelessSetup
 
 class I(Interface):
@@ -50,8 +50,8 @@ class Test(PlacelessSetup, TestCase):
         request = HTTPRequest(StringIO(''), {})
         request.method = 'SPAM'
 
-        ztapi.provideView(I, IHTTPRequest, Interface, 'SPAM', V)
-
+        component.provideAdapter(V, (I, IHTTPRequest), Interface, name='SPAM')
+        
         ob = C()
         pub.callObject(request, ob)
         self.assertEqual(ob.spammed, 1)

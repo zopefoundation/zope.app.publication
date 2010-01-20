@@ -13,7 +13,7 @@
 ##############################################################################
 """Tests for the HTTP Publication Request Factory.
 
-$Id: test_httpfactory.py 38357 2005-09-07 20:14:34Z srichter $
+$Id$
 """
 from unittest import TestCase, TestSuite, main, makeSuite
 
@@ -29,7 +29,6 @@ from zope.app.publication.httpfactory import HTTPPublicationRequestFactory
 from zope.app.publication.browser import BrowserPublication
 from zope.app.publication.http import HTTPPublication
 from zope.app.publication.xmlrpc import XMLRPCPublication
-from zope.app.testing import ztapi
 from zope.app.publication import interfaces
 from zope.app.publication.requestpublicationregistry import factoryRegistry
 from zope.app.publication.requestpublicationfactories import \

@@ -29,8 +29,8 @@ from zope.app.publisher.interfaces.xmlrpc import IXMLRPCView
 from zope.publisher.interfaces.xmlrpc import IXMLRPCRequest
 from zope.publisher.interfaces.xmlrpc import IXMLRPCPublisher
 from zope.publisher.xmlrpc import TestRequest
-from zope.app.testing import ztapi
-
+from zope.app.publication.tests import support
+from zope import component
 
 class SimpleObject(object):
     def __init__(self, v):
@@ -52,8 +52,9 @@ class XMLRPCPublicationTests(BasePublicationTests):
             x = SimpleObject(1)
         ob = C()
         r = self._createRequest('/x', pub)
-        ztapi.provideView(None, IXMLRPCRequest, IXMLRPCPublisher,
-                          '', TestTraverser)
+        component.provideAdapter(TestTraverser, (None, IXMLRPCRequest),
+                                 IXMLRPCPublisher)
+
         ob2 = pub.traverseName(r, ob, 'x')
         self.assertEqual(removeAllProxies(ob2).v, 1)
 
@@ -76,8 +77,10 @@ class XMLRPCPublicationTests(BasePublicationTests):
         ob = C()
         r = self._createRequest('/foo', pub)
 
-        ztapi.provideView(I, IXMLRPCView, Interface, 'view', V)
-        ztapi.setDefaultViewName(I, 'view', type=IXMLRPCView)
+        component.provideAdapter(V, (I, IXMLRPCView), Interface,
+                                 name='view')
+
+        support.setDefaultViewName(I, 'view', type=IXMLRPCView)
         self.assertRaises(NotFound, pub.traverseName, r, ob, 'foo')
 
 
@@ -99,11 +102,13 @@ class XMLRPCPublicationTests(BasePublicationTests):
 
 
         # Register the simple traverser so we can traverse without @@
-        ztapi.provideView(Interface, IXMLRPCRequest, IXMLRPCPublisher, '',
-                          SimpleComponentTraverser)
+        component.provideAdapter(SimpleComponentTraverser,
+                                 (Interface, IXMLRPCRequest),
+                                 IXMLRPCPublisher)
 
         r = self._createRequest('/@@spam', pub)
-        ztapi.provideView(I, IXMLRPCRequest, Interface, 'spam', V)
+        component.provideAdapter(V, (I, IXMLRPCRequest), Interface,
+                                 name='spam')
         ob2 = pub.traverseName(r, ob, '@@spam')
         self.assertEqual(removeAllProxies(ob2).__class__, V)
 
