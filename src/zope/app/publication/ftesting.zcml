@@ -1,36 +1,53 @@
 <configure
    xmlns="http://namespaces.zope.org/zope"
    xmlns:meta="http://namespaces.zope.org/meta"
+   xmlns:browser="http://namespaces.zope.org/browser"
    i18n_domain="zope"
    package="zope.app.publication">
 
-  <!-- This file is the equivalent of site.zcml and it is -->
-  <!-- used for functional testing setup -->
 
+  <include package="zope.component" file="meta.zcml"/>
+  <include package="zope.app.publication" file="meta.zcml" />
+  <include package="zope.browserpage" file="meta.zcml" />
+
+  <include package="zope.app.publication" />
+
+  <include package="zope.security" file="meta.zcml" />
+  <include package="zope.publisher" file="meta.zcml" />
+  <include package="zope.principalregistry" file="meta.zcml" />
+  <include package="zope.browserpage" file="meta.zcml" />
+  <include package="zope.app.publication" file="meta.zcml" />
   <include package="zope.securitypolicy" file="meta.zcml" />
 
-  <include package="zope.app.zcmlfiles" />
-  <include package="zope.app.authentication" />
   <include package="zope.login" />
+  <include package="zope.security" />
+  <include package="zope.authentication" />
+  <include package="zope.securitypolicy" />
+  <include package="zope.principalregistry" />
+  <include package="zope.app.publication" />
+  <include package="zope.app.appsetup" file="ftesting.zcml"/>
+  <include package="zope.app.exception.browser" />
+  <include package="zope.app.http" />
+  <include package="zope.annotation" />
+  <include package="zope.publisher" />
+  <include package="zope.password" />
+  <include package="zope.browserpage" />
+  <include package="zope.app.wsgi" />
 
   <securityPolicy
-      component="zope.securitypolicy.zopepolicy.ZopeSecurityPolicy" />
+    component="zope.securitypolicy.zopepolicy.ZopeSecurityPolicy" />
 
-  <role id="zope.Anonymous" title="Everybody"
-                 description="All users have this role implicitly" />
   <role id="zope.Manager" title="Site Manager" />
-
-  <!-- Replace the following directive if you don't want public access -->
-  <grant permission="zope.View"
-                  role="zope.Anonymous" />
 
   <grantAll role="zope.Manager" />
 
   <!-- Principals -->
-
   <unauthenticatedPrincipal
       id="zope.anybody"
       title="Unauthenticated User" />
+  <grant
+      permission="zope.View"
+      principal="zope.anybody" />
 
   <!-- Principal that tests generally run as -->
   <principal
@@ -39,13 +56,14 @@
       login="mgr"
       password="mgrpw" />
 
-  <!-- Bootstrap principal used to make local grant to the principal above -->
-  <principal
-      id="zope.globalmgr"
-      title="Manager"
-      login="globalmgr"
-      password="globalmgrpw" />
+  <grant role="zope.Manager" principal="zope.mgr" />
 
-  <grant role="zope.Manager" principal="zope.globalmgr" />
+  <browser:defaultView name="test.html" />
+
+  <browser:page
+     for="*"
+     class=".testing.DefaultTestView"
+     name="test.html"
+     permission="zope.View" />
 
 </configure>

@@ -13,8 +13,7 @@ view,  HTTP 405 Method Not Allowed response is returned:
   X-Powered-By: Zope (www.zope.org), Python (www.python.org)
   Content-Length: 18
   Allow: DELETE, OPTIONS, PUT
-  <BLANKLINE>
-  Method Not Allowed
+  ...
 
   >>> print http(r"""
   ... DELETE / HTTP/1.1

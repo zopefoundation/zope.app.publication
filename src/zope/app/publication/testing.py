@@ -19,7 +19,17 @@ $Id$
 __docformat__ = "reStructuredText"
 
 from zope.app.wsgi.testlayer import BrowserLayer
+from zope.publisher.browser import BrowserPage
 import zope.app.publication
+
+
+class DefaultTestView(BrowserPage):
+
+    def __call__(self):
+        self.request.response.setHeader(
+            'Content-Type', 'text/html;charset=utf-8')
+        return "<html><body>Test</body></html>"
+
 
 PublicationLayer = BrowserLayer(zope.app.publication, name='PublicationLayer')
 

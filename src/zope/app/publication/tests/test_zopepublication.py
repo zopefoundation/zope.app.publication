@@ -48,7 +48,7 @@ from zope.authentication.interfaces import IUnauthenticatedPrincipal
 from zope.security.interfaces import IPrincipal
 from zope.principalregistry.principalregistry import principalRegistry
 from zope.app.publication.zopepublication import ZopePublication
-from zope.app.folder import Folder, rootFolder
+from zope.site.folder import Folder, rootFolder
 
 
 class Principal(object):
@@ -124,7 +124,7 @@ class BasePublicationTests(PlacelessSetup, unittest.TestCase):
         app = getattr(root, ZopePublication.root_name, None)
 
         if app is None:
-            from zope.app.folder import rootFolder
+            from zope.site.folder import rootFolder
             app = rootFolder()
             root[ZopePublication.root_name] = app
             transaction.commit()
@@ -226,10 +226,10 @@ class ZopePublicationErrorHandling(BasePublicationTests):
 
         def _view(obj, request):
             return lambda: view_text
-    
+
         component.provideAdapter(_view, (E1, self.presentation_type),
                                  Interface, name='name')
-        
+
         try:
             raise E1
         except:
@@ -285,7 +285,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
 
         component.provideAdapter(MyView, (E2, self.presentation_type),
                                  Interface, name='name')
-                                 
+
         try:
             raise E2
         except:
@@ -470,7 +470,7 @@ class ZopePublicationTests(BasePublicationTests):
         # unauthenticated principal.
         authentication = AuthUtility3()
         component.provideUtility(authentication, IAuthentication)
-    
+
         # We need a fallback unauthenticated principal, otherwise we'll get a
         # ComponentLookupError:
         self.assertRaises(ComponentLookupError,
@@ -501,14 +501,14 @@ class ZopePublicationTests(BasePublicationTests):
         setup.addUtility(sm2, '', IAuthentication, AuthUtility2())
         transaction.commit()
 
-        from zope.app.container.interfaces import ISimpleReadContainer
-        from zope.app.container.traversal import ContainerTraverser
+        from zope.container.interfaces import ISimpleReadContainer
+        from zope.container.traversal import ContainerTraverser
 
         component.provideAdapter(ContainerTraverser,
                                  (ISimpleReadContainer, IRequest),
                                  IPublishTraverse, name='')
-        
-        from zope.app.folder.interfaces import IFolder
+
+        from zope.site.interfaces import IFolder
         from zope.security.checker import defineChecker, InterfaceChecker
         defineChecker(Folder, InterfaceChecker(IFolder))
 
@@ -616,7 +616,7 @@ class ZopePublicationTests(BasePublicationTests):
 
         component.provideHandler(set.append, (IBeforeTraverseEvent,))
         component.provideHandler(clear.append, (IEndRequestEvent,))
-        
+
         ob = object()
 
         # This should fire the BeforeTraverseEvent

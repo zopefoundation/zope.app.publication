@@ -17,7 +17,7 @@ A regular GET, POST or HEAD
   ... """)
   HTTP/1.0 200 OK
   X-Powered-By: Zope (www.zope.org), Python (www.python.org)
-  Content-Length: 4322
+  Content-Length: ...
   Content-Type: text/html;charset=utf-8
   ...
   >>> print http(r"""
@@ -25,7 +25,7 @@ A regular GET, POST or HEAD
   ... """)
   HTTP/1.0 200 OK
   X-Powered-By: Zope (www.zope.org), Python (www.python.org)
-  Content-Length: 4322
+  Content-Length: ...
   Content-Type: text/html;charset=utf-8
   ...
   >>> print http(r"""
