@@ -53,7 +53,6 @@ setup(name='zope.app.publication',
     namespace_packages=['zope', 'zope.app'],
     extras_require = dict(
         test=['zope.app.testing',
-              'zope.app.securitypolicy',
               'zope.app.zcmlfiles>=3.5.4',
               'zope.principalregistry',
               'zope.applicationcontrol>=3.5.0',
