@@ -2,7 +2,7 @@
 CHANGES
 =======
 
-3.11.0 (unreleased)
+3.11.0 (2010-04-13)
 -------------------
 
 - Don't depend on zope.app.testing and zope.app.zcmlfiles anymore in
