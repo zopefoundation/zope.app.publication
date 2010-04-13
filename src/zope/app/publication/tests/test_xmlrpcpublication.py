@@ -25,7 +25,7 @@ from zope.app.publication.xmlrpc import XMLRPCPublication
 from zope.interface import Interface, implements
 from zope.proxy import removeAllProxies
 from zope.publisher.interfaces import NotFound
-from zope.app.publisher.interfaces.xmlrpc import IXMLRPCView
+from zope.publisher.interfaces.xmlrpc import IXMLRPCView
 from zope.publisher.interfaces.xmlrpc import IXMLRPCRequest
 from zope.publisher.interfaces.xmlrpc import IXMLRPCPublisher
 from zope.publisher.xmlrpc import TestRequest

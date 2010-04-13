@@ -26,7 +26,7 @@ import transaction
 
 from zope.interface.verify import verifyClass
 from zope.interface import implements, classImplements, implementedBy
-from zope.component.interfaces import ComponentLookupError
+from zope.component.interfaces import ComponentLookupError, ISite
 from zope.error.interfaces import IErrorReportingUtility
 from zope.location import Location
 from zope.publisher.base import TestPublication, TestRequest
@@ -36,9 +36,9 @@ from zope.security.management import setSecurityPolicy, queryInteraction
 from zope.security.management import endInteraction
 from zope.traversing.interfaces import IPhysicallyLocatable
 from zope.location.interfaces import ILocation
+from zope.testing.cleanup import cleanUp
+from zope.site.site import LocalSiteManager
 
-from zope.app.testing.placelesssetup import PlacelessSetup
-from zope.app.testing import setup
 from zope import component
 from zope.app.publication.tests import support
 
@@ -105,10 +105,23 @@ class LocatableObject(Location):
 class TestRequest(TestRequest):
     URL='http://test.url'
 
-class BasePublicationTests(PlacelessSetup, unittest.TestCase):
+
+def addUtility(sitemanager, name, iface, utility, suffix=''):
+    """Add a utility to a site manager
+
+    This helper function is useful for tests that need to set up utilities.
+    """
+    folder_name = (name or (iface.__name__ + 'Utility')) + suffix
+    default = sitemanager['default']
+    default[folder_name] = utility
+    utility = default[folder_name]
+    sitemanager.registerUtility(utility, iface, name)
+    return utility
+
+
+class BasePublicationTests(unittest.TestCase):
 
     def setUp(self):
-        super(BasePublicationTests, self).setUp()
         from zope.security.management import endInteraction
         endInteraction()
         self.policy = setSecurityPolicy(
@@ -151,14 +164,14 @@ class BasePublicationTests(PlacelessSetup, unittest.TestCase):
         # Close the request, otherwise a Cleanup object will start logging
         # messages from its __del__ method at some inappropriate moment.
         self.request.close()
-        super(BasePublicationTests, self).tearDown()
+        cleanUp()
+
+
+class ZopePublicationErrorHandling(BasePublicationTests):
 
     def testInterfacesVerify(self):
         for interface in implementedBy(ZopePublication):
             verifyClass(interface, TestPublication)
-
-
-class ZopePublicationErrorHandling(BasePublicationTests):
 
     def testRetryAllowed(self):
         from ZODB.POSException import ConflictError
@@ -483,53 +496,6 @@ class ZopePublicationTests(BasePublicationTests):
         self.publication.beforeTraversal(self.request)
         self.failUnless(self.request.principal is principal)
 
-    def testPlacefulAuth(self):
-        setup.setUpTraversal()
-        setup.setUpSiteManagerLookup()
-        principalRegistry.defineDefaultPrincipal('anonymous', '')
-
-        root = self.db.open().root()
-        app = root[ZopePublication.root_name]
-        app['f1'] = rootFolder()
-        f1 = app['f1']
-        f1['f2'] = Folder()
-        sm1 = setup.createSiteManager(f1)
-        setup.addUtility(sm1, '', IAuthentication, AuthUtility1())
-
-        f2 = f1['f2']
-        sm2 = setup.createSiteManager(f2)
-        setup.addUtility(sm2, '', IAuthentication, AuthUtility2())
-        transaction.commit()
-
-        from zope.container.interfaces import ISimpleReadContainer
-        from zope.container.traversal import ContainerTraverser
-
-        component.provideAdapter(ContainerTraverser,
-                                 (ISimpleReadContainer, IRequest),
-                                 IPublishTraverse, name='')
-
-        from zope.site.interfaces import IFolder
-        from zope.security.checker import defineChecker, InterfaceChecker
-        defineChecker(Folder, InterfaceChecker(IFolder))
-
-        self.publication.beforeTraversal(self.request)
-        self.assertEqual(list(queryInteraction().participations),
-                         [self.request])
-        self.assertEqual(self.request.principal.id, 'anonymous')
-        root = self.publication.getApplication(self.request)
-        self.publication.callTraversalHooks(self.request, root)
-        self.assertEqual(self.request.principal.id, 'anonymous')
-        ob = self.publication.traverseName(self.request, root, 'f1')
-        self.publication.callTraversalHooks(self.request, ob)
-        self.assertEqual(self.request.principal.id, 'test.anonymous')
-        ob = self.publication.traverseName(self.request, ob, 'f2')
-        self.publication.afterTraversal(self.request, ob)
-        self.assertEqual(self.request.principal.id, 'test.bob')
-        self.assertEqual(list(queryInteraction().participations),
-                         [self.request])
-        self.publication.endRequest(self.request, ob)
-        self.assertEqual(queryInteraction(), None)
-
     def testTransactionCommitAfterCall(self):
         root = self.db.open().root()
         txn = transaction.get()
@@ -647,9 +613,64 @@ class ZopePublicationTests(BasePublicationTests):
         self.assertEqual(conn.db(), self.db)
 
 
+class AuthZopePublicationTests(BasePublicationTests):
+
+    def setUp(self):
+        super(AuthZopePublicationTests, self).setUp()
+        principalRegistry.defineDefaultPrincipal('anonymous', '')
+
+        root = self.db.open().root()
+        app = root[ZopePublication.root_name]
+        app['f1'] = rootFolder()
+        f1 = app['f1']
+        f1['f2'] = Folder()
+        if not ISite.providedBy(f1):
+            f1.setSiteManager(LocalSiteManager(f1))
+        sm1 = f1.getSiteManager()
+        addUtility(sm1, '', IAuthentication, AuthUtility1())
+
+        f2 = f1['f2']
+        if not ISite.providedBy(f2):
+            f2.setSiteManager(LocalSiteManager(f2))
+        sm2 = f2.getSiteManager()
+        addUtility(sm2, '', IAuthentication, AuthUtility2())
+        transaction.commit()
+
+        from zope.container.interfaces import ISimpleReadContainer
+        from zope.container.traversal import ContainerTraverser
+
+        component.provideAdapter(ContainerTraverser,
+                                 (ISimpleReadContainer, IRequest),
+                                 IPublishTraverse, name='')
+
+        from zope.site.interfaces import IFolder
+        from zope.security.checker import defineChecker, InterfaceChecker
+        defineChecker(Folder, InterfaceChecker(IFolder))
+
+    def testPlacefulAuth(self):
+        self.publication.beforeTraversal(self.request)
+        self.assertEqual(list(queryInteraction().participations),
+                         [self.request])
+        self.assertEqual(self.request.principal.id, 'anonymous')
+        root = self.publication.getApplication(self.request)
+        self.publication.callTraversalHooks(self.request, root)
+        self.assertEqual(self.request.principal.id, 'anonymous')
+        ob = self.publication.traverseName(self.request, root, 'f1')
+        self.publication.callTraversalHooks(self.request, ob)
+        self.assertEqual(self.request.principal.id, 'test.anonymous')
+        ob = self.publication.traverseName(self.request, ob, 'f2')
+        self.publication.afterTraversal(self.request, ob)
+        self.assertEqual(self.request.principal.id, 'test.bob')
+        self.assertEqual(list(queryInteraction().participations),
+                         [self.request])
+        self.publication.endRequest(self.request, ob)
+        self.assertEqual(queryInteraction(), None)
+
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(ZopePublicationTests),
+        unittest.makeSuite(AuthZopePublicationTests),
         unittest.makeSuite(ZopePublicationErrorHandling),
         ))
 
