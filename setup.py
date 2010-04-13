@@ -54,6 +54,7 @@ setup(name='zope.app.publication',
     extras_require = dict(
         test=['zope.app.testing',
               'zope.app.zcmlfiles>=3.5.4',
+              'zope.app.wsgi',
               'zope.principalregistry',
               'zope.applicationcontrol>=3.5.0',
               'zope.site',

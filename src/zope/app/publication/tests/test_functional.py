@@ -18,9 +18,10 @@ $Id$
 
 import re
 import unittest
+
 from zope.testing import renormalizing
-from zope.app.testing import functional
 from zope.app.publication.testing import PublicationLayer
+from zope.testing import doctest
 
 
 checker = renormalizing.RENormalizing([
@@ -29,20 +30,19 @@ checker = renormalizing.RENormalizing([
 
 
 def test_suite():
-    methodnotallowed = functional.FunctionalDocFileSuite(
+    methodnotallowed = doctest.DocFileSuite(
         '../methodnotallowed.txt')
     methodnotallowed.layer = PublicationLayer
-    httpfactory = functional.FunctionalDocFileSuite(
+    httpfactory = doctest.DocFileSuite(
         '../httpfactory.txt', checker=checker)
     httpfactory.layer = PublicationLayer
-    site = functional.FunctionalDocFileSuite(
+    site = doctest.DocFileSuite(
         '../site.txt')
     site.layer = PublicationLayer
     return unittest.TestSuite((
         methodnotallowed,
         httpfactory,
-        site,
-        ))
+        site,))
 
 if __name__ == '__main__':
     unittest.main(defaultTest='test_suite')

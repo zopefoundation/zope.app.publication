@@ -18,10 +18,8 @@ $Id$
 
 __docformat__ = "reStructuredText"
 
-import os
-from zope.app.testing.functional import ZCMLLayer
+from zope.component.testlayer import ZCMLFileLayer
+import zope.app.publication
 
-PublicationLayer = ZCMLLayer(
-    os.path.join(os.path.split(__file__)[0], 'ftesting.zcml'),
-    __name__, 'PublicationLayer', allow_teardown=True)
+PublicationLayer = ZCMLFileLayer(zope.app.publication, name='PublicationLayer')
 
