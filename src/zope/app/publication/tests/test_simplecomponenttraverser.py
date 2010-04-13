@@ -20,7 +20,6 @@ from zope.publisher.interfaces import NotFound
 from zope.interface import Interface, directlyProvides
 
 from zope.app.publication.traversers import SimpleComponentTraverser
-from zope.app.testing.placelesssetup import PlacelessSetup
 from zope import component
 
 class I(Interface):
@@ -50,7 +49,8 @@ class View(object):
         self._comp = comp
 
 
-class Test(PlacelessSetup, unittest.TestCase):
+class Test(unittest.TestCase):
+
     def testAttr(self):
         # test container traver
         foo = Container()
