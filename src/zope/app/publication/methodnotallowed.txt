@@ -8,7 +8,7 @@ view,  HTTP 405 Method Not Allowed response is returned:
   ... FROG / HTTP/1.1
   ... """)
   HTTP/1.1 405 Method Not Allowed
-  Allow: DELETE, MKCOL, OPTIONS, PROPFIND, PROPPATCH, PUT
+  Allow: DELETE, OPTIONS, PUT
   Content-Length: 18
   <BLANKLINE>
   Method Not Allowed
