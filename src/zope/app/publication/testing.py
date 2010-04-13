@@ -18,8 +18,8 @@ $Id$
 
 __docformat__ = "reStructuredText"
 
-from zope.component.testlayer import ZCMLFileLayer
+from zope.app.wsgi.testlayer import BrowserLayer
 import zope.app.publication
 
-PublicationLayer = ZCMLFileLayer(zope.app.publication, name='PublicationLayer')
+PublicationLayer = BrowserLayer(zope.app.publication, name='PublicationLayer')
 
