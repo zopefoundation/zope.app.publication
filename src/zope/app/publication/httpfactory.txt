@@ -10,24 +10,29 @@ the mime type and sometimes some request headers
 
 A regular GET, POST or HEAD
 
+  >>> from zope.app.wsgi.testlayer import http
+
   >>> print http(r"""
   ... GET / HTTP/1.1
   ... """)
-  HTTP/1.1 200 OK
-  Content-Length: 4322
+  HTTP/1.0 200 OK
+  X-Powered-By: Zope (www.zope.org), Python (www.python.org)
+  Content-Length: ...
   Content-Type: text/html;charset=utf-8
   ...
   >>> print http(r"""
   ... POST / HTTP/1.1
   ... """)
-  HTTP/1.1 200 OK
-  Content-Length: 4322
+  HTTP/1.0 200 OK
+  X-Powered-By: Zope (www.zope.org), Python (www.python.org)
+  Content-Length: ...
   Content-Type: text/html;charset=utf-8
   ...
   >>> print http(r"""
   ... HEAD / HTTP/1.1
   ... """)
-  HTTP/1.1 200 OK
+  HTTP/1.0 200 OK
+  X-Powered-By: Zope (www.zope.org), Python (www.python.org)
   Content-Length: 0
   Content-Type: text/html;charset=utf-8
   <BLANKLINE>
@@ -39,6 +44,7 @@ A text/xml POST request, wich is an xml-rpc call
   ... Content-Type: text/xml
   ... """)
   HTTP/1.0 200 OK
+  X-Powered-By: Zope (www.zope.org), Python (www.python.org)
   Content-Length: ...
   Content-Type: text/xml;charset=utf-8
   ...
@@ -54,6 +60,7 @@ TODO need to create a real SOAP exchange test here
   ... HTTP_SOAPACTION: soap#action
   ... """)
   HTTP/1.0 200 OK
+  X-Powered-By: Zope (www.zope.org), Python (www.python.org)
   Content-Length: ...
   Content-Type: text/xml;charset=utf-8
   ...

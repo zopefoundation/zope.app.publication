@@ -18,10 +18,18 @@ $Id$
 
 __docformat__ = "reStructuredText"
 
-import os
-from zope.app.testing.functional import ZCMLLayer
+from zope.app.wsgi.testlayer import BrowserLayer
+from zope.publisher.browser import BrowserPage
+import zope.app.publication
 
-PublicationLayer = ZCMLLayer(
-    os.path.join(os.path.split(__file__)[0], 'ftesting.zcml'),
-    __name__, 'PublicationLayer', allow_teardown=True)
+
+class DefaultTestView(BrowserPage):
+
+    def __call__(self):
+        self.request.response.setHeader(
+            'Content-Type', 'text/html;charset=utf-8')
+        return "<html><body>Test</body></html>"
+
+
+PublicationLayer = BrowserLayer(zope.app.publication, name='PublicationLayer')
 

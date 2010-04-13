@@ -24,7 +24,6 @@ from zope.publisher.interfaces.http import IHTTPRequest
 
 import zope.app.publication.http
 from zope import component
-from zope.app.testing.placelesssetup import PlacelessSetup
 
 class I(Interface):
     pass
@@ -42,7 +41,7 @@ class V(object):
         self.context.spammed += 1
 
 
-class Test(PlacelessSetup, TestCase):
+class Test(TestCase):
     # Note that zope publication tests cover all of the code but callObject
 
     def test_callObject(self):
@@ -51,7 +50,7 @@ class Test(PlacelessSetup, TestCase):
         request.method = 'SPAM'
 
         component.provideAdapter(V, (I, IHTTPRequest), Interface, name='SPAM')
-        
+
         ob = C()
         pub.callObject(request, ob)
         self.assertEqual(ob.spammed, 1)

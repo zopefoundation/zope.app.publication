@@ -248,7 +248,7 @@ class BrowserPublicationTests(BasePublicationTests):
         self.assertEqual(removeSecurityProxy(ob2).v, 1)
 
     def testTraverseNameApplicationControl(self):
-        from zope.app.applicationcontrol.applicationcontrol \
+        from zope.applicationcontrol.applicationcontrol \
              import applicationController, applicationControllerRoot
         from zope.traversing.interfaces import IEtcNamespace
         component.provideUtility(applicationController,

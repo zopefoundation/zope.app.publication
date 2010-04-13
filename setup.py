@@ -17,7 +17,7 @@
 # Zope Toolkit policies as described by this documentation.
 ##############################################################################
 
-version = '3.11dev'
+version = '3.11.0dev'
 
 import os
 from setuptools import setup, find_packages
@@ -52,15 +52,19 @@ setup(name='zope.app.publication',
     package_dir = {'': 'src'},
     namespace_packages=['zope', 'zope.app'],
     extras_require = dict(
-        test=['zope.app.testing',
-              'zope.app.securitypolicy',
-              'zope.app.zcmlfiles>=3.5.4',
-              'zope.app.dav',
-              'zope.principalregistry',
-              'zope.app.applicationcontrol>=3.5.0',
-              'zope.site',
+        test=['zope.annotation',
+              'zope.app.appsetup',
+              'zope.app.exception',
+              'zope.app.http',
+              'zope.app.wsgi',
+              'zope.applicationcontrol>=3.5.0',
+              'zope.browserpage',
               'zope.login',
-              ]),
+              'zope.password',
+              'zope.principalregistry',
+              'zope.security',
+              'zope.securitypolicy',
+              'zope.site']),
     install_requires=['zope.interface',
                       'ZODB3',
                       'zope.authentication',
