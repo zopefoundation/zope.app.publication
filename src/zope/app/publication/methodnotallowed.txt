@@ -17,7 +17,6 @@ view,  HTTP 405 Method Not Allowed response is returned:
 
   >>> print http(r"""
   ... DELETE / HTTP/1.1
-  ... Authorization: Basic bWdyOm1ncnB3
   ... """)
   HTTP/1.0 405 Method Not Allowed
   ...
