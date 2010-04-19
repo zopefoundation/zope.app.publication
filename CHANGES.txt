@@ -5,8 +5,7 @@ CHANGES
 3.11.1 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Fix up tests to work with newer zope.app.wsgi release (3.9.0).
 
 3.11.0 (2010-04-13)
 -------------------
