@@ -2,7 +2,7 @@
 CHANGES
 =======
 
-3.11.1 (unreleased)
+3.11.1 (2010-04-19)
 -------------------
 
 - Fix up tests to work with newer zope.app.wsgi release (3.9.0).
