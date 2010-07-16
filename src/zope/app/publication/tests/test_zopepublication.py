@@ -574,18 +574,32 @@ class ZopePublicationTests(BasePublicationTests):
         self.assertEqual(txn_info['location'], expected_path)
 
     def testSiteEvents(self):
-        from zope.publisher.interfaces import IEndRequestEvent
+        from zope.publisher.interfaces import (
+            IEndRequestEvent,
+            IStartRequestEvent,
+            )
         from zope.traversing.interfaces import IBeforeTraverseEvent
 
+        start = []
         set = []
         clear = []
 
+        component.provideHandler(start.append, (IStartRequestEvent,))
         component.provideHandler(set.append, (IBeforeTraverseEvent,))
         component.provideHandler(clear.append, (IEndRequestEvent,))
 
         ob = object()
 
-        # This should fire the BeforeTraverseEvent
+        # The request is started at the top of publication, which tries to do
+        # auth.  Let's register an unauthenticated principal instance.
+        principal = UnauthenticatedPrincipal('fallback')
+        component.provideUtility(principal, IFallbackUnauthenticatedPrincipal)
+        # Start publication.
+        self.publication.beforeTraversal(self.request)
+        self.assertEqual(len(start), 1)
+        self.assertEqual(start[0].request, self.request)
+
+        # This should fire the BeforeTraverseEvent.
         self.publication.callTraversalHooks(self.request, ob)
 
         self.assertEqual(len(set), 1)
@@ -597,6 +611,7 @@ class ZopePublicationTests(BasePublicationTests):
         # This should fire the EndRequestEvent
         self.publication.endRequest(self.request, ob2)
 
+        self.assertEqual(len(start), 1)
         self.assertEqual(len(set), 1)
         self.assertEqual(len(clear), 1)
         self.assertEqual(clear[0].object, ob2)

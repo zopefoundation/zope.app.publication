@@ -44,7 +44,7 @@ from zope.error.interfaces import IErrorReportingUtility
 import zope.authentication.interfaces
 from zope.browser.interfaces import ISystemErrorView
 from zope.publisher.defaultview import queryDefaultViewName
-from zope.publisher.interfaces import EndRequestEvent
+from zope.publisher.interfaces import EndRequestEvent, StartRequestEvent
 from zope.authentication.interfaces import IUnauthenticatedPrincipal
 from zope.authentication.interfaces import IFallbackUnauthenticatedPrincipal
 from zope.authentication.interfaces import IAuthentication
@@ -67,6 +67,7 @@ class Cleanup(object):
                 "Cleanup without request close")
             self._f()
 
+
 class ZopePublication(object):
     """Base Zope publication specification."""
     implements(IPublication)
@@ -86,6 +87,7 @@ class ZopePublication(object):
         return ProxyFactory(ob)
 
     def beforeTraversal(self, request):
+        notify(StartRequestEvent(request))
         # Try to authenticate against the root authentication utility.
         auth = zope.component.getGlobalSiteManager().getUtility(
             zope.authentication.interfaces.IAuthentication)

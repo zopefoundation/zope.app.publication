@@ -2,10 +2,11 @@
 CHANGES
 =======
 
-3.11.2 (unreleased)
+3.12.0 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Notify with IStartRequestEvent at the start of the request publication
+  cycle.
 
 
 3.11.1 (2010-04-19)
