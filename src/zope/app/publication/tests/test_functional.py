@@ -12,8 +12,6 @@
 #
 ##############################################################################
 """Test not found errors
-
-$Id$
 """
 
 import re
@@ -35,6 +33,10 @@ def test_suite():
         '../methodnotallowed.txt',
         optionflags=optionflags)
     methodnotallowed.layer = PublicationLayer
+    notfound = doctest.DocFileSuite(
+        '../notfound.txt',
+        optionflags=optionflags)
+    notfound.layer = PublicationLayer
     httpfactory = doctest.DocFileSuite(
         '../httpfactory.txt', checker=checker,
         optionflags=optionflags)
@@ -45,6 +47,7 @@ def test_suite():
     site.layer = PublicationLayer
     return unittest.TestSuite((
         methodnotallowed,
+        notfound,
         httpfactory,
         site,))
 
