@@ -11,12 +11,14 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-from zope.testing import doctest, cleanup
+import doctest
 import unittest
+
 import zope.app.publication.browser
 import zope.component
 import zope.interface
 import zope.publisher.interfaces.browser
+from zope.testing import cleanup
 import zope.traversing.namespace
 
 class Proxy:

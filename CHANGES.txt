@@ -5,6 +5,8 @@ CHANGES
 3.12.0 (unreleased)
 -------------------
 
+- Use the standard libraries doctest module.
+
 - Include the ``notfound.txt`` test again but reduce its scope to functionality
   relevant to this distribution.
 
