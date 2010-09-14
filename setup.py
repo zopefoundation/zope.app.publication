@@ -17,7 +17,7 @@
 # Zope Toolkit policies as described by this documentation.
 ##############################################################################
 
-version = '3.11.2dev'
+version = '3.12.0'
 
 import os
 from setuptools import setup, find_packages
@@ -36,7 +36,7 @@ setup(name='zope.app.publication',
         read('CHANGES.txt')
         ),
     license='ZPL 2.1',
-    keywords = "zope3 publication",
+    keywords = "zope publication",
     classifiers = [
         'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',

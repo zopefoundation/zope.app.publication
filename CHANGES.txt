@@ -2,7 +2,7 @@
 CHANGES
 =======
 
-3.12.0 (unreleased)
+3.12.0 (2010-09-14)
 -------------------
 
 - Use the standard libraries doctest module.
