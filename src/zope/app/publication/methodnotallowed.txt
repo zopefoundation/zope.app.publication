@@ -20,13 +20,30 @@ view,  HTTP 405 Method Not Allowed response is returned:
   HTTP/1.0 405 Method Not Allowed
   ...
 
+Trying to PUT on an object which does not support PUT leads to 405:
 
-The request below should return 405, but instead crashes with a TypeError,
-when the view tries to adapt context to IWriteFile.
+  >>> print http(r"""
+  ... PUT / HTTP/1.1
+  ... Authorization: Basic mgr:mgrpw
+  ... """)
+  HTTP/1.0 405 Method Not Allowed
+  ...
 
-#   >>> print http(r"""
-#   ... PUT / HTTP/1.1
-#   ... Authorization: Basic mgr:mgrpw
-#   ... """, handle_errors=False)
-#   HTTP/1.1 405 Method Not Allowed
-#   ...
+Trying to PUT a not existing object on a container which does not support
+PUT leads to 405:
+
+  >>> print http(r"""
+  ... PUT /asdf HTTP/1.1
+  ... Authorization: Basic mgr:mgrpw
+  ... """)
+  HTTP/1.0 405 Method Not Allowed
+  ...
+
+When ``handle_errors`` is set to ``False`` a traceback is displayed:
+
+  >>> print http(r"""
+  ... PUT / HTTP/1.1
+  ... Authorization: Basic mgr:mgrpw
+  ... """, handle_errors=False)
+  Traceback (most recent call last):
+  MethodNotAllowed: <zope.site.folder.Folder object at 0x...>, <zope.publisher.http.HTTPRequest instance URL=http://localhost>
