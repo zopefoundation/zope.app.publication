@@ -2,7 +2,7 @@
 CHANGES
 =======
 
-3.13.0 (unreleased)
+3.13.0 (2011-01-25)
 -------------------
 
 - Reenabled a test which makes sure ``405 MethodNotAllowed`` is returned
