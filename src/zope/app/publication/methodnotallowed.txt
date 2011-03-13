@@ -6,7 +6,7 @@ view,  HTTP 405 Method Not Allowed response is returned:
 
   >>> from zope.app.wsgi.testlayer import http
 
-  >>> print http("""
+  >>> print http("""\
   ... FROG / HTTP/1.1
   ... """)
   HTTP/1.0 405 Method Not Allowed
