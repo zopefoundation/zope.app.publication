@@ -2,10 +2,10 @@
 CHANGES
 =======
 
-3.13.1 (unreleased)
+3.13.1 (2011-03-14)
 -------------------
 
-- Nothing changed yet.
+- Test fix: HTTP request should not have leading whitespace.
 
 
 3.13.0 (2011-01-25)
