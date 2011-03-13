@@ -6,7 +6,7 @@ view,  HTTP 405 Method Not Allowed response is returned:
 
   >>> from zope.app.wsgi.testlayer import http
 
-  >>> print http(r"""
+  >>> print http("""
   ... FROG / HTTP/1.1
   ... """)
   HTTP/1.0 405 Method Not Allowed
@@ -14,7 +14,7 @@ view,  HTTP 405 Method Not Allowed response is returned:
   Allow: DELETE, OPTIONS, PUT
   ...
 
-  >>> print http(r"""
+  >>> print http("""\
   ... DELETE / HTTP/1.1
   ... """)
   HTTP/1.0 405 Method Not Allowed
@@ -22,7 +22,7 @@ view,  HTTP 405 Method Not Allowed response is returned:
 
 Trying to PUT on an object which does not support PUT leads to 405:
 
-  >>> print http(r"""
+  >>> print http("""\
   ... PUT / HTTP/1.1
   ... Authorization: Basic mgr:mgrpw
   ... """)
@@ -32,7 +32,7 @@ Trying to PUT on an object which does not support PUT leads to 405:
 Trying to PUT a not existing object on a container which does not support
 PUT leads to 405:
 
-  >>> print http(r"""
+  >>> print http("""\
   ... PUT /asdf HTTP/1.1
   ... Authorization: Basic mgr:mgrpw
   ... """)
@@ -41,7 +41,7 @@ PUT leads to 405:
 
 When ``handle_errors`` is set to ``False`` a traceback is displayed:
 
-  >>> print http(r"""
+  >>> print http("""\
   ... PUT / HTTP/1.1
   ... Authorization: Basic mgr:mgrpw
   ... """, handle_errors=False)
