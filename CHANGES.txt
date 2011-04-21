@@ -5,7 +5,7 @@ CHANGES
 3.14 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- Add missing test dependency on zope.testing.
 
 
 3.13.1 (2011-03-14)
