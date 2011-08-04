@@ -26,7 +26,6 @@
   <include package="zope.principalregistry" />
   <include package="zope.app.publication" />
   <include package="zope.app.appsetup" file="ftesting.zcml"/>
-  <include package="zope.app.exception.browser" />
   <include package="zope.app.http" />
   <include package="zope.annotation" />
   <include package="zope.publisher" />

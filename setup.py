@@ -54,7 +54,6 @@ setup(name='zope.app.publication',
     extras_require = dict(
         test=['zope.annotation',
               'zope.app.appsetup >= 3.14.0',
-              'zope.app.exception',
               'zope.app.http >= 3.10',
               'zope.app.wsgi <3.11, >= 3.12',
               'zope.applicationcontrol>=3.5.0',
