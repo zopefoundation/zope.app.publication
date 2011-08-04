@@ -2,8 +2,8 @@
 CHANGES
 =======
 
-3.14 (unreleased)
------------------
+3.13.2 (2011-08-04)
+-------------------
 
 - Add missing test dependency on zope.testing.
 
