@@ -1,6 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 2001, 2002 Zope Corporation and Contributors.
+# Copyright (c) 2001, 2002 Zope Foundation and Contributors.
 # All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
@@ -21,8 +21,6 @@ Each directive also has a name and a sortkey.
 
 The sortkey helps when several directives can handle a request:
 they are sorted by this key and the highest one is taken.
-
-$Id$
 """
 __docformat__ = 'restructuredtext'
 

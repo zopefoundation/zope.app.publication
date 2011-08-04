@@ -1,6 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 2007 Zope Corporation and Contributors.
+# Copyright (c) 2007 Zope Foundation and Contributors.
 # All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
@@ -12,8 +12,6 @@
 #
 ##############################################################################
 """zope.app.publication common test related classes/functions/objects.
-
-$Id$
 """
 
 __docformat__ = "reStructuredText"
