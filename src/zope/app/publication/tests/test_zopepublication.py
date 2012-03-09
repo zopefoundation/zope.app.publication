@@ -172,8 +172,18 @@ class ZopePublicationErrorHandling(BasePublicationTests):
             verifyClass(interface, TestPublication)
 
     def testRetryAllowed(self):
-        from ZODB.POSException import ConflictError
         from zope.publisher.interfaces import Retry
+
+        # a more generic version of ConflictError, but is the better thing
+        from transaction.interfaces import TransientError
+        try:
+            raise TransientError
+        except:
+            self.assertRaises(Retry, self.publication.handleException,
+                self.object, self.request, sys.exc_info(), retry_allowed=True)
+
+        # be nice and check ZODB's ConflictError
+        from ZODB.POSException import ConflictError
         try:
             raise ConflictError
         except:
@@ -187,8 +197,20 @@ class ZopePublicationErrorHandling(BasePublicationTests):
                 self.object, self.request, sys.exc_info(), retry_allowed=True)
 
     def testRetryNotAllowed(self):
+        from transaction.interfaces import TransientError
+        try:
+            raise TransientError
+        except:
+            self.publication.handleException(
+                self.object, self.request, sys.exc_info(), retry_allowed=False)
+        value = ''.join(self.request.response._result).split()
+        self.assertEqual(' '.join(value[:6]),
+                         'Traceback (most recent call last): File')
+        self.assertEqual(' '.join(value[-5:]),
+                         'in testRetryNotAllowed raise TransientError'
+                         ' TransientError')
+
         from ZODB.POSException import ConflictError
-        from zope.publisher.interfaces import Retry
         try:
             raise ConflictError
         except:
@@ -201,6 +223,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
                          'in testRetryNotAllowed raise ConflictError'
                          ' ConflictError: database conflict error')
 
+        from zope.publisher.interfaces import Retry
         try:
             raise Retry(sys.exc_info())
         except:
@@ -379,6 +402,22 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         self.assertEqual(ConflictError, adapter.exception_type)
         self.assertEqual(self.object, adapter.obj)
         self.assertEqual(self.request, adapter.request)
+
+    def testExceptionResetsResponseTransientError(self):
+        from zope.publisher.browser import TestRequest
+        request = TestRequest()
+        request.response.setHeader('Content-Type', 'application/pdf')
+        request.response.setCookie('spam', 'eggs')
+        from transaction.interfaces import TransientError
+        try:
+            raise TransientError
+        except:
+            pass
+        self.publication.handleException(
+            self.object, request, sys.exc_info(), retry_allowed=False)
+        self.assertEqual(request.response.getHeader('Content-Type'),
+                         'text/html;charset=utf-8')
+        self.assertEqual(request.response._cookies, {})
 
     def testExceptionResetsResponse(self):
         from zope.publisher.browser import TestRequest
