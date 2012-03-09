@@ -2,8 +2,8 @@
 CHANGES
 =======
 
-3.14 (unreleased)
------------------
+3.14.0 (2012-03-09)
+-------------------
 
 - Replace ZODB.POSException.ConflictError with
   transaction.interfaces.TransientError. The latter should be a more generic
