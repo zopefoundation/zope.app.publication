@@ -5,7 +5,12 @@ CHANGES
 3.14 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- Replace ZODB.POSException.ConflictError with
+  transaction.interfaces.TransientError. The latter should be a more generic
+  signal to retry a transaction/request.
+  This requires ZODB3 >= 3.10.0 and transaction >= 1.1.0.
+
+- Get rid of ZODB dependency.
 
 
 3.13.2 (2011-08-04)

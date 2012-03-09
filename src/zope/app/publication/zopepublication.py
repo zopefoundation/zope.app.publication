@@ -17,14 +17,12 @@ import sys
 import logging
 from new import instancemethod
 
-from ZODB.POSException import ConflictError
 import transaction
 
 import zope.component
 import zope.component.interfaces
 from zope.component import queryMultiAdapter
 from zope.event import notify
-from zope.security.interfaces import Unauthorized
 from zope.interface import implements, providedBy
 from zope.publisher.publish import mapply
 from zope.publisher.interfaces import IExceptionSideEffects, IHeld
@@ -300,7 +298,9 @@ class ZopePublication(object):
             raise
 
         # Convert ConflictErrors to Retry exceptions.
-        if retry_allowed and isinstance(exc_info[1], ConflictError):
+        # where transaction.interfaces.TransientError is a more generic exception
+        if retry_allowed and isinstance(exc_info[1],
+                                        transaction.interfaces.TransientError):
             tryToLogWarning(
                 'ZopePublication',
                 'Competing writes/reads at %s: %s'
