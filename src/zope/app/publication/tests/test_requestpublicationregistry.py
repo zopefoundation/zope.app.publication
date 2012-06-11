@@ -1,6 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 2003 Zope Corporation and Contributors.
+# Copyright (c) 2003 Zope Foundation and Contributors.
 # All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
@@ -13,7 +13,7 @@
 ##############################################################################
 """Tests for the HTTP Publication Request Factory.
 
-$Id: test_publicationfactories.py 38841 2005-10-07 04:34:09Z andreasjung $
+$Id$
 """
 from unittest import TestCase, TestSuite, main, makeSuite
 

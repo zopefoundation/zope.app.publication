@@ -1,6 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 2005 Zope Corporation and Contributors.
+# Copyright (c) 2005 Zope Foundation and Contributors.
 # All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
@@ -21,7 +21,7 @@ in order to implement SOAP support. If no utility is registered
 for this interface, SOAP requests are handled as if they were
 browser requests.
 
-$Id: $
+$Id$
 """
 
 from zope.app.publication.http import BaseHTTPPublication
