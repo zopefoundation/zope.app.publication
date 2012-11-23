@@ -7,6 +7,8 @@ CHANGES
 
 - Relax ZODB dependency to allow 3.10dev builds from SVN.
 
+- Introduce ZopePublication.callErrorView as a possible hook point.
+
 
 3.14.0 (2012-03-09)
 -------------------
