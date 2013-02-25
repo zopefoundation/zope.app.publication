@@ -11,6 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+from __future__ import print_function
 import doctest
 import unittest
 
@@ -24,7 +25,7 @@ import zope.traversing.namespace
 class Proxy:
 
     def __init__(self, context):
-        print "Proxy called"
+        print("Proxy called")
         self.context = context
 
 class Publication(zope.app.publication.browser.BrowserPublication):
@@ -66,10 +67,9 @@ class DB:
     def close(self):
         pass
 
-class Publisher:
-
-    zope.interface.implements(
+@zope.interface.implementer(
         zope.publisher.interfaces.browser.IBrowserPublisher)
+class Publisher:
 
     def __init__(self, context, request):
         self.context = context

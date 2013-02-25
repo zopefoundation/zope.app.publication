@@ -15,8 +15,6 @@
 """
 from unittest import TestCase, TestSuite, main, makeSuite
 
-from StringIO import StringIO
-
 from zope import component, interface
 from zope.interface.verify import verifyClass
 from zope.component.testing import PlacelessSetup

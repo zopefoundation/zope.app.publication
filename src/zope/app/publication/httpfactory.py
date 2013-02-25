@@ -33,8 +33,8 @@ def chooseClasses(method, environment):
     return request_class, publication
 
 
+@interface.implementer(interfaces.IPublicationRequestFactory)
 class HTTPPublicationRequestFactory(object):
-    interface.implements(interfaces.IPublicationRequestFactory)
 
     def __init__(self, db):
         """See `zope.app.publication.interfaces.IPublicationRequestFactory`"""

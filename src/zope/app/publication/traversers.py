@@ -17,16 +17,16 @@ __docformat__ = 'restructuredtext'
 
 import zope.component
 
-from zope.interface import providedBy, implements
+from zope.interface import providedBy, implementer
 from zope.publisher.interfaces import Unauthorized, NotFound
 from zope.publisher.interfaces.browser import IBrowserPublisher
 from zope.publisher.interfaces.xmlrpc import IXMLRPCPublisher
 from zope.publisher.defaultview import getDefaultViewName
 
+@implementer(IBrowserPublisher, IXMLRPCPublisher)
 class SimpleComponentTraverser(object):
     """Browser traverser for simple components that can only traverse to views
     """
-    implements(IBrowserPublisher, IXMLRPCPublisher)
 
     def __init__(self, context, request):
         self.context = context
@@ -70,9 +70,9 @@ class FileContentTraverser(SimpleComponentTraverser):
 def NoTraverser(ob, request):
     return None
 
+@implementer(IBrowserPublisher)
 class TestTraverser(object):
     """Bobo-style traverser, mostly useful for testing"""
-    implements(IBrowserPublisher)
 
     def __init__(self, context, request):
         self.context = context
@@ -80,7 +80,8 @@ class TestTraverser(object):
     def browserDefault(self, request):
         ob = self.context
 
-        if list(providedBy(ob)):
+        providedIfaces = [iface for iface in providedBy(ob)]
+        if providedIfaces:
             view_name = getDefaultViewName(ob, request)
             return ob, (("@@%s" % view_name),)
 

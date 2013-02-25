@@ -15,15 +15,13 @@
 """
 import unittest
 import sys
-from cStringIO import StringIO
 
-from persistent import Persistent
 from ZODB.DB import DB
 from ZODB.DemoStorage import DemoStorage
 import transaction
 
 from zope.interface.verify import verifyClass
-from zope.interface import implements, classImplements, implementedBy
+from zope.interface import implementer, classImplements, implementedBy
 from zope.component.interfaces import ComponentLookupError, ISite
 from zope.error.interfaces import IErrorReportingUtility
 from zope.location import Location
@@ -31,9 +29,6 @@ from zope.publisher.base import TestPublication, TestRequest
 from zope.publisher.interfaces import IRequest, IPublishTraverse
 from zope.security import simplepolicies
 from zope.security.management import setSecurityPolicy, queryInteraction
-from zope.security.management import endInteraction
-from zope.traversing.interfaces import IPhysicallyLocatable
-from zope.location.interfaces import ILocation
 from zope.testing.cleanup import cleanUp
 from zope.site.site import LocalSiteManager
 
@@ -48,16 +43,18 @@ from zope.principalregistry.principalregistry import principalRegistry
 from zope.app.publication.zopepublication import ZopePublication
 from zope.site.folder import Folder, rootFolder
 
+PYTHON2 = sys.version_info[0] == 2
 
+@implementer(IPrincipal)
 class Principal(object):
-    implements(IPrincipal)
     def __init__(self, id):
         self.id = id
         self.title = ''
         self.description = ''
 
+@implementer(IUnauthenticatedPrincipal)
 class UnauthenticatedPrincipal(Principal):
-    implements(IUnauthenticatedPrincipal)
+    pass
 
 class AuthUtility1(object):
 
@@ -86,8 +83,8 @@ class AuthUtility3(AuthUtility1):
     def unauthenticatedPrincipal(self):
         return None
 
+@implementer(IErrorReportingUtility)
 class ErrorReportingUtility(object):
-    implements(IErrorReportingUtility)
 
     def __init__(self):
         self.exceptions = []
@@ -296,7 +293,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         # Now, we'll register an exception view that indicates that we
         # have a system error.
 
-        from zope.interface import Interface, implements
+        from zope.interface import Interface
         class E2(Exception):
             pass
 
@@ -306,8 +303,8 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         view_text = 'You had a conflict error'
 
         from zope.browser.interfaces import ISystemErrorView
+        @implementer(ISystemErrorView)
         class MyView:
-            implements(ISystemErrorView)
             def __init__(self, context, request):
                 pass
 
@@ -340,6 +337,9 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         handler.uninstall()
 
     def testNoViewOnClassicClassException(self):
+        if not PYTHON2:
+            # Python > 2 does not have classic classes
+            return
         from zope.interface import Interface
         from types import ClassType
         class ClassicError:
@@ -368,8 +368,8 @@ class ZopePublicationErrorHandling(BasePublicationTests):
 
     def testExceptionSideEffects(self):
         from zope.publisher.interfaces import IExceptionSideEffects
+        @implementer(IExceptionSideEffects)
         class SideEffects(object):
-            implements(IExceptionSideEffects)
             def __init__(self, exception):
                 self.exception = exception
             def __call__(self, obj, request, exc_info):
@@ -457,9 +457,8 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         try:
             raise FooError
         except FooError:
-            pass
-        self.publication.handleException(
-            self.object, self.request, sys.exc_info(), retry_allowed=False)
+            self.publication.handleException(
+                self.object, self.request, sys.exc_info(), retry_allowed=False)
 
         # assert that the last transaction is NOT our transaction
         new_txn_info = self.storage.lastTransaction()
@@ -624,6 +623,7 @@ class ZopePublicationTests(BasePublicationTests):
         component.provideHandler(start.append, (IStartRequestEvent,))
         component.provideHandler(set.append, (IBeforeTraverseEvent,))
         component.provideHandler(clear.append, (IEndRequestEvent,))
+
 
         ob = object()
 

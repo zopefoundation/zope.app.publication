@@ -26,12 +26,16 @@ checker = renormalizing.RENormalizing([
     (re.compile(r"HTTP/1\.([01]) (\d\d\d) .*"), r"HTTP/1.\1 \2 <MESSAGE>"),
     ])
 
+excchecker=renormalizing.RENormalizing([
+    (re.compile(r"zope.publisher.interfaces.http.MethodNotAllowed"), "MethodNotAllowed")
+])
+
 optionflags = doctest.ELLIPSIS+doctest.NORMALIZE_WHITESPACE
 
 def test_suite():
     methodnotallowed = doctest.DocFileSuite(
         '../methodnotallowed.txt',
-        optionflags=optionflags)
+        optionflags=optionflags, checker=excchecker)
     methodnotallowed.layer = PublicationLayer
     notfound = doctest.DocFileSuite(
         '../notfound.txt',

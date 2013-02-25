@@ -20,7 +20,7 @@ from zope.app.publication.tests.test_zopepublication import \
 from zope.app.publication.traversers import TestTraverser
 from zope.app.publication.traversers import SimpleComponentTraverser
 from zope.app.publication.xmlrpc import XMLRPCPublication
-from zope.interface import Interface, implements
+from zope.interface import Interface, implementer
 from zope.proxy import removeAllProxies
 from zope.publisher.interfaces import NotFound
 from zope.publisher.interfaces.xmlrpc import IXMLRPCView
@@ -61,17 +61,17 @@ class XMLRPCPublicationTests(BasePublicationTests):
         class I(Interface):
             pass
 
+        @implementer(I)
         class C(object):
-            implements(I)
 
             def foo(self):
                 return 'bar'
 
+        @implementer(IXMLRPCView)
         class V(object):
             def __init__(self, context, request):
                 pass
-            implements(IXMLRPCView)
-
+            
         ob = C()
         r = self._createRequest('/foo', pub)
 
@@ -88,16 +88,17 @@ class XMLRPCPublicationTests(BasePublicationTests):
         class I(Interface):
             pass
 
+        @implementer(I)
         class C(object):
-            implements(I)
+            pass
 
         ob = C()
 
+        @implementer(IXMLRPCView)
         class V(object):
             def __init__(self, context, request):
                 pass
-            implements(IXMLRPCView)
-
+            
 
         # Register the simple traverser so we can traverse without @@
         component.provideAdapter(SimpleComponentTraverser,

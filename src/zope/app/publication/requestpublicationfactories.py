@@ -18,7 +18,7 @@ This module provides factories for tuples (request, publication).
 __docformat__ = 'restructuredtext'
 
 from zope import component
-from zope.interface import implements
+from zope.interface import implementer
 from zope.app.publication.interfaces import IRequestPublicationFactory
 from zope.app.publication import interfaces
 from zope.app.publication.soap import SOAPPublication
@@ -29,9 +29,8 @@ from zope.app.publication.browser import BrowserPublication
 from zope.publisher.http import HTTPRequest
 from zope.publisher.browser import BrowserRequest
 
+@implementer(IRequestPublicationFactory)
 class SOAPFactory(object):
-
-    implements(IRequestPublicationFactory)
 
     def canHandle(self, environment):
         self.soap_req = component.queryUtility(interfaces.ISOAPRequestFactory)
@@ -41,9 +40,8 @@ class SOAPFactory(object):
         return self.soap_req, SOAPPublication
 
 
+@implementer(IRequestPublicationFactory)
 class XMLRPCFactory(object):
-
-    implements(IRequestPublicationFactory)
 
     def canHandle(self, environment):
         return True
@@ -54,9 +52,8 @@ class XMLRPCFactory(object):
         return request_class, XMLRPCPublication
 
 
+@implementer(IRequestPublicationFactory)
 class HTTPFactory(object):
-
-    implements(IRequestPublicationFactory)
 
     def canHandle(self, environment):
         return True
@@ -66,9 +63,8 @@ class HTTPFactory(object):
             interfaces.IHTTPRequestFactory, default=HTTPRequest)
         return request_class, HTTPPublication
 
+@implementer(IRequestPublicationFactory)
 class BrowserFactory(object):
-
-    implements(IRequestPublicationFactory)
 
     def canHandle(self, environment):
         return True
