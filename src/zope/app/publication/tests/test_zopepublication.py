@@ -203,9 +203,10 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         value = ''.join(self.request.response._result).split()
         self.assertEqual(' '.join(value[:6]),
                          'Traceback (most recent call last): File')
+        excname = ('TransientError' if PYTHON2
+                   else 'transaction.interfaces.TransientError')
         self.assertEqual(' '.join(value[-5:]),
-                         'in testRetryNotAllowed raise TransientError'
-                         ' TransientError')
+                         'in testRetryNotAllowed raise TransientError %s' % excname)
 
         from ZODB.POSException import ConflictError
         try:
@@ -216,22 +217,29 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         value = ''.join(self.request.response._result).split()
         self.assertEqual(' '.join(value[:6]),
                          'Traceback (most recent call last): File')
+
+        excname = ('ConflictError' if PYTHON2
+                   else 'ZODB.POSException.ConflictError')
         self.assertEqual(' '.join(value[-8:]),
                          'in testRetryNotAllowed raise ConflictError'
-                         ' ConflictError: database conflict error')
+                         ' %s: database conflict error' % excname)
 
         from zope.publisher.interfaces import Retry
         try:
-            raise Retry(sys.exc_info())
+            try:
+                raise ConflictError
+            except ConflictError:
+                raise Retry(sys.exc_info())
         except:
             self.publication.handleException(
                 self.object, self.request, sys.exc_info(), retry_allowed=False)
         value = ''.join(self.request.response._result).split()
         self.assertEqual(' '.join(value[:6]),
                          'Traceback (most recent call last): File')
+        excname = 'Retry' if PYTHON2 else 'zope.publisher.interfaces.Retry'
         self.assertEqual(' '.join(value[-8:]),
                          'in testRetryNotAllowed raise Retry(sys.exc_info())'
-                         ' Retry: database conflict error')
+                         ' %s: database conflict error' % excname)
 
         try:
             raise Retry
@@ -243,7 +251,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
                          'Traceback (most recent call last): File')
         self.assertEqual(' '.join(value[-6:]),
                          'in testRetryNotAllowed raise Retry'
-                         ' Retry: None')
+                         ' %s: None' % excname)
 
     def testViewOnException(self):
         from zope.interface import Interface
@@ -264,9 +272,8 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         try:
             raise E1
         except:
-            pass
-        self.publication.handleException(
-            self.object, self.request, sys.exc_info(), retry_allowed=False)
+            self.publication.handleException(
+                self.object, self.request, sys.exc_info(), retry_allowed=False)
         self.assertEqual(self.request.response._result, view_text)
 
     def testHandlingSystemErrors(self):
@@ -393,9 +400,8 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         try:
             raise exception
         except:
-            pass
-        self.publication.handleException(
-            self.object, self.request, sys.exc_info(), retry_allowed=False)
+            self.publication.handleException(
+                self.object, self.request, sys.exc_info(), retry_allowed=False)
         adapter = factory.adapter
         self.assertEqual(exception, adapter.exception)
         self.assertEqual(exception, adapter.exception_from_info)
@@ -485,17 +491,16 @@ class ZopePublicationErrorHandling(BasePublicationTests):
             pass
         def faux_abort():
             raise AbortError
-        try:
-            raise AnEarlierError()
-        except AnEarlierError:
-            pass
         transaction.abort = faux_abort
         try:
             # (Test:)
             try:
-                self.publication.handleException(
-                    self.object, self.request, sys.exc_info(),
-                    retry_allowed=False)
+                try:
+                    raise AnEarlierError()
+                except AnEarlierError:
+                    self.publication.handleException(
+                        self.object, self.request, sys.exc_info(),
+                        retry_allowed=False)
             except AbortError:
                 pass
             else:
