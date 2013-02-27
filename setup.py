@@ -16,9 +16,6 @@
 # When developing and releasing this package, please follow the documented
 # Zope Toolkit policies as described by this documentation.
 ##############################################################################
-
-version = '3.14.1dev'
-
 import os
 from setuptools import setup, find_packages
 
@@ -42,7 +39,7 @@ TEST_REQUIREMENTS =['zope.annotation',
                     ]
 
 setup(name='zope.app.publication',
-    version=version,
+    version='4.0.0a1.dev',
     author='Zope Corporation and Contributors',
     author_email='zope-dev@zope.org',
     description='Zope publication',
