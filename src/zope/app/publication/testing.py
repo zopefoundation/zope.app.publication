@@ -30,4 +30,3 @@ class DefaultTestView(BrowserPage):
 
 
 PublicationLayer = BrowserLayer(zope.app.publication, name='PublicationLayer')
-
