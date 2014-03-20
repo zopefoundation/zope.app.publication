@@ -5,6 +5,10 @@ CHANGES
 3.14.1 (unreleased)
 -------------------
 
+- Improve the publication factory lookup by falling back to a more generic
+  registration if the specific factory chooses not to handle the request after
+  all.
+
 - Relax ZODB dependency to allow 3.10dev builds from SVN.
 
 - Introduce ZopePublication.callErrorView as a possible hook point.
