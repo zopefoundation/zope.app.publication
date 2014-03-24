@@ -174,17 +174,20 @@ class Test(PlacelessSetup, TestCase):
             }
         # No registration found for the method/mime-type.
         r.register('GET', 'foo/bar', 'foobarget', 0, NotSoPickyFactory('a'))
-        with self.assertRaises(ConfigurationError):
-            r.lookup('GET', 'zope/epoz', env)
-        with self.assertRaises(ConfigurationError):
-            r.lookup('BAZ', 'foo/bar', env)
+        self.assertRaises(
+            ConfigurationError,
+            r.lookup, 'GET', 'zope/epoz', env)
+        self.assertRaises(
+            ConfigurationError,
+            r.lookup, 'BAZ', 'foo/bar', env)
         # If the only found factory cannot handle the request after all, we
         # obviously fail too.
         r.register('GET', 'frop/fropple', 'pickyget', 2, PickyFactory('P'))
         self.assertEqual('P', r.lookup('GET', 'frop/fropple', env).name)
         del env['CAN_HANDLE']
-        with self.assertRaises(ConfigurationError):
-            r.lookup('BAZ', 'frop/fropple', env)
+        self.assertRaises(
+            ConfigurationError,
+            r.lookup, 'BAZ', 'frop/fropple', env)
 
 def test_suite():
     return TestSuite((
