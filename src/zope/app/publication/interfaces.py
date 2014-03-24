@@ -88,6 +88,8 @@ class IRequestPublicationRegistry(interface.Interface):
     def lookup(method, mimetype, environment):
         """Lookup a factory for a given method+mimetype and a
         environment.
+
+        Raises ConfigurationError if no factory can be found.
         """
 
     def getFactoriesFor(method, mimetype):
