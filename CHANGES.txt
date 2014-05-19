@@ -2,8 +2,8 @@
 CHANGES
 =======
 
-3.15 (unreleased)
------------------
+3.15.0-md1 (2014-05-19)
+-----------------------
 
 - Improve the publication factory lookup by falling back to a more generic
   registration if the specific factory chooses not to handle the request after
