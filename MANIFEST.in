@@ -1,0 +1,7 @@
+include *.txt
+include bootstrap.py
+include buildout.cfg
+include MANIFEST.in
+include tox.ini
+include .travis.yml
+recursive-include src *.zcml *.txt
