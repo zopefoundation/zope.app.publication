@@ -204,6 +204,12 @@ class ZopePublication(object):
     def callObject(self, request, ob):
         return mapply(ob, request.getPositionalArguments(), request)
 
+    def callErrorView(self, request, view):
+        # We don't want to pass positional arguments.  The positional
+        # arguments were meant for the published object, not an exception
+        # view.
+        return mapply(view, (), request)
+
     def afterCall(self, request, ob):
         txn = transaction.get()
         if txn.isDoomed():
@@ -372,11 +378,7 @@ class ZopePublication(object):
 
             if view is not None:
                 try:
-                    # We use mapply instead of self.callObject here
-                    # because we don't want to pass positional
-                    # arguments.  The positional arguments were meant
-                    # for the published object, not an exception view.
-                    body = mapply(view, (), request)
+                    body = self.callErrorView(request, view)
                     response.setResult(body)
                     transaction.commit()
                     if (ISystemErrorView.providedBy(view)
