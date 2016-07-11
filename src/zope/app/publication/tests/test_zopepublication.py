@@ -249,7 +249,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         value = ''.join(self.request.response._result).split()
         self.assertEqual(' '.join(value[:6]),
                          'Traceback (most recent call last): File')
-        self.assertEqual(' '.join(value[-6:]),
+        self.assertIn(' '.join(value[-5:]),
                          'in testRetryNotAllowed raise Retry'
                          ' %s: None' % excname)
 
@@ -418,9 +418,10 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         try:
             raise TransientError
         except:
+            exec_info = sys.exc_info()
             pass
         self.publication.handleException(
-            self.object, request, sys.exc_info(), retry_allowed=False)
+            self.object, request, exec_info, retry_allowed=False)
         self.assertEqual(request.response.getHeader('Content-Type'),
                          'text/html;charset=utf-8')
         self.assertEqual(request.response._cookies, {})
@@ -434,9 +435,10 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         try:
             raise ConflictError
         except:
+            exec_info = sys.exc_info()
             pass
         self.publication.handleException(
-            self.object, request, sys.exc_info(), retry_allowed=False)
+            self.object, request, exec_info, retry_allowed=False)
         self.assertEqual(request.response.getHeader('Content-Type'),
                          'text/html;charset=utf-8')
         self.assertEqual(request.response._cookies, {})
