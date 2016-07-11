@@ -25,7 +25,7 @@ def read(*rnames):
 TEST_REQUIREMENTS =['zope.annotation',
                     'zope.app.appsetup >= 3.14.0',
                     'zope.app.http >= 3.10',
-                    'zope.app.wsgi[testbrowser] <3.11, >= 3.12',
+                    'zope.app.wsgi[testlayer] >= 4.0.0a1',
                     'zope.applicationcontrol>=4.0.0a1',
                     'zope.browserpage',
                     'zope.login',
