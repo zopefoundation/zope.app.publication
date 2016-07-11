@@ -83,27 +83,25 @@ class RequestPublicationRegistry(object):
 
 
     def lookup(self, method, mimetype, environment):
-        """Lookup a factory for a given method+mimetype and a environment."""
-
-        for m,mt in ((method, mimetype), (method, '*'), ('*', '*')):
-            factory_lst = self.getFactoriesFor(m, mt)
-            if factory_lst:
-                break
-        else:
-            raise ConfigurationError('No registered publisher found '
-                                     'for (%s/%s)' % (method, mimetype))
-
-        # now iterate over all factory candidates and let them introspect
-        # the request environment to figure out if they can handle the
-        # request
-        for d in factory_lst:
-            factory = d['factory']
-            if factory.canHandle(environment):
-                return factory
-
-        # Actually we should never get here unless of improper
-        # configuration (no default handler for method=* and mimetype=*)
-        return None
+        """Lookup a factory for a given method+mimetype and a environment.
+        """
+        factories = []
+        for m, mt in ((method, mimetype), (method, '*'), ('*', '*')):
+            # Collect, in order, from most specific to most generic, the
+            # factories that potentially handle the given environment.
+            # Now iterate over all factory candidates and let them
+            # introspect the request environment to figure out if
+            # they can handle the request. The first one to accept the
+            # environment, wins.
+            found = self.getFactoriesFor(m, mt)
+            if found is None:
+                continue
+            for info in found:
+                factory = info['factory']
+                if factory.canHandle(environment):
+                    return factory
+        raise ConfigurationError(
+            'No registered publisher found for (%s/%s)' % (method, mimetype))
 
 
 factoryRegistry = RequestPublicationRegistry()

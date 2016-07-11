@@ -40,6 +40,25 @@ class DummyRequestFactory(object):
     def setPublication(self, pub):
         self.pub = pub
 
+class PickyFactory(object):
+    def __init__(self, name):
+        self.name = name
+
+    def __call__(self, name, input_stream, env, can_handle=True):
+        self.input_stream = input_stream
+        self.env = env
+        return self
+
+    def canHandle(self, env):
+        return 'CAN_HANDLE' in env
+
+    def setPublication(self, pub):
+        self.pub = pub
+
+class NotSoPickyFactory(PickyFactory):
+    def canHandle(self, env):
+        return True
+
 class Test(PlacelessSetup, TestCase):
 
     def test_interface(self):
@@ -116,6 +135,57 @@ class Test(PlacelessSetup, TestCase):
         self.assert_(
             isinstance(r.lookup('FOO', 'zope/sucks', env), BrowserFactory))
 
+    def test_fallback_to_generic_publicationfactory(self):
+        # If a found publication factory for the given method/mime-type
+        # claims it cannot handle the request after all, we fall back
+        # to a more generically registered factory.
+        r = RequestPublicationRegistry()
+        r.register('*', '*', 'generic', 0, NotSoPickyFactory('a'))
+        r.register('GET', '*', 'genericget', 0, NotSoPickyFactory('b'))
+        r.register('GET', 'foo/bar', 'pickyget', 2, PickyFactory('P'))
+        env =  {
+            'SERVER_URL': 'http://127.0.0.1',
+            'HTTP_HOST': '127.0.0.1',
+            'CAN_HANDLE': 'true',
+            }
+        self.assertEqual('a', r.lookup('FOO', 'zope/epoz', env).name)
+        self.assertEqual('b', r.lookup('GET', 'zope/epoz', env).name)
+        # The picky factory find the "CAN_HANDLE" key in the env, so yes
+        # it can handle request, and the lookup succeeds.
+        self.assertEqual('P', r.lookup('GET', 'foo/bar', env).name)
+        # Now we alter the environment, so the picky factory says it
+        # cannot handle the request and we fallback to a more generically
+        # registered factory.
+        del env['CAN_HANDLE']
+        self.assertEqual('b', r.lookup('GET', 'foo/bar', env).name)
+
+    def test_fail_if_no_factory_can_be_found(self):
+        from zope.configuration.exceptions import ConfigurationError
+        # If cannot find a factory that would handle the requestm at all
+        # we fail with a clear message. The lookup //used// to return None
+        # in these case without the callee handling that case.
+        r = RequestPublicationRegistry()
+        env =  {
+            'SERVER_URL': 'http://127.0.0.1',
+            'HTTP_HOST': '127.0.0.1',
+            'CAN_HANDLE': 'true',
+            }
+        # No registration found for the method/mime-type.
+        r.register('GET', 'foo/bar', 'foobarget', 0, NotSoPickyFactory('a'))
+        self.assertRaises(
+            ConfigurationError,
+            r.lookup, 'GET', 'zope/epoz', env)
+        self.assertRaises(
+            ConfigurationError,
+            r.lookup, 'BAZ', 'foo/bar', env)
+        # If the only found factory cannot handle the request after all, we
+        # obviously fail too.
+        r.register('GET', 'frop/fropple', 'pickyget', 2, PickyFactory('P'))
+        self.assertEqual('P', r.lookup('GET', 'frop/fropple', env).name)
+        del env['CAN_HANDLE']
+        self.assertRaises(
+            ConfigurationError,
+            r.lookup, 'BAZ', 'frop/fropple', env)
 
 def test_suite():
     return TestSuite((

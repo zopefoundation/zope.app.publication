@@ -19,38 +19,43 @@
 import os
 from setuptools import setup, find_packages
 
+
 def read(*rnames):
-    return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
+    with open(os.path.join(os.path.dirname(__file__), *rnames)) as f:
+        return f.read()
 
-TEST_REQUIREMENTS =['zope.annotation',
-                    'zope.app.appsetup >= 3.14.0',
-                    'zope.app.http >= 3.10',
-                    'zope.app.wsgi[testlayer] >= 4.0.0a1',
-                    'zope.applicationcontrol>=4.0.0a1',
-                    'zope.browserpage',
-                    'zope.login',
-                    'zope.password',
-                    'zope.principalregistry',
-                    'zope.securitypolicy',
-                    'zope.site>=4.0.0a1',
-                    'zope.testing',
-                    'zope.testrunner',
-                    'ZODB'
-                    ]
 
-setup(name='zope.app.publication',
+TEST_REQUIREMENTS = [
+    'zope.annotation',
+    'zope.app.appsetup >= 3.14.0',
+    'zope.app.http >= 3.10',
+    'zope.app.wsgi[testlayer] >= 4.0.0a4',
+    'zope.applicationcontrol>=4.0.0a1',
+    'zope.browserpage',
+    'zope.login',
+    'zope.password',
+    'zope.principalregistry',
+    'zope.securitypolicy',
+    'zope.site>=4.0.0a1',
+    'zope.testing',
+    'zope.testrunner',
+    'ZODB3>=3.10dev',
+]
+
+setup(
+    name='zope.app.publication',
     version='4.0.0a1.dev',
     author='Zope Corporation and Contributors',
     author_email='zope-dev@zope.org',
     description='Zope publication',
     long_description=(
-        read('README.txt')
-        + '\n\n' +
+        read('README.txt') +
+        '\n\n' +
         read('CHANGES.txt')
-        ),
+    ),
     license='ZPL 2.1',
-    keywords = "zope publication",
-    classifiers = [
+    keywords="zope publication",
+    classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',
         'Intended Audience :: Developers',
@@ -65,32 +70,35 @@ setup(name='zope.app.publication',
         'Natural Language :: English',
         'Operating System :: OS Independent',
         'Topic :: Internet :: WWW/HTTP',
-        'Framework :: Zope3'],
+        'Framework :: Zope3',
+    ],
     url='http://pypi.python.org/pypi/zope.app.publication',
     packages=find_packages('src'),
-    package_dir = {'': 'src'},
+    package_dir={'': 'src'},
     namespace_packages=['zope', 'zope.app'],
-    extras_require = dict(test=TEST_REQUIREMENTS),
-    install_requires=['six',
-                      'zope.interface',
-                      'zope.authentication',
-                      'zope.component',
-                      'zope.error',
-                      'zope.browser>=1.2',
-                      'zope.location',
-                      'zope.publisher>=4.0.0a2',
-                      'zope.traversing>=4.0.0a2',
-                      #'zope.untrustedpython',
-                      'zope.i18n>=4.0.0a3',
-                      'transaction>=1.1.0',
-                      'setuptools',
-                      ],
-    setup_requires=['eggtestinfo', # captures testing metadata in EGG-INFO
-                    'zope.testrunner'
-                     ],
-    tests_require = TEST_REQUIREMENTS,
+    extras_require=dict(test=TEST_REQUIREMENTS),
+    install_requires=[
+        'six',
+        'zope.interface',
+        'zope.authentication',
+        'zope.component',
+        'zope.error',
+        'zope.browser>=1.2',
+        'zope.location',
+        'zope.publisher>=4.0.0a2',
+        'zope.traversing>=4.0.0a2',
+        # 'zope.untrustedpython',
+        'zope.i18n>=4.0.0a3',
+        'transaction>=1.1.0',
+        'setuptools',
+    ],
+    setup_requires=[
+        'eggtestinfo',  # captures testing metadata in EGG-INFO
+        'zope.testrunner'
+    ],
+    tests_require=TEST_REQUIREMENTS,
     test_suite='zope.app.publication.tests.collect_tests.collect_tests',
     test_loader='zope.testrunner.eggsupport:SkipLayers',
-    include_package_data = True,
-    zip_safe = False,
-    )
+    include_package_data=True,
+    zip_safe=False,
+)
