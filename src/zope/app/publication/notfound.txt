@@ -7,7 +7,7 @@ to an object that doesn't exist, as in:
   >>> from __future__ import print_function
 
   >>> from zope.app.wsgi.testlayer import http
-  >>> print(http(b"""\
+  >>> print(http(wsgi_app, b"""\
   ... GET /eek HTTP/1.1
   ... """))
   HTTP/1.0 404 Not Found

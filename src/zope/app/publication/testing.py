@@ -29,4 +29,5 @@ class DefaultTestView(BrowserPage):
         return "<html><body>Test</body></html>"
 
 
-PublicationLayer = BrowserLayer(zope.app.publication, name='PublicationLayer')
+PublicationLayer = BrowserLayer(
+    zope.app.publication, name='PublicationLayer', allowTearDown=True)

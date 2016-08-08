@@ -1,9 +1,16 @@
 *.pyc
 __pycache__
 
+*.egg-info/
+.coverage*
+.eggs/
 .installed.cfg
 .tox
-bin
-develop-eggs
+bin/
+coverage.xml
+develop-eggs/
 dist
+eggs/
+htmlcov/
 src/*.egg-info/
+

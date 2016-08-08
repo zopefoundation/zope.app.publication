@@ -14,21 +14,21 @@ A regular GET, POST or HEAD
 
   >>> from zope.app.wsgi.testlayer import http
 
-  >>> print(http(b"""\
+  >>> print(http(wsgi_app, b"""\
   ... GET / HTTP/1.1
   ... """))
   HTTP/1.0 200 OK
   Content-Length: ...
   Content-Type: text/html;charset=utf-8
   ...
-  >>> print(http(b"""\
+  >>> print(http(wsgi_app, b"""\
   ... POST / HTTP/1.1
   ... """))
   HTTP/1.0 200 OK
   Content-Length: ...
   Content-Type: text/html;charset=utf-8
   ...
-  >>> print(http(b"""\
+  >>> print(http(wsgi_app, b"""\
   ... HEAD / HTTP/1.1
   ... """))
   HTTP/1.0 200 OK
@@ -38,7 +38,7 @@ A regular GET, POST or HEAD
 
 A text/xml POST request, wich is an xml-rpc call
 
-  >>> print(http(b"""\
+  >>> print(http(wsgi_app, b"""\
   ... POST /RPC2 HTTP/1.0
   ... Content-Type: text/xml
   ... """))
@@ -52,7 +52,7 @@ wich is an xml-rpc call:
 
 TODO need to create a real SOAP exchange test here
 
-  >>> print(http(b"""\
+  >>> print(http(wsgi_app, b"""\
   ... POST /RPC2 HTTP/1.0
   ... Content-Type: text/xml
   ... HTTP_SOAPACTION: soap#action
@@ -66,7 +66,7 @@ Unknown request types:
 
 TODO need more testing here
 
-  >>> print(http(b"""\
+  >>> print(http(wsgi_app, b"""\
   ... POST /BUBA HTTP/1.0
   ... Content-Type: text/topnotch
   ... """))

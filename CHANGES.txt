@@ -5,6 +5,12 @@ CHANGES
 4.0.0a1 (unreleased)
 --------------------
 
+- Claim compatibility to Python 3.4 and 3.5 and drop support for Python 2.6.
+
+- Improve the publication factory lookup by falling back to a more generic
+  registration if the specific factory chooses not to handle the request after
+  all.
+
 - Relax ZODB dependency to allow 3.10dev builds from SVN.
 
 - Introduce ZopePublication.callErrorView as a possible hook point.
