@@ -26,19 +26,28 @@ checker = renormalizing.RENormalizing([
     (re.compile(r"HTTP/1\.([01]) (\d\d\d) .*"), r"HTTP/1.\1 \2 <MESSAGE>"),
     ])
 
+excchecker=renormalizing.RENormalizing([
+    (re.compile(r"zope.publisher.interfaces.http.MethodNotAllowed"), "MethodNotAllowed")
+])
+
 optionflags = doctest.ELLIPSIS+doctest.NORMALIZE_WHITESPACE
+
+
+def setUpTestLayer(test):
+    test.globs['wsgi_app'] = PublicationLayer.make_wsgi_app()
+
 
 def test_suite():
     methodnotallowed = doctest.DocFileSuite(
-        '../methodnotallowed.txt',
-        optionflags=optionflags)
+        '../methodnotallowed.txt', setUp=setUpTestLayer,
+        optionflags=optionflags, checker=excchecker)
     methodnotallowed.layer = PublicationLayer
     notfound = doctest.DocFileSuite(
-        '../notfound.txt',
+        '../notfound.txt', setUp=setUpTestLayer,
         optionflags=optionflags)
     notfound.layer = PublicationLayer
     httpfactory = doctest.DocFileSuite(
-        '../httpfactory.txt', checker=checker,
+        '../httpfactory.txt', checker=checker, setUp=setUpTestLayer,
         optionflags=optionflags)
     httpfactory.layer = PublicationLayer
     site = doctest.DocFileSuite(
@@ -53,4 +62,3 @@ def test_suite():
 
 if __name__ == '__main__':
     unittest.main(defaultTest='test_suite')
-

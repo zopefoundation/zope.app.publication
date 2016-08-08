@@ -15,18 +15,17 @@
 """
 import unittest
 
-from StringIO import StringIO
+from io import BytesIO
 
 from zope import component
 from zope.security.interfaces import ForbiddenAttribute
-from zope.interface import Interface, implements
+from zope.interface import Interface, implementer
 
 from zope.publisher.publish import publish
 from zope.publisher.browser import TestRequest, BrowserView
 from zope.publisher.interfaces.browser import (IBrowserPublisher,
                                                IDefaultBrowserLayer)
-from zope.proxy import getProxiedObject
-from zope.security.proxy import Proxy, removeSecurityProxy
+from zope.security.proxy import removeSecurityProxy
 from zope.security.checker import defineChecker, NamesChecker
 
 from zope.principalregistry.principalregistry import principalRegistry
@@ -44,8 +43,8 @@ def foo():
     "I am an otherwise empty docstring."
     return '<html><body>hello base fans</body></html>'
 
+@implementer(IBrowserPublisher)
 class DummyPublished(object):
-    implements(IBrowserPublisher)
 
     def publishTraverse(self, request, name):
         if name == 'bruce':
@@ -76,12 +75,14 @@ class SimpleObject(object):
 class I1(Interface):
     pass
 
+@implementer(I1)
 class mydict(dict):
-    implements(I1)
+    pass
 
 
+@implementer(I1)
 class O1(Persistent):
-    implements(I1)
+    pass
 
 
 class BrowserDefaultTests(BasePublicationTests):
@@ -162,8 +163,8 @@ class BrowserPublicationTests(BasePublicationTests):
 
     def testAdaptedTraverseNameWrapping(self):
 
+        @implementer(IBrowserPublisher)
         class Adapter(object):
-            implements(IBrowserPublisher)
             def __init__(self, context, request):
                 self.context = context
                 self.counter = 0
@@ -185,8 +186,8 @@ class BrowserPublicationTests(BasePublicationTests):
 
     def testAdaptedTraverseDefaultWrapping(self):
         # Test default content and make sure that it's wrapped.
+        @implementer(IBrowserPublisher)
         class Adapter(object):
-            implements(IBrowserPublisher)
             def __init__(self, context, request):
                 self.context = context
 
@@ -223,8 +224,9 @@ class BrowserPublicationTests(BasePublicationTests):
     def testTraverseNameView(self):
         pub = self.klass(self.db)
         class I(Interface): pass
+        @implementer(I)
         class C(object):
-            implements(I)
+            pass
         ob = C()
         class V(object):
             def __init__(self, context, request): pass
@@ -269,23 +271,23 @@ class BrowserPublicationTests(BasePublicationTests):
             id = 'bob'
 
         # With a normal request, we should get a body:
-        request = TestRequest(StringIO(''), {'PATH_INFO': '/'})
+        request = TestRequest(BytesIO(b''), {'PATH_INFO': '/'})
         request.setPrincipal(User())
         request.response.setResult(u"spam")
         pub.afterCall(request, None)
-        self.assertEqual(request.response.consumeBody(), 'spam' )
+        self.assertEqual(request.response.consumeBody(), b'spam' )
 
         # But with a HEAD request, the body should be empty
-        request = TestRequest(StringIO(''), {'PATH_INFO': '/'})
+        request = TestRequest(BytesIO(b''), {'PATH_INFO': '/'})
         request.setPrincipal(User())
         request.method = 'HEAD'
         request.response.setResult(u"spam")
         pub.afterCall(request, None)
-        self.assertEqual(request.response.consumeBody(), '')
+        self.assertEqual(request.response.consumeBody(), b'')
 
     def testUnicode_NO_HTTP_CHARSET(self):
         # Test so that a unicode body doesn't cause a UnicodeEncodeError
-        request = TestRequest(StringIO(''), {})
+        request = TestRequest(BytesIO(b''), {})
         request.response.setResult(u"\u0442\u0435\u0441\u0442")
         headers = request.response.getHeaders()
         headers.sort()
@@ -297,7 +299,7 @@ class BrowserPublicationTests(BasePublicationTests):
              ('X-Powered-By', 'Zope (www.zope.org), Python (www.python.org)')])
         self.assertEqual(
             request.response.consumeBody(),
-            '\xd1\x82\xd0\xb5\xd1\x81\xd1\x82')
+            b'\xd1\x82\xd0\xb5\xd1\x81\xd1\x82')
 
 
 class HTTPPublicationRequestFactoryTests(BasePublicationTests):
@@ -319,7 +321,7 @@ class HTTPPublicationRequestFactoryTests(BasePublicationTests):
 
     def testGetBackSamePublication(self):
         factory = HTTPPublicationRequestFactory(db=None)
-        args = (StringIO(''), {})
+        args = (BytesIO(b''), {})
         self.assert_(id(factory(*args).publication) ==
                      id(factory(*args).publication))
 

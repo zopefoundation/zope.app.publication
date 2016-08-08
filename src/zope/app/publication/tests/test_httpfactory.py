@@ -15,7 +15,7 @@
 """
 from unittest import TestCase, TestSuite, main, makeSuite
 
-from StringIO import StringIO
+from io import BytesIO
 
 from zope import component, interface
 from zope.publisher.browser import BrowserRequest
@@ -87,7 +87,7 @@ class Test(PlacelessSetup, TestCase):
         env = self.__env
         env['REQUEST_METHOD'] = 'POST'
         env['CONTENT_TYPE'] = 'text/xml'
-        input = StringIO('')
+        input = BytesIO(b'')
         env['HTTP_SOAPACTION'] = 'foo'
         self.assertEqual(httpfactory(input, env), soaprequestfactory)
         del env['HTTP_SOAPACTION']
@@ -99,20 +99,20 @@ class Test(PlacelessSetup, TestCase):
         self.assertEqual(httpfactory(input, env), httprequestfactory)
 
     def test_browser(self):
-        r = self.__factory(StringIO(''), self.__env)
+        r = self.__factory(BytesIO(b''), self.__env)
         self.assertEqual(r.__class__, BrowserRequest)
         self.assertEqual(r.publication.__class__, BrowserPublication)
 
         for method in ('GET', 'HEAD', 'POST', 'get', 'head', 'post'):
             self.__env['REQUEST_METHOD'] = method
-            r = self.__factory(StringIO(''), self.__env)
+            r = self.__factory(BytesIO(b''), self.__env)
             self.assertEqual(r.__class__, BrowserRequest)
             self.assertEqual(r.publication.__class__, BrowserPublication)
 
     def test_http(self):
         for method in ('PUT', 'put', 'ZZZ'):
             self.__env['REQUEST_METHOD'] = method
-            r = self.__factory(StringIO(''), self.__env)
+            r = self.__factory(BytesIO(b''), self.__env)
             self.assertEqual(r.__class__, HTTPRequest)
             self.assertEqual(r.publication.__class__, HTTPPublication)
 
@@ -120,20 +120,20 @@ class Test(PlacelessSetup, TestCase):
         self.__env['CONTENT_TYPE'] = 'text/xml'
         for method in ('POST', 'post'):
             self.__env['REQUEST_METHOD'] = method
-            r = self.__factory(StringIO(''), self.__env)
+            r = self.__factory(BytesIO(b''), self.__env)
             self.assertEqual(r.__class__, XMLRPCRequest)
             self.assertEqual(r.publication.__class__, XMLRPCPublication)
 
         # content type doesn't matter for non post
         for method in ('GET', 'HEAD', 'get', 'head'):
             self.__env['REQUEST_METHOD'] = method
-            r = self.__factory(StringIO(''), self.__env)
+            r = self.__factory(BytesIO(b''), self.__env)
             self.assertEqual(r.__class__, BrowserRequest)
             self.assertEqual(r.publication.__class__, BrowserPublication)
 
         for method in ('PUT', 'put', 'ZZZ'):
             self.__env['REQUEST_METHOD'] = method
-            r = self.__factory(StringIO(''), self.__env)
+            r = self.__factory(BytesIO(b''), self.__env)
             self.assertEqual(r.__class__, HTTPRequest)
             self.assertEqual(r.publication.__class__, HTTPPublication)
 

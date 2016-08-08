@@ -1,0 +1,19 @@
+[run]
+branch = True
+source = zope.app.publication
+
+[report]
+precision = 2
+omit = */interfaces.py
+       */interfaces/*
+       */tests.py
+       */tests/*
+
+[html]
+directory = htmlcov
+
+[paths]
+source =
+   src/zope/app/publication
+   .tox/*/lib/python*/site-packages/zope/app/publication
+   .tox/pypy*/site-packages/zope/app/publication

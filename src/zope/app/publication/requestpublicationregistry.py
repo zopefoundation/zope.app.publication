@@ -14,10 +14,11 @@
 """A registry for Request-Publication factories.
 """
 __docformat__ = 'restructuredtext'
-from zope.interface import implements
+from zope.interface import implementer
 from zope.app.publication.interfaces import IRequestPublicationRegistry
 from zope.configuration.exceptions import ConfigurationError
 
+@implementer(IRequestPublicationRegistry)
 class RequestPublicationRegistry(object):
     """The registry implements a three stage lookup for registered factories
     that have to deal with requests::
@@ -32,7 +33,6 @@ class RequestPublicationRegistry(object):
     The `priority` is used to define a lookup-order when multiple factories
     are registered for the same method and mime-type.
     """
-    implements(IRequestPublicationRegistry)
 
     def __init__(self):
         self._d = {}   # method -> { mimetype -> {factories_data}}
@@ -41,9 +41,9 @@ class RequestPublicationRegistry(object):
         """Register a factory for method+mimetype """
 
         # initialize the two-level deep nested datastructure if necessary
-        if not self._d.has_key(method):
+        if method not in self._d:
             self._d[method] = {}
-        if not self._d[method].has_key(mimetype):
+        if mimetype not in self._d[method]:
             self._d[method][mimetype] = []
         l = self._d[method][mimetype]
 
@@ -58,7 +58,7 @@ class RequestPublicationRegistry(object):
         l.append({'name' : name, 'factory' : factory, 'priority' : priority})
 
         # order by descending priority
-        l.sort(lambda x,y: -cmp(x['priority'], y['priority']))
+        l.sort(key=lambda v: v['priority'], reverse=True)
 
         # check if the priorities are unique
         priorities = [item['priority'] for item in l]

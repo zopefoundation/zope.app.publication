@@ -16,9 +16,6 @@
 # When developing and releasing this package, please follow the documented
 # Zope Toolkit policies as described by this documentation.
 ##############################################################################
-
-version = '3.14.1dev'
-
 import os
 from setuptools import setup, find_packages
 
@@ -32,28 +29,28 @@ TEST_REQUIREMENTS = [
     'zope.annotation',
     'zope.app.appsetup >= 3.14.0',
     'zope.app.http >= 3.10',
-    'zope.app.wsgi >= 3.12',
-    'zope.applicationcontrol>=3.5.0',
+    'zope.app.wsgi[testlayer] >= 4.0.0a4',
+    'zope.applicationcontrol>=4.0.0a1',
     'zope.browserpage',
     'zope.login',
     'zope.password',
     'zope.principalregistry',
-    'zope.security>=4.0.0a1',
     'zope.securitypolicy',
-    'zope.site',
+    'zope.site>=4.0.0a1',
     'zope.testing',
     'zope.testrunner',
     'ZODB3>=3.10dev',
 ]
 
-setup(name='zope.app.publication',
-    version=version,
+setup(
+    name='zope.app.publication',
+    version='4.0.0a1.dev',
     author='Zope Corporation and Contributors',
     author_email='zope-dev@zope.org',
     description='Zope publication',
     long_description=(
-        read('README.txt')
-        + '\n\n' +
+        read('README.txt') +
+        '\n\n' +
         read('CHANGES.txt')
     ),
     license='ZPL 2.1',
@@ -63,9 +60,12 @@ setup(name='zope.app.publication',
         'Environment :: Web Environment',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: Zope Public License',
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 2.6',
+        'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
         'Natural Language :: English',
         'Operating System :: OS Independent',
         'Topic :: Internet :: WWW/HTTP',
@@ -77,6 +77,7 @@ setup(name='zope.app.publication',
     namespace_packages=['zope', 'zope.app'],
     extras_require=dict(test=TEST_REQUIREMENTS),
     install_requires=[
+        'six',
         'zope.interface',
         'zope.authentication',
         'zope.component',
@@ -84,13 +85,19 @@ setup(name='zope.app.publication',
         'zope.browser>=1.2',
         'zope.location',
         'zope.publisher>=4.0.0a2',
-        'zope.traversing>=3.9.0',
-        'zope.untrustedpython',
+        'zope.traversing>=4.0.0a2',
+        # 'zope.untrustedpython',
         'zope.i18n>=4.0.0a3',
         'transaction>=1.1.0',
         'setuptools',
     ],
+    setup_requires=[
+        'eggtestinfo',  # captures testing metadata in EGG-INFO
+        'zope.testrunner'
+    ],
     tests_require=TEST_REQUIREMENTS,
+    test_suite='zope.app.publication.tests.collect_tests.collect_tests',
+    test_loader='zope.testrunner.eggsupport:SkipLayers',
     include_package_data=True,
     zip_safe=False,
 )

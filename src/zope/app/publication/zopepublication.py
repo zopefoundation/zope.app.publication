@@ -15,15 +15,16 @@ __docformat__ = 'restructuredtext'
 
 import sys
 import logging
-from new import instancemethod
+from types import MethodType
 
 import transaction
 
+import six
 import zope.component
 import zope.component.interfaces
 from zope.component import queryMultiAdapter
 from zope.event import notify
-from zope.interface import implements, providedBy
+from zope.interface import implementer, providedBy
 from zope.publisher.publish import mapply
 from zope.publisher.interfaces import IExceptionSideEffects, IHeld
 from zope.publisher.interfaces import IPublication, IPublishTraverse, IRequest
@@ -48,9 +49,9 @@ from zope.authentication.interfaces import IFallbackUnauthenticatedPrincipal
 from zope.authentication.interfaces import IAuthentication
 
 
+@implementer(IHeld)
 class Cleanup(object):
 
-    implements(IHeld)
 
     def __init__(self, f):
         self._f = f
@@ -66,9 +67,9 @@ class Cleanup(object):
             self._f()
 
 
+@implementer(IPublication)
 class ZopePublication(object):
     """Base Zope publication specification."""
-    implements(IPublication)
 
     root_name = 'Application'
 
@@ -234,8 +235,8 @@ class ZopePublication(object):
 
         # Work around methods that are usually used for views
         bare = removeSecurityProxy(ob)
-        if isinstance(bare, instancemethod):
-            ob = bare.im_self
+        if isinstance(bare, MethodType):
+            ob = bare.__self__
 
         # set the location path
         path = None
@@ -388,7 +389,7 @@ class ZopePublication(object):
                         # Lame hack to get around logging missfeature
                         # that is fixed in Python 2.4
                         try:
-                            raise exc_info[0], exc_info[1], exc_info[2]
+                            six.reraise(exc_info[0], exc_info[1], exc_info[2])
                         except:
                             logging.getLogger('SiteError').exception(
                                 str(request.URL),

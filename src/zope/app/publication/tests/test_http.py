@@ -14,9 +14,9 @@
 """Test HTTP Publication
 """
 from unittest import TestCase, TestSuite, main, makeSuite
-from StringIO import StringIO
+from io import BytesIO
 
-from zope.interface import Interface, implements
+from zope.interface import Interface, implementer
 from zope.publisher.http import HTTPRequest
 from zope.publisher.interfaces.http import IHTTPRequest
 
@@ -26,9 +26,9 @@ from zope import component
 class I(Interface):
     pass
 
+@implementer(I)
 class C(object):
     spammed = 0
-    implements(I)
 
 class V(object):
 
@@ -44,7 +44,7 @@ class Test(TestCase):
 
     def test_callObject(self):
         pub = zope.app.publication.http.HTTPPublication(None)
-        request = HTTPRequest(StringIO(''), {})
+        request = HTTPRequest(BytesIO(b''), {})
         request.method = 'SPAM'
 
         component.provideAdapter(V, (I, IHTTPRequest), Interface, name='SPAM')
