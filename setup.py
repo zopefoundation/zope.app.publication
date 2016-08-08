@@ -39,7 +39,7 @@ TEST_REQUIREMENTS = [
     'zope.site>=4.0.0a1',
     'zope.testing',
     'zope.testrunner',
-    'ZODB3>=3.10dev',
+    'ZODB',
 ]
 
 setup(
