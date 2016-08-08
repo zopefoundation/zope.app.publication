@@ -44,7 +44,7 @@ TEST_REQUIREMENTS = [
 
 setup(
     name='zope.app.publication',
-    version='4.1.0.dev0',
+    version='4.1.0',
     author='Zope Corporation and Contributors',
     author_email='zope-dev@zope.org',
     description='Zope publication',
