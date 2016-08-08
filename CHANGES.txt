@@ -5,7 +5,8 @@ CHANGES
 4.1.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Test against released final versions, thus requiring ``zope.app.http`` >= 4.0
+  (test dependency).
 
 
 4.0.0 (2016-08-08)
