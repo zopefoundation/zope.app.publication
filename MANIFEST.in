@@ -1,7 +1,8 @@
 include *.txt
 include bootstrap.py
 include buildout.cfg
-include MANIFEST.in
+exclude MANIFEST.in
 include tox.ini
-include .travis.yml
+include .coveragerc
+exclude .travis.yml
 recursive-include src *.zcml *.txt
