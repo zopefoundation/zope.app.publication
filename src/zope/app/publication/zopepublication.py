@@ -231,7 +231,8 @@ class ZopePublication(object):
         it's specific to this particular implementation.
         """
         if request.principal is not None:
-            txn.setUser(request.principal.id)
+            principal_id = six.text_type(request.principal.id)
+            txn.setUser(principal_id)
 
         # Work around methods that are usually used for views
         bare = removeSecurityProxy(ob)
@@ -265,7 +266,7 @@ class ZopePublication(object):
     def _logErrorWithErrorReportingUtility(self, object, request, exc_info):
         # Record the error with the ErrorReportingUtility
         self.beginErrorHandlingTransaction(request, object,
-                                           'error reporting utility')
+                                           u'error reporting utility')
         try:
             errUtility = zope.component.getUtility(IErrorReportingUtility)
 
@@ -343,7 +344,7 @@ class ZopePublication(object):
             # We definitely have an Exception
             # Set the request body, and abort the current transaction.
             self.beginErrorHandlingTransaction(
-                request, object, 'application error-handling')
+                request, object, u'application error-handling')
             view = None
             try:
                 # We need to get a location, because some template content of
@@ -425,7 +426,7 @@ class ZopePublication(object):
 
             if adapter is not None:
                 self.beginErrorHandlingTransaction(
-                    request, object, 'application error-handling side-effect')
+                    request, object, u'application error-handling side-effect')
                 try:
                     # Although request is passed in here, it should be
                     # considered read-only.

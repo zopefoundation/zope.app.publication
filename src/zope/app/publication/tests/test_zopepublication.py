@@ -578,16 +578,11 @@ class ZopePublicationTests(BasePublicationTests):
                                  (ILocation,), IPhysicallyLocatable)
 
         def get_txn_info():
-            if hasattr(self.storage, 'iterator'):
-                # ZODB 3.9
-                txn_id = self.storage.lastTransaction()
-                txn = list(self.storage.iterator(txn_id, txn_id))[0]
-                txn_info = dict(location=txn.extension['location'],
-                                user_name=txn.user,
-                                request_type=txn.extension['request_type'])
-            else:
-                # ZODB 3.8
-                txn_info = self.storage.undoInfo()[0]
+            txn_id = self.storage.lastTransaction()
+            txn = list(self.storage.iterator(txn_id, txn_id))[0]
+            txn_info = dict(location=txn.extension['location'],
+                            user_name=txn.user,
+                            request_type=txn.extension['request_type'])
             return txn_info
 
         root = self.db.open().root()
@@ -601,7 +596,7 @@ class ZopePublicationTests(BasePublicationTests):
 
         from zope.publisher.interfaces import IRequest
         expected_path = "/foo/bar"
-        expected_user = "/ " + self.user.id
+        expected_user = "/ {}".format(self.user.id).encode('utf-8')
         expected_request = IRequest.__module__ + '.' + IRequest.getName()
 
         self.publication.afterCall(self.request, bar)
