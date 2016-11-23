@@ -10,6 +10,8 @@ CHANGES
 - Update tests to be compatible with ``ZODB >= 5.1`, thus requiring at least
   this version for the tests.
 
+- Drop Python 3.3 support.
+
 
 4.1.0 (2016-08-08)
 ------------------
