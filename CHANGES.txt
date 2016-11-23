@@ -13,7 +13,7 @@ CHANGES
 
 - Update the code to be compatible with ``transaction >= 2.0``.
 
-- Update tests to be compatible with ``ZODB >= 5.1`, thus requiring at least
+- Update tests to be compatible with ``ZODB >= 5.1``, thus requiring at least
   this version for the tests.
 
 - Drop Python 3.3 support.
