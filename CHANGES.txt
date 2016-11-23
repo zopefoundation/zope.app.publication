@@ -2,7 +2,7 @@
 CHANGES
 =======
 
-4.2.0 (unreleased)
+4.2.0 (2016-11-23)
 ------------------
 
 - Update the code to be compatible with ``transaction >= 2.0``.
