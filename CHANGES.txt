@@ -5,7 +5,10 @@ CHANGES
 4.2.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Update the code to be compatible with ``transaction >= 2.0``.
+
+- Update tests to be compatible with ``ZODB >= 5.1`, thus requiring at least
+  this version for the tests.
 
 
 4.1.0 (2016-08-08)
