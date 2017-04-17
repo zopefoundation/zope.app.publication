@@ -2,7 +2,7 @@
 CHANGES
 =======
 
-4.2.1 (unreleased)
+4.2.1 (2017-04-17)
 ------------------
 
 - Include ``MANIFEST.in`` since it is needed for pip install.
