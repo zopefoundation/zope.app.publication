@@ -2,6 +2,12 @@
 CHANGES
 =======
 
+4.1.1 (unreleased)
+------------------
+
+- Include MANIFEST.in since it is needed for pip install.
+
+
 4.1.0 (2016-08-08)
 ------------------
 
