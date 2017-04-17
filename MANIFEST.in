@@ -1,7 +1,6 @@
 include *.txt
 include bootstrap.py
 include buildout.cfg
-exclude MANIFEST.in
 include tox.ini
 include .coveragerc
 exclude .travis.yml
