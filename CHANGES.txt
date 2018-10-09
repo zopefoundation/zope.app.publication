@@ -2,10 +2,14 @@
 CHANGES
 =======
 
-4.2.2 (unreleased)
+4.3.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Drop Python 3.4 support and added 3.7.
+
+- Updated expected doc output to match latest library versions.
+
+- Removed all deprecation warnings.
 
 
 4.2.1 (2017-04-17)

@@ -121,7 +121,7 @@ class BrowserDefaultTests(BasePublicationTests):
 
         component.provideAdapter(DummyView, (I1, IDefaultBrowserLayer),
                                  Interface, name='view')
-        
+
         support.setDefaultViewName(I1, 'view')
         component.provideAdapter(TestTraverser, (None, IDefaultBrowserLayer),
                                  IBrowserPublisher)
@@ -219,7 +219,7 @@ class BrowserPublicationTests(BasePublicationTests):
         ob2 = pub.traverseName(r, ob, 'x')
         self.assertRaises(ForbiddenAttribute, getattr, ob2, 'v')
         self.assertEqual(removeSecurityProxy(ob2).v, 1)
-        self.assert_(pub.traverseName(r, ob, '.') is ob)
+        self.assertTrue(pub.traverseName(r, ob, '.') is ob)
 
     def testTraverseNameView(self):
         pub = self.klass(self.db)
@@ -253,7 +253,7 @@ class BrowserPublicationTests(BasePublicationTests):
         from zope.traversing.interfaces import IEtcNamespace
         component.provideUtility(applicationController,
                                  IEtcNamespace, name='process')
-        
+
         pub = self.klass(self.db)
         r = self._createRequest('/++etc++process',pub)
         ac = pub.traverseName(r,
@@ -322,8 +322,9 @@ class HTTPPublicationRequestFactoryTests(BasePublicationTests):
     def testGetBackSamePublication(self):
         factory = HTTPPublicationRequestFactory(db=None)
         args = (BytesIO(b''), {})
-        self.assert_(id(factory(*args).publication) ==
-                     id(factory(*args).publication))
+        self.assertEqual(
+            id(factory(*args).publication),
+            id(factory(*args).publication))
 
 
 def test_suite():

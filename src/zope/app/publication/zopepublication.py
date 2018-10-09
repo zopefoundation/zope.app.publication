@@ -466,7 +466,7 @@ def tryToLogWarning(arg1, arg2=None, exc_info=False):
         subsystem = arg1
         message = arg2
     try:
-        logging.getLogger(subsystem).warn(message, exc_info=exc_info)
+        logging.getLogger(subsystem).warning(message, exc_info=exc_info)
     # Bare except, because we want to swallow any exception raised while
     # logging a warning.
     except:

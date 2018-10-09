@@ -127,12 +127,12 @@ class Test(PlacelessSetup, TestCase):
             soaprequestfactory, interfaces.ISOAPRequestFactory)
         component.provideUtility(soaprequestfactory)
 
-        self.assert_(
+        self.assertTrue(
             isinstance(r.lookup('POST', 'text/xml', env), XMLRPCFactory))
         env['HTTP_SOAPACTION'] = 'foo'
-        self.assert_(
+        self.assertTrue(
             isinstance(r.lookup('POST', 'text/xml', env), SOAPFactory))
-        self.assert_(
+        self.assertTrue(
             isinstance(r.lookup('FOO', 'zope/sucks', env), BrowserFactory))
 
     def test_fallback_to_generic_publicationfactory(self):

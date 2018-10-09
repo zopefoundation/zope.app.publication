@@ -1,29 +1,30 @@
-import zope.app.publication.tests as tests
-import tests.test_browserpublication
-import tests.test_dependencies
-import tests.test_functional
-import tests.test_http
-import tests.test_httpfactory
-import tests.test_proxycontrol
-import tests.test_requestpublicationfactories
-import tests.test_requestpublicationregistry
-import tests.test_simplecomponenttraverser
-import tests.test_xmlrpcpublication
-import tests.test_zopepublication
+from __future__ import absolute_import
+
+from . import test_browserpublication
+from . import test_dependencies
+from . import test_functional
+from . import test_http
+from . import test_httpfactory
+from . import test_proxycontrol
+from . import test_requestpublicationfactories
+from . import test_requestpublicationregistry
+from . import test_simplecomponenttraverser
+from . import test_xmlrpcpublication
+from . import test_zopepublication
 import unittest
 
 
 def collect_tests():
     """Combine all test suites to have one entry point."""
     return unittest.TestSuite((
-        tests.test_browserpublication.test_suite(),
-        tests.test_dependencies.test_suite(),
-        tests.test_functional.test_suite(),
-        tests.test_http.test_suite(),
-        tests.test_httpfactory.test_suite(),
-        tests.test_proxycontrol.test_suite(),
-        tests.test_requestpublicationfactories.test_suite(),
-        tests.test_simplecomponenttraverser.test_suite(),
-        tests.test_xmlrpcpublication.test_suite(),
-        tests.test_zopepublication.test_suite(),
+        test_browserpublication.test_suite(),
+        test_dependencies.test_suite(),
+        test_functional.test_suite(),
+        test_http.test_suite(),
+        test_httpfactory.test_suite(),
+        test_proxycontrol.test_suite(),
+        test_requestpublicationfactories.test_suite(),
+        test_simplecomponenttraverser.test_suite(),
+        test_xmlrpcpublication.test_suite(),
+        test_zopepublication.test_suite(),
     ))

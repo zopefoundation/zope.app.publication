@@ -48,4 +48,4 @@ When ``handle_errors`` is set to ``False`` a traceback is displayed:
   ... Authorization: Basic mgr:mgrpw
   ... """, handle_errors=False))
   Traceback (most recent call last):
-  MethodNotAllowed: <zope.site.folder.Folder object at 0x...>, <zope.publisher.http.HTTPRequest instance URL=http://localhost>
+  MethodNotAllowed: <Folder object at 0x...>, <zope.publisher.http.HTTPRequest instance URL=http://localhost>
