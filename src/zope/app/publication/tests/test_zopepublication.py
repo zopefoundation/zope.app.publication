@@ -169,9 +169,8 @@ class ZopePublicationErrorHandling(BasePublicationTests):
     def setUp(self):
         super(ZopePublicationErrorHandling, self).setUp()
         self.logger = logging.getLogger('ZopePublication')
-        self.handler = logging.StreamHandler(
-            io.BytesIO() if PYTHON2 else io.StringIO()
-        )
+        self.log_stream = io.BytesIO() if PYTHON2 else io.StringIO()
+        self.handler = logging.StreamHandler(self.log_stream)
         self.logger.addHandler(self.handler)
 
     def tearDown(self):
@@ -206,6 +205,8 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         except:
             self.assertRaises(Retry, self.publication.handleException,
                 self.object, self.request, sys.exc_info(), retry_allowed=True)
+
+        self.assertIn('Competing writes/reads', self.log_stream.getvalue())
 
     def testRetryNotAllowed(self):
         from transaction.interfaces import TransientError
