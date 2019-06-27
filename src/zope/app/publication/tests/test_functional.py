@@ -39,19 +39,19 @@ def setUpTestLayer(test):
 
 def test_suite():
     methodnotallowed = doctest.DocFileSuite(
-        '../methodnotallowed.txt', setUp=setUpTestLayer,
+        '../methodnotallowed.rst', setUp=setUpTestLayer,
         optionflags=optionflags, checker=excchecker)
     methodnotallowed.layer = PublicationLayer
     notfound = doctest.DocFileSuite(
-        '../notfound.txt', setUp=setUpTestLayer,
+        '../notfound.rst', setUp=setUpTestLayer,
         optionflags=optionflags)
     notfound.layer = PublicationLayer
     httpfactory = doctest.DocFileSuite(
-        '../httpfactory.txt', checker=checker, setUp=setUpTestLayer,
+        '../httpfactory.rst', checker=checker, setUp=setUpTestLayer,
         optionflags=optionflags)
     httpfactory.layer = PublicationLayer
     site = doctest.DocFileSuite(
-        '../site.txt',
+        '../site.rst',
         optionflags=optionflags)
     site.layer = PublicationLayer
     return unittest.TestSuite((
