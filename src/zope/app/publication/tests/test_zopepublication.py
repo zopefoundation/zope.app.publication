@@ -13,8 +13,10 @@
 ##############################################################################
 """Zope Publication Tests
 """
-import unittest
+import io
+import logging
 import sys
+import unittest
 
 from ZODB.DB import DB
 from ZODB.DemoStorage import DemoStorage
@@ -146,7 +148,7 @@ class BasePublicationTests(unittest.TestCase):
         support.provideNamespaceHandler('resource', resource)
         support.provideNamespaceHandler('etc', etc)
 
-        self.request = TestRequest('/f1/f2')
+        self.request = TestRequest(u'/f1/f2')
         self.user = Principal('test.principal')
         self.request.setPrincipal(self.user)
         from zope.interface import Interface
@@ -163,6 +165,18 @@ class BasePublicationTests(unittest.TestCase):
 
 
 class ZopePublicationErrorHandling(BasePublicationTests):
+
+    def setUp(self):
+        super(ZopePublicationErrorHandling, self).setUp()
+        self.logger = logging.getLogger('ZopePublication')
+        self.handler = logging.StreamHandler(
+            io.BytesIO() if PYTHON2 else io.StringIO()
+        )
+        self.logger.addHandler(self.handler)
+
+    def tearDown(self):
+        self.logger.removeHandler(self.handler)
+        super(ZopePublicationErrorHandling, self).tearDown()
 
     def testInterfacesVerify(self):
         for interface in implementedBy(ZopePublication):
