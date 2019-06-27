@@ -311,7 +311,7 @@ class ZopePublication(object):
                                         transaction.interfaces.TransientError):
             tryToLogWarning(
                 'ZopePublication',
-                'Competing writes/reads at %s: %s'
+                'Competing writes/reads at %r: %s'
                 % (request.get('PATH_INFO', '???'),
                    exc_info[1],
                    ),

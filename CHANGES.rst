@@ -5,7 +5,12 @@ CHANGES
 4.3.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Updated expected doc output to match latest library versions (yes, again).
+
+- Fixed supported Python versions in .travis.yml.
+
+- Avoid passing unicode text to logging.Logger.warning() on Python 2 (`issue 8
+  <https://github.com/zopefoundation/zope.app.publication/issues/8>`_).
 
 
 4.3.0 (2018-10-09)
@@ -86,7 +91,7 @@ CHANGES
 
 - Reenabled a test which makes sure ``405 MethodNotAllowed`` is returned
   when PUT is not supported. This requires at least version 3.10 of
-  `zope.app.http`.
+  zope.app.http.
 
 
 3.12.0 (2010-09-14)
