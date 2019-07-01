@@ -2,7 +2,7 @@
 CHANGES
 =======
 
-4.3.1 (unreleased)
+4.3.1 (2019-07-01)
 ------------------
 
 - Updated expected doc output to match latest library versions (yes, again).
