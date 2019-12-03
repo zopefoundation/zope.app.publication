@@ -22,10 +22,11 @@ from ZODB.DB import DB
 from ZODB.DemoStorage import DemoStorage
 import transaction
 
-from zope.interface.verify import verifyClass
-from zope.interface import implementer, classImplements, implementedBy
-from zope.component.interfaces import ComponentLookupError, ISite
+from zope.component.interfaces import ISite
 from zope.error.interfaces import IErrorReportingUtility
+from zope.interface import implementer, classImplements, implementedBy
+from zope.interface.interfaces import ComponentLookupError
+from zope.interface.verify import verifyClass
 from zope.location import Location
 from zope.publisher.base import TestPublication, TestRequest
 from zope.publisher.interfaces import IRequest, IPublishTraverse
