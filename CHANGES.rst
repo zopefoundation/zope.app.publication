@@ -2,7 +2,7 @@
 CHANGES
 =======
 
-4.3.2 (unreleased)
+4.3.2 (2019-12-04)
 ------------------
 
 - Fix deprecation warning in tests.
