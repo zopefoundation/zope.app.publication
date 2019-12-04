@@ -5,7 +5,7 @@ CHANGES
 4.3.2 (unreleased)
 ------------------
 
-- Fix deprecation error in tests.
+- Fix deprecation warning in tests.
 
 
 4.3.1 (2019-07-01)
