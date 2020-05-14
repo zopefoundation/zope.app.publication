@@ -91,7 +91,6 @@ setup(
         'transaction>=1.1.0',
         'setuptools',
     ],
-    tests_require=TEST_REQUIREMENTS,
     include_package_data=True,
     zip_safe=False,
 )
