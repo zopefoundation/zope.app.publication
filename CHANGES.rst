@@ -2,7 +2,7 @@
 CHANGES
 =======
 
-4.4 (unreleased)
+4.4 (2020-05-14)
 ----------------
 
 - Drop support for ``python setup.py test``.
