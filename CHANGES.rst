@@ -2,8 +2,8 @@
 CHANGES
 =======
 
-4.3.3 (unreleased)
-------------------
+4.4 (unreleased)
+----------------
 
 - Drop support for ``python setup.py test``.
 
