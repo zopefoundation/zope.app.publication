@@ -91,9 +91,6 @@ setup(
         'transaction>=1.1.0',
         'setuptools',
     ],
-    setup_requires=[
-        'zope.testrunner'
-    ],
     tests_require=TEST_REQUIREMENTS,
     test_suite='zope.app.publication.tests.collect_tests.collect_tests',
     test_loader='zope.testrunner.eggsupport:SkipLayers',
