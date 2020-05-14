@@ -92,7 +92,6 @@ setup(
         'setuptools',
     ],
     setup_requires=[
-        'eggtestinfo',  # captures testing metadata in EGG-INFO
         'zope.testrunner'
     ],
     tests_require=TEST_REQUIREMENTS,
