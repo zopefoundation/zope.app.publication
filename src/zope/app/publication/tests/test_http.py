@@ -13,7 +13,7 @@
 ##############################################################################
 """Test HTTP Publication
 """
-from unittest import TestCase, TestSuite, main, makeSuite
+from unittest import TestCase, TestSuite, makeSuite
 from io import BytesIO
 
 from zope.interface import Interface, implementer
@@ -23,12 +23,15 @@ from zope.publisher.interfaces.http import IHTTPRequest
 import zope.app.publication.http
 from zope import component
 
-class I(Interface):
+
+class ExampleInterface(Interface):
     pass
 
-@implementer(I)
+
+@implementer(ExampleInterface)
 class C(object):
     spammed = 0
+
 
 class V(object):
 
@@ -47,7 +50,8 @@ class Test(TestCase):
         request = HTTPRequest(BytesIO(b''), {})
         request.method = 'SPAM'
 
-        component.provideAdapter(V, (I, IHTTPRequest), Interface, name='SPAM')
+        component.provideAdapter(
+            V, (ExampleInterface, IHTTPRequest), Interface, name='SPAM')
 
         ob = C()
         pub.callObject(request, ob)
@@ -57,7 +61,4 @@ class Test(TestCase):
 def test_suite():
     return TestSuite((
         makeSuite(Test),
-        ))
-
-if __name__=='__main__':
-    main(defaultTest='test_suite')
+    ))

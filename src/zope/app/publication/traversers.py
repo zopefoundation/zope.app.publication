@@ -13,8 +13,6 @@
 ##############################################################################
 """Generic object traversers
 """
-__docformat__ = 'restructuredtext'
-
 import zope.component
 
 from zope.interface import providedBy, implementer
@@ -22,6 +20,7 @@ from zope.publisher.interfaces import Unauthorized, NotFound
 from zope.publisher.interfaces.browser import IBrowserPublisher
 from zope.publisher.interfaces.xmlrpc import IXMLRPCPublisher
 from zope.publisher.defaultview import getDefaultViewName
+
 
 @implementer(IBrowserPublisher, IXMLRPCPublisher)
 class SimpleComponentTraverser(object):
@@ -43,6 +42,7 @@ class SimpleComponentTraverser(object):
         if view is None:
             raise NotFound(ob, name)
         return view
+
 
 class FileContentTraverser(SimpleComponentTraverser):
     """Browser traverser for file content.
@@ -67,8 +67,10 @@ class FileContentTraverser(SimpleComponentTraverser):
 
         return view, path
 
+
 def NoTraverser(ob, request):
     return None
+
 
 @implementer(IBrowserPublisher)
 class TestTraverser(object):
@@ -95,7 +97,7 @@ class TestTraverser(object):
         if name.startswith('_'):
             raise Unauthorized(name)
 
-        subob = getattr(ob, name, self) # self is marker here
+        subob = getattr(ob, name, self)  # self is marker here
         if subob is self:
             # no attribute
             try:

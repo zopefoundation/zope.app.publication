@@ -16,11 +16,13 @@ from zope.publisher.interfaces import IDefaultViewName
 from zope.publisher.interfaces.browser import (IDefaultBrowserLayer,
                                                IBrowserRequest)
 
+
 def provideNamespaceHandler(name, handler):
     component.provideAdapter(handler, (None,), ITraversable,
                              name=name)
     component.provideAdapter(handler, (None, None), ITraversable,
                              name=name)
+
 
 def setDefaultViewName(for_, name, layer=IDefaultBrowserLayer,
                        type=IBrowserRequest):

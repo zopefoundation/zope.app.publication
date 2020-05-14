@@ -48,6 +48,7 @@ from zope.site.folder import Folder, rootFolder
 
 PYTHON2 = sys.version_info[0] == 2
 
+
 @implementer(IPrincipal)
 class Principal(object):
     def __init__(self, id):
@@ -55,9 +56,11 @@ class Principal(object):
         self.title = ''
         self.description = ''
 
+
 @implementer(IUnauthenticatedPrincipal)
 class UnauthenticatedPrincipal(Principal):
     pass
+
 
 class AuthUtility1(object):
 
@@ -73,6 +76,7 @@ class AuthUtility1(object):
     def getPrincipal(self, id):
         return UnauthenticatedPrincipal(id)
 
+
 class AuthUtility2(AuthUtility1):
 
     def authenticate(self, request):
@@ -81,10 +85,12 @@ class AuthUtility2(AuthUtility1):
     def getPrincipal(self, id):
         return Principal(id)
 
+
 class AuthUtility3(AuthUtility1):
 
     def unauthenticatedPrincipal(self):
         return None
+
 
 @implementer(IErrorReportingUtility)
 class ErrorReportingUtility(object):
@@ -95,13 +101,15 @@ class ErrorReportingUtility(object):
     def raising(self, info, request=None):
         self.exceptions.append([info, request])
 
+
 class LocatableObject(Location):
 
     def foo(self):
         pass
 
+
 class TestRequest(TestRequest):
-    URL='http://test.url'
+    URL = 'http://test.url'
 
 
 def addUtility(sitemanager, name, iface, utility, suffix=''):
@@ -123,8 +131,7 @@ class BasePublicationTests(unittest.TestCase):
         from zope.security.management import endInteraction
         endInteraction()
         self.policy = setSecurityPolicy(
-            simplepolicies.PermissiveSecurityPolicy
-            )
+            simplepolicies.PermissiveSecurityPolicy)
         self.storage = DemoStorage('test_storage')
         self.db = db = DB(self.storage)
 
@@ -189,22 +196,25 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         from transaction.interfaces import TransientError
         try:
             raise TransientError
-        except:
-            self.assertRaises(Retry, self.publication.handleException,
+        except Exception:
+            self.assertRaises(
+                Retry, self.publication.handleException,
                 self.object, self.request, sys.exc_info(), retry_allowed=True)
 
         # be nice and check ZODB's ConflictError
         from ZODB.POSException import ConflictError
         try:
             raise ConflictError
-        except:
-            self.assertRaises(Retry, self.publication.handleException,
+        except Exception:
+            self.assertRaises(
+                Retry, self.publication.handleException,
                 self.object, self.request, sys.exc_info(), retry_allowed=True)
 
         try:
             raise Retry(sys.exc_info())
-        except:
-            self.assertRaises(Retry, self.publication.handleException,
+        except Exception:
+            self.assertRaises(
+                Retry, self.publication.handleException,
                 self.object, self.request, sys.exc_info(), retry_allowed=True)
 
         self.assertIn('Competing writes/reads', self.log_stream.getvalue())
@@ -213,7 +223,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         from transaction.interfaces import TransientError
         try:
             raise TransientError
-        except:
+        except Exception:
             self.publication.handleException(
                 self.object, self.request, sys.exc_info(), retry_allowed=False)
         value = ''.join(self.request.response._result).split()
@@ -221,13 +231,14 @@ class ZopePublicationErrorHandling(BasePublicationTests):
                          'Traceback (most recent call last): File')
         excname = ('TransientError' if PYTHON2
                    else 'transaction.interfaces.TransientError')
-        self.assertEqual(' '.join(value[-5:]),
-                         'in testRetryNotAllowed raise TransientError %s' % excname)
+        self.assertEqual(
+            ' '.join(value[-5:]),
+            'in testRetryNotAllowed raise TransientError %s' % excname)
 
         from ZODB.POSException import ConflictError
         try:
             raise ConflictError
-        except:
+        except Exception:
             self.publication.handleException(
                 self.object, self.request, sys.exc_info(), retry_allowed=False)
         value = ''.join(self.request.response._result).split()
@@ -246,7 +257,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
                 raise ConflictError
             except ConflictError:
                 raise Retry(sys.exc_info())
-        except:
+        except Exception:
             self.publication.handleException(
                 self.object, self.request, sys.exc_info(), retry_allowed=False)
         value = ''.join(self.request.response._result).split()
@@ -259,18 +270,19 @@ class ZopePublicationErrorHandling(BasePublicationTests):
 
         try:
             raise Retry
-        except:
+        except Exception:
             self.publication.handleException(
                 self.object, self.request, sys.exc_info(), retry_allowed=False)
         value = ''.join(self.request.response._result).split()
         self.assertEqual(' '.join(value[:6]),
                          'Traceback (most recent call last): File')
-        self.assertIn(' '.join(value[-5:]),
-                         'in testRetryNotAllowed raise Retry'
-                         ' %s: None' % excname)
+        self.assertIn(
+            ' '.join(value[-5:]),
+            'in testRetryNotAllowed raise Retry'' %s: None' % excname)
 
     def testViewOnException(self):
         from zope.interface import Interface
+
         class E1(Exception):
             pass
 
@@ -287,7 +299,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
 
         try:
             raise E1
-        except:
+        except Exception:
             self.publication.handleException(
                 self.object, self.request, sys.exc_info(), retry_allowed=False)
         self.assertEqual(self.request.response._result, view_text)
@@ -317,6 +329,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         # have a system error.
 
         from zope.interface import Interface
+
         class E2(Exception):
             pass
 
@@ -326,6 +339,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         view_text = 'You had a conflict error'
 
         from zope.browser.interfaces import ISystemErrorView
+
         @implementer(ISystemErrorView)
         class MyView:
             def __init__(self, context, request):
@@ -342,7 +356,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
 
         try:
             raise E2
-        except:
+        except Exception:
             self.publication.handleException(
                 self.object, self.request, sys.exc_info(), retry_allowed=False)
 
@@ -355,24 +369,25 @@ class ZopePublicationErrorHandling(BasePublicationTests):
             '  Error while reporting an error to the Error Reporting utility\n'
             'SiteError ERROR\n'
             '  http://test.url'
-            )
+        )
 
         handler.uninstall()
 
+    @unittest.skipIf(not PYTHON2, 'Python > 2 does not have classic classes')
     def testNoViewOnClassicClassException(self):
-        if not PYTHON2:
-            # Python > 2 does not have classic classes
-            return
         from zope.interface import Interface
         from types import ClassType
+
         class ClassicError:
             __metaclass__ = ClassType
+
         class IClassicError(Interface):
             pass
         classImplements(ClassicError, IClassicError)
         support.setDefaultViewName(IClassicError, 'name',
                                    self.presentation_type)
         view_text = 'You made a classic error ;-)'
+
         def _view(obj, request):
             return lambda: view_text
         component.provideAdapter(
@@ -380,7 +395,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
             name='name')
         try:
             raise ClassicError
-        except:
+        except:  # noqa: E722 (bare except)
             pass
         self.publication.handleException(
             self.object, self.request, sys.exc_info(), retry_allowed=False)
@@ -391,15 +406,18 @@ class ZopePublicationErrorHandling(BasePublicationTests):
 
     def testExceptionSideEffects(self):
         from zope.publisher.interfaces import IExceptionSideEffects
+
         @implementer(IExceptionSideEffects)
         class SideEffects(object):
             def __init__(self, exception):
                 self.exception = exception
+
             def __call__(self, obj, request, exc_info):
                 self.obj = obj
                 self.request = request
                 self.exception_type = exc_info[0]
                 self.exception_from_info = exc_info[1]
+
         class SideEffectsFactory:
             def __call__(self, exception):
                 self.adapter = SideEffects(exception)
@@ -407,6 +425,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         factory = SideEffectsFactory()
         from ZODB.POSException import ConflictError
         from zope.interface import Interface
+
         class IConflictError(Interface):
             pass
         classImplements(ConflictError, IConflictError)
@@ -415,7 +434,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         exception = ConflictError()
         try:
             raise exception
-        except:
+        except Exception:
             self.publication.handleException(
                 self.object, self.request, sys.exc_info(), retry_allowed=False)
         adapter = factory.adapter
@@ -433,7 +452,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         from transaction.interfaces import TransientError
         try:
             raise TransientError
-        except:
+        except Exception:
             exec_info = sys.exc_info()
             pass
         self.publication.handleException(
@@ -450,7 +469,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         from ZODB.POSException import ConflictError
         try:
             raise ConflictError
-        except:
+        except Exception:
             exec_info = sys.exc_info()
             pass
         self.publication.handleException(
@@ -463,7 +482,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         txn = transaction.get()
         try:
             raise Exception
-        except:
+        except Exception:
             pass
         self.publication.handleException(
             self.object, self.request, sys.exc_info(), retry_allowed=False)
@@ -503,10 +522,13 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         # (Set up:)
         component.provideUtility(ErrorReportingUtility())
         abort = transaction.abort
+
         class AbortError(Exception):
             pass
+
         class AnEarlierError(Exception):
             pass
+
         def faux_abort():
             raise AbortError
         transaction.abort = faux_abort
@@ -631,7 +653,7 @@ class ZopePublicationTests(BasePublicationTests):
         from zope.publisher.interfaces import (
             IEndRequestEvent,
             IStartRequestEvent,
-            )
+        )
         from zope.traversing.interfaces import IBeforeTraverseEvent
 
         start = []
@@ -641,7 +663,6 @@ class ZopePublicationTests(BasePublicationTests):
         component.provideHandler(start.append, (IStartRequestEvent,))
         component.provideHandler(set.append, (IBeforeTraverseEvent,))
         component.provideHandler(clear.append, (IEndRequestEvent,))
-
 
         ob = object()
 
@@ -672,13 +693,12 @@ class ZopePublicationTests(BasePublicationTests):
         self.assertEqual(clear[0].object, ob2)
 
     def testConnectionAnnotation(self):
-        """The request is annotated with the connection to the main ZODB.
-        """
+        """The request is annotated with the connection to the main ZODB."""
         self.assertRaises(
             KeyError,
             lambda: self.request.annotations['ZODB.interfaces.IConnection'])
 
-        app = self.publication.getApplication(self.request)
+        self.publication.getApplication(self.request)
         conn = self.request.annotations['ZODB.interfaces.IConnection']
         self.assertEqual(conn.db(), self.db)
 
@@ -742,7 +762,4 @@ def test_suite():
         unittest.makeSuite(ZopePublicationTests),
         unittest.makeSuite(AuthZopePublicationTests),
         unittest.makeSuite(ZopePublicationErrorHandling),
-        ))
-
-if __name__ == '__main__':
-    unittest.TextTestRunner().run(test_suite())
+    ))

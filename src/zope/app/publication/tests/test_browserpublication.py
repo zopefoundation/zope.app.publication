@@ -34,14 +34,16 @@ from zope.app.publication.browser import BrowserPublication
 from zope.app.publication.httpfactory import HTTPPublicationRequestFactory
 from zope.app.publication.traversers import TestTraverser
 from zope.app.publication.tests.test_zopepublication \
-     import BasePublicationTests as BasePublicationTests_
+    import BasePublicationTests as BasePublicationTests_
 from zope.app.publication.tests import support
 
 from persistent import Persistent
 
+
 def foo():
-    "I am an otherwise empty docstring."
+    """I am an otherwise empty docstring."""
     return '<html><body>hello base fans</body></html>'
+
 
 @implementer(IBrowserPublisher)
 class DummyPublished(object):
@@ -53,7 +55,6 @@ class DummyPublished(object):
 
     def browserDefault(self, request):
         return self, ['bruce']
-
 
 
 class DummyView(DummyPublished, BrowserView):
@@ -68,12 +69,15 @@ class BasePublicationTests(BasePublicationTests_):
         request.setPublication(publication)
         return request
 
+
 class SimpleObject(object):
     def __init__(self, v):
         self.v = v
 
+
 class I1(Interface):
     pass
+
 
 @implementer(I1)
 class mydict(dict):
@@ -86,8 +90,7 @@ class O1(Persistent):
 
 
 class BrowserDefaultTests(BasePublicationTests):
-    """
-    test browser default
+    """Test browser default
 
     many views lead to a default view
     <base href="/somepath/@@view/view_method">
@@ -110,8 +113,6 @@ class BrowserDefaultTests(BasePublicationTests):
         self._testBaseTags('/somepath',
                            'http://127.0.0.1/somepath/@@view/bruce')
 
-
-
     def _testBaseTags(self, url, expected):
         # Make sure I1 and O1 are visible in the module namespace
         # so that the classes can be pickled.
@@ -128,7 +129,7 @@ class BrowserDefaultTests(BasePublicationTests):
 
         ob = O1()
 
-        ## the following is for running the tests standalone
+        # the following is for running the tests standalone
         principalRegistry.defineDefaultPrincipal(
             'tim', 'timbot', 'ai at its best')
 
@@ -149,12 +150,10 @@ class BrowserDefaultTests(BasePublicationTests):
 
         self.assertEqual(response.getBase(), expected)
 
-
     def _createRequest(self, path, publication, **kw):
         request = TestRequest(PATH_INFO=path, **kw)
         request.setPublication(publication)
         return request
-
 
 
 class BrowserPublicationTests(BasePublicationTests):
@@ -202,17 +201,19 @@ class BrowserPublicationTests(BasePublicationTests):
         ob['bruce'] = SimpleObject('bruce')
         ob['bruce2'] = SimpleObject('bruce2')
         pub = self.klass(self.db)
-        ob2, x = pub.getDefaultTraversal(self._createRequest('/bruce',pub), ob)
+        ob2, x = pub.getDefaultTraversal(
+            self._createRequest('/bruce', pub), ob)
         self.assertEqual(x, 'dummy')
         self.assertRaises(ForbiddenAttribute, getattr, ob2, 'v')
         self.assertEqual(removeSecurityProxy(ob2).v, 'bruce')
 
     def testTraverseName(self):
         pub = self.klass(self.db)
+
         class C(object):
             x = SimpleObject(1)
         ob = C()
-        r = self._createRequest('/x',pub)
+        r = self._createRequest('/x', pub)
         component.provideAdapter(TestTraverser,
                                  (None, IDefaultBrowserLayer),
                                  IBrowserPublisher)
@@ -223,44 +224,51 @@ class BrowserPublicationTests(BasePublicationTests):
 
     def testTraverseNameView(self):
         pub = self.klass(self.db)
-        class I(Interface): pass
-        @implementer(I)
+
+        class ExampleInterface(Interface):
+            pass
+
+        @implementer(ExampleInterface)
         class C(object):
             pass
         ob = C()
+
         class V(object):
-            def __init__(self, context, request): pass
-        r = self._createRequest('/@@spam',pub)
-        component.provideAdapter(V, (I, IDefaultBrowserLayer), Interface,
-                                 name='spam')
+            def __init__(self, context, request):
+                pass
+        r = self._createRequest('/@@spam', pub)
+        component.provideAdapter(
+            V, (ExampleInterface, IDefaultBrowserLayer), Interface, name='spam'
+        )
         ob2 = pub.traverseName(r, ob, '@@spam')
         self.assertEqual(ob2.__class__, V)
 
     def testTraverseNameSiteManager(self):
         pub = self.klass(self.db)
+
         class C(object):
             def getSiteManager(self):
                 return SimpleObject(1)
         ob = C()
-        r = self._createRequest('/++etc++site',pub)
+        r = self._createRequest('/++etc++site', pub)
         ob2 = pub.traverseName(r, ob, '++etc++site')
         self.assertRaises(ForbiddenAttribute, getattr, ob2, 'v')
         self.assertEqual(removeSecurityProxy(ob2).v, 1)
 
     def testTraverseNameApplicationControl(self):
         from zope.applicationcontrol.applicationcontrol \
-             import applicationController, applicationControllerRoot
+            import applicationController, applicationControllerRoot
         from zope.traversing.interfaces import IEtcNamespace
         component.provideUtility(applicationController,
                                  IEtcNamespace, name='process')
 
         pub = self.klass(self.db)
-        r = self._createRequest('/++etc++process',pub)
+        r = self._createRequest('/++etc++process', pub)
         ac = pub.traverseName(r,
                               applicationControllerRoot,
                               '++etc++process')
         self.assertEqual(ac, applicationController)
-        r = self._createRequest('/++etc++process',pub)
+        r = self._createRequest('/++etc++process', pub)
         app = r.publication.getApplication(r)
         self.assertEqual(app, applicationControllerRoot)
 
@@ -275,7 +283,7 @@ class BrowserPublicationTests(BasePublicationTests):
         request.setPrincipal(User())
         request.response.setResult(u"spam")
         pub.afterCall(request, None)
-        self.assertEqual(request.response.consumeBody(), b'spam' )
+        self.assertEqual(request.response.consumeBody(), b'spam')
 
         # But with a HEAD request, the body should be empty
         request = TestRequest(BytesIO(b''), {'PATH_INFO': '/'})
@@ -307,7 +315,7 @@ class HTTPPublicationRequestFactoryTests(BasePublicationTests):
     def setUp(self):
         super(BasePublicationTests, self).setUp()
         from zope.app.publication.requestpublicationregistry import \
-             factoryRegistry
+            factoryRegistry
         from zope.app.publication.requestpublicationfactories \
             import SOAPFactory, XMLRPCFactory, HTTPFactory, BrowserFactory
 
@@ -332,8 +340,4 @@ def test_suite():
         unittest.makeSuite(BrowserPublicationTests, 'test'),
         unittest.makeSuite(BrowserDefaultTests, 'test'),
         unittest.makeSuite(HTTPPublicationRequestFactoryTests, 'test'),
-        ))
-
-
-if __name__ == '__main__':
-    unittest.TextTestRunner().run(test_suite())
+    ))

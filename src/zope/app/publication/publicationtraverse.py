@@ -12,6 +12,9 @@
 #
 ##############################################################################
 import warnings
+from zope.traversing.publicationtraverse import PublicationTraverse  # noqa: F401 E501 (BBB and long line)
+from zope.traversing.publicationtraverse import PublicationTraverser  # noqa: F401 E501 (BBB and long line)
+
 
 warnings.warn("""%s is deprecated
 
@@ -21,13 +24,11 @@ deprecated.
 """ % __name__, DeprecationWarning, stacklevel=1)
 
 
-from zope.traversing.publicationtraverse import PublicationTraverse #BBB import
-from zope.traversing.publicationtraverse import PublicationTraverser #BBB import
-
-#BBB: do not use
+# BBB: do not use
 class DuplicateNamespaces(Exception):
     """More than one namespace was specified in a request"""
 
-#BBB: do not use
+
+# BBB: do not use
 class UnknownNamespace(Exception):
     """A parameter specified an unknown namespace"""

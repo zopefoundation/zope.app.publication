@@ -16,7 +16,7 @@
 import unittest
 
 from zope.app.publication.tests.test_zopepublication import \
-     BasePublicationTests
+    BasePublicationTests
 from zope.app.publication.traversers import TestTraverser
 from zope.app.publication.traversers import SimpleComponentTraverser
 from zope.app.publication.xmlrpc import XMLRPCPublication
@@ -29,6 +29,7 @@ from zope.publisher.interfaces.xmlrpc import IXMLRPCPublisher
 from zope.publisher.xmlrpc import TestRequest
 from zope.app.publication.tests import support
 from zope import component
+
 
 class SimpleObject(object):
     def __init__(self, v):
@@ -46,6 +47,7 @@ class XMLRPCPublicationTests(BasePublicationTests):
 
     def testTraverseName(self):
         pub = self.klass(self.db)
+
         class C(object):
             x = SimpleObject(1)
         ob = C()
@@ -58,10 +60,11 @@ class XMLRPCPublicationTests(BasePublicationTests):
 
     def testDenyDirectMethodAccess(self):
         pub = self.klass(self.db)
-        class I(Interface):
+
+        class ExampleInterface(Interface):
             pass
 
-        @implementer(I)
+        @implementer(ExampleInterface)
         class C(object):
 
             def foo(self):
@@ -71,24 +74,23 @@ class XMLRPCPublicationTests(BasePublicationTests):
         class V(object):
             def __init__(self, context, request):
                 pass
-            
+
         ob = C()
         r = self._createRequest('/foo', pub)
 
-        component.provideAdapter(V, (I, IXMLRPCView), Interface,
+        component.provideAdapter(V, (ExampleInterface, IXMLRPCView), Interface,
                                  name='view')
 
-        support.setDefaultViewName(I, 'view', type=IXMLRPCView)
+        support.setDefaultViewName(ExampleInterface, 'view', type=IXMLRPCView)
         self.assertRaises(NotFound, pub.traverseName, r, ob, 'foo')
-
 
     def testTraverseNameView(self):
         pub = self.klass(self.db)
 
-        class I(Interface):
+        class ExampleInterface(Interface):
             pass
 
-        @implementer(I)
+        @implementer(ExampleInterface)
         class C(object):
             pass
 
@@ -98,7 +100,6 @@ class XMLRPCPublicationTests(BasePublicationTests):
         class V(object):
             def __init__(self, context, request):
                 pass
-            
 
         # Register the simple traverser so we can traverse without @@
         component.provideAdapter(SimpleComponentTraverser,
@@ -106,29 +107,27 @@ class XMLRPCPublicationTests(BasePublicationTests):
                                  IXMLRPCPublisher)
 
         r = self._createRequest('/@@spam', pub)
-        component.provideAdapter(V, (I, IXMLRPCRequest), Interface,
-                                 name='spam')
+        component.provideAdapter(
+            V, (ExampleInterface, IXMLRPCRequest), Interface, name='spam')
         ob2 = pub.traverseName(r, ob, '@@spam')
         self.assertEqual(removeAllProxies(ob2).__class__, V)
 
         ob2 = pub.traverseName(r, ob, 'spam')
         self.assertEqual(removeAllProxies(ob2).__class__, V)
 
-
     def testTraverseNameSiteManager(self):
         pub = self.klass(self.db)
+
         class C(object):
             def getSiteManager(self):
                 return SimpleObject(1)
         ob = C()
-        r = self._createRequest('/++etc++site',pub)
+        r = self._createRequest('/++etc++site', pub)
         ob2 = pub.traverseName(r, ob, '++etc++site')
         self.assertEqual(removeAllProxies(ob2).v, 1)
+
 
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(XMLRPCPublicationTests),
-        ))
-
-if __name__ == '__main__':
-    unittest.main()
+    ))

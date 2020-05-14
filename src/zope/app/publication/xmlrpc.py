@@ -15,12 +15,12 @@
 
 This module specifically implements a custom `nameTraverse()` method.
 """
-__docformat__ = 'restructuredtext'
-
 from zope.app.publication.http import BaseHTTPPublication
+
 
 # Don't need any special handling for xml-rpc
 XMLRPCPublication = BaseHTTPPublication
+
 
 class XMLRPCPublicationFactory(object):
 

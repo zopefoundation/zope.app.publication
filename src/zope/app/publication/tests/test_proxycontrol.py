@@ -19,14 +19,15 @@ import zope.app.publication.browser
 import zope.component
 import zope.interface
 import zope.publisher.interfaces.browser
-from zope.testing import cleanup
 import zope.traversing.namespace
+
 
 class Proxy:
 
     def __init__(self, context):
         print("Proxy called")
         self.context = context
+
 
 class Publication(zope.app.publication.browser.BrowserPublication):
 
@@ -35,40 +36,52 @@ class Publication(zope.app.publication.browser.BrowserPublication):
 
 
 class Sample:
-    "Sample object for testing"
+    """Sample object for testing"""
+
 
 class Response:
     def reset(self):
         pass
+
     def handleException(self, *args):
         pass
+
 
 class Request:
     principal = None
     method = 'GET'
+
     def __init__(self):
         self.annotations = {}
         self.response = Response()
+
     def hold(self, ob):
         pass
+
     def getTraversalStack(self):
         return []
+
     def getURL(self):
         return '/'
+
 
 class DB:
     def open(self):
         return self
+
     def root(self):
         return self
+
     def get(self, key, default=None):
         assert key == 'Application'
         return Sample()
+
     def close(self):
         pass
 
+
 @zope.interface.implementer(
-        zope.publisher.interfaces.browser.IBrowserPublisher)
+    zope.publisher.interfaces.browser.IBrowserPublisher)
 class Publisher:
 
     def __init__(self, context, request):
@@ -82,12 +95,14 @@ class Publisher:
     def browserDefault(self, request):
         return self.context, ['foo']
 
+
 def proxy_control():
     """You can override proxy control in a subclass
 
     This test makes sure the override is called in the cases where the
     publication wants to call ProxyFactory.
 
+    >>> from zope.testing import cleanup
     >>> cleanup.cleanUp()
 
     >>> zope.component.provideAdapter(Publisher, (Sample, Request))
@@ -126,11 +141,8 @@ def proxy_control():
     >>> cleanup.cleanUp()
     """
 
+
 def test_suite():
     return unittest.TestSuite((
         doctest.DocTestSuite(),
-        ))
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='test_suite')
-
+    ))

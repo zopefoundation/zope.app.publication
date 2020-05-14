@@ -13,7 +13,7 @@
 ##############################################################################
 """Tests for the HTTP Publication Request Factory.
 """
-from unittest import TestCase, TestSuite, main, makeSuite
+from unittest import TestCase, TestSuite, makeSuite
 
 from io import BytesIO
 
@@ -30,7 +30,8 @@ from zope.app.publication.xmlrpc import XMLRPCPublication
 from zope.app.publication import interfaces
 from zope.app.publication.requestpublicationregistry import factoryRegistry
 from zope.app.publication.requestpublicationfactories import \
-     HTTPFactory, SOAPFactory, BrowserFactory, XMLRPCFactory
+    HTTPFactory, SOAPFactory, BrowserFactory, XMLRPCFactory
+
 
 class DummyRequestFactory(object):
     def __call__(self, input_stream, env):
@@ -41,17 +42,18 @@ class DummyRequestFactory(object):
     def setPublication(self, pub):
         self.pub = pub
 
+
 class Test(PlacelessSetup, TestCase):
 
     def setUp(self):
         super(Test, self).setUp()
         self.__factory = HTTPPublicationRequestFactory(None)
-        self.__env =  {
-            'SERVER_URL':         'http://127.0.0.1',
-            'HTTP_HOST':          '127.0.0.1',
-            'CONTENT_LENGTH':     '0',
-            'GATEWAY_INTERFACE':  'TestFooInterface/1.0',
-            }
+        self.__env = {
+            'SERVER_URL': 'http://127.0.0.1',
+            'HTTP_HOST': '127.0.0.1',
+            'CONTENT_LENGTH': '0',
+            'GATEWAY_INTERFACE': 'TestFooInterface/1.0',
+        }
 
         # Simulate standard configuration
         factoryRegistry.register('GET', '*', 'browser', 0, BrowserFactory())
@@ -141,7 +143,4 @@ class Test(PlacelessSetup, TestCase):
 def test_suite():
     return TestSuite((
         makeSuite(Test),
-        ))
-
-if __name__=='__main__':
-    main(defaultTest='test_suite')
+    ))

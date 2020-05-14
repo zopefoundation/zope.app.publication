@@ -13,12 +13,9 @@
 ##############################################################################
 """Tests for the HTTP Publication Request Factory.
 """
-from unittest import TestCase, TestSuite, main, makeSuite
+from unittest import TestCase, TestSuite, makeSuite
 
 from zope import component, interface
-from zope.publisher.browser import BrowserRequest
-from zope.publisher.http import HTTPRequest
-from zope.publisher.xmlrpc import XMLRPCRequest
 from zope.component.testing import PlacelessSetup
 
 from zope.app.publication.browser import BrowserPublication
@@ -26,9 +23,9 @@ from zope.app.publication.http import HTTPPublication
 from zope.app.publication.xmlrpc import XMLRPCPublication
 from zope.app.publication import interfaces
 from zope.app.publication.requestpublicationfactories import \
-     SOAPFactory, XMLRPCFactory, HTTPFactory, BrowserFactory
+    SOAPFactory, XMLRPCFactory, HTTPFactory, BrowserFactory
 from zope.app.publication.soap import SOAPPublication
-from zope.app.publication.browser import BrowserPublication
+
 
 class DummyRequestFactory(object):
     def __call__(self, input_stream, env):
@@ -44,12 +41,12 @@ class Test(PlacelessSetup, TestCase):
 
     def setUp(self):
         super(Test, self).setUp()
-        self.__env =  {
-            'SERVER_URL':         'http://127.0.0.1',
-            'HTTP_HOST':          '127.0.0.1',
-            'CONTENT_LENGTH':     '0',
-            'GATEWAY_INTERFACE':  'TestFooInterface/1.0',
-            }
+        self.__env = {
+            'SERVER_URL': 'http://127.0.0.1',
+            'HTTP_HOST': '127.0.0.1',
+            'CONTENT_LENGTH': '0',
+            'GATEWAY_INTERFACE': 'TestFooInterface/1.0',
+        }
 
     def test_soapfactory(self):
         soaprequestfactory = DummyRequestFactory()
@@ -101,10 +98,8 @@ class Test(PlacelessSetup, TestCase):
         self.assertEqual(isinstance(request, DummyRequestFactory), True)
         self.assertEqual(publication, BrowserPublication)
 
+
 def test_suite():
     return TestSuite((
         makeSuite(Test),
-        ))
-
-if __name__=='__main__':
-    main(defaultTest='test_suite')
+    ))

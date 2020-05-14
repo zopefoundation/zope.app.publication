@@ -20,14 +20,15 @@ from zope.interface import Interface, directlyProvides
 from zope.app.publication.traversers import SimpleComponentTraverser
 from zope import component
 
-class I(Interface):
+
+class ExampleInterface(Interface):
     pass
 
 
 class Container(object):
     def __init__(self, **kw):
         for k in kw:
-            setattr(self, k , kw[k])
+            setattr(self, k, kw[k])
 
     def get(self, name, default=None):
         return getattr(self, name, default)
@@ -52,34 +53,28 @@ class Test(unittest.TestCase):
     def testAttr(self):
         # test container traver
         foo = Container()
-        c   = Container(foo=foo)
-        req = Request(I)
+        c = Container(foo=foo)
+        req = Request(ExampleInterface)
 
         T = SimpleComponentTraverser(c, req)
 
-        self.assertRaises(NotFound , T.publishTraverse, req ,'foo')
-
+        self.assertRaises(NotFound, T.publishTraverse, req, 'foo')
 
     def testView(self):
         # test getting a view
         foo = Container()
-        c   = Container(foo=foo)
-        req = Request(I)
+        c = Container(foo=foo)
+        req = Request(ExampleInterface)
 
         T = SimpleComponentTraverser(c, req)
-        component.provideAdapter(View, (None, I), Interface,
+        component.provideAdapter(View, (None, ExampleInterface), Interface,
                                  name='foo')
 
         self.assertTrue(T.publishTraverse(req, 'foo').__class__ is View)
 
-        self.assertRaises(NotFound, T.publishTraverse, req , 'morebar')
-
+        self.assertRaises(NotFound, T.publishTraverse, req, 'morebar')
 
 
 def test_suite():
     loader = unittest.TestLoader()
     return loader.loadTestsFromTestCase(Test)
-
-
-if __name__ == '__main__':
-    unittest.TextTestRunner().run(test_suite())

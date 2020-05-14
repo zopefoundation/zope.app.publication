@@ -13,10 +13,10 @@
 ##############################################################################
 """A registry for Request-Publication factories.
 """
-__docformat__ = 'restructuredtext'
 from zope.interface import implementer
 from zope.app.publication.interfaces import IRequestPublicationRegistry
 from zope.configuration.exceptions import ConfigurationError
+
 
 @implementer(IRequestPublicationRegistry)
 class RequestPublicationRegistry(object):
@@ -38,39 +38,37 @@ class RequestPublicationRegistry(object):
         self._d = {}   # method -> { mimetype -> {factories_data}}
 
     def register(self, method, mimetype, name, priority, factory):
-        """Register a factory for method+mimetype """
-
+        """Register a factory for method+mimetype"""
         # initialize the two-level deep nested datastructure if necessary
         if method not in self._d:
             self._d[method] = {}
         if mimetype not in self._d[method]:
             self._d[method][mimetype] = []
-        l = self._d[method][mimetype]
+        factories_data = self._d[method][mimetype]
 
         # Check if there is already a registered publisher factory (check by
         # name).  If yes then it will be removed and replaced by a new
         # publisher.
-        for pos, d in enumerate(l):
+        for pos, d in enumerate(factories_data):
             if d['name'] == name:
-                del l[pos]
+                del factories_data[pos]
                 break
         # add the publisher factory + additional informations
-        l.append({'name' : name, 'factory' : factory, 'priority' : priority})
+        factories_data.append(
+            {'name': name, 'factory': factory, 'priority': priority})
 
         # order by descending priority
-        l.sort(key=lambda v: v['priority'], reverse=True)
+        factories_data.sort(key=lambda v: v['priority'], reverse=True)
 
         # check if the priorities are unique
-        priorities = [item['priority'] for item in l]
-        if len(set(priorities)) != len(l):
+        priorities = [item['priority'] for item in factories_data]
+        if len(set(priorities)) != len(factories_data):
             raise ConfigurationError('All registered publishers for a given '
                                      'method+mimetype must have distinct '
                                      'priorities. Please check your ZCML '
                                      'configuration')
 
-
     def getFactoriesFor(self, method, mimetype):
-
         if ';' in mimetype:
             # `mimetype` might be something like 'text/xml; charset=utf8'. In
             # this case we are only interested in the first part.
@@ -81,11 +79,9 @@ class RequestPublicationRegistry(object):
         except KeyError:
             return None
 
-
     def lookup(self, method, mimetype, environment):
         """Lookup a factory for a given method+mimetype and a environment.
         """
-        factories = []
         for m, mt in ((method, mimetype), (method, '*'), ('*', '*')):
             # Collect, in order, from most specific to most generic, the
             # factories that potentially handle the given environment.
@@ -111,4 +107,4 @@ try:
 except ImportError:
     pass
 else:
-    zope.testing.cleanup.addCleanUp(lambda : factoryRegistry.__init__())
+    zope.testing.cleanup.addCleanUp(lambda: factoryRegistry.__init__())

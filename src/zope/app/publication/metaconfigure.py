@@ -15,9 +15,8 @@
 
 See metadirective.py
 """
-__docformat__ = 'restructuredtext'
-
 from zope.app.publication.requestpublicationregistry import factoryRegistry
+
 
 def publisher(_context, name, factory, methods=['*'], mimetypes=['*'],
               priority=0):
@@ -27,7 +26,7 @@ def publisher(_context, name, factory, methods=['*'], mimetypes=['*'],
     for method in methods:
         for mimetype in mimetypes:
             _context.action(
-                discriminator = (method, mimetype, priority),
-                callable = factoryRegistry.register,
-                args = (method, mimetype, name, priority, factory)
-                )
+                discriminator=(method, mimetype, priority),
+                callable=factoryRegistry.register,
+                args=(method, mimetype, name, priority, factory)
+            )

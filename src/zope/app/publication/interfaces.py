@@ -13,15 +13,13 @@
 ##############################################################################
 """Publication Interfaces
 """
-__docformat__ = 'restructuredtext'
-
 from zope import interface
 
 # BBB: Re-import symbols to their old location.
-from zope.publisher.interfaces import IEndRequestEvent
-from zope.publisher.interfaces import EndRequestEvent
-from zope.traversing.interfaces import IBeforeTraverseEvent
-from zope.traversing.interfaces import BeforeTraverseEvent
+from zope.publisher.interfaces import IEndRequestEvent  # noqa: F401 (BBB)
+from zope.publisher.interfaces import EndRequestEvent  # noqa: F401 (BBB)
+from zope.traversing.interfaces import IBeforeTraverseEvent  # noqa: F401 (BBB)
+from zope.traversing.interfaces import BeforeTraverseEvent  # noqa: F401 (BBB)
 
 
 class IPublicationRequestFactory(interface.Interface):
@@ -33,23 +31,29 @@ class IPublicationRequestFactory(interface.Interface):
         A request is created and configured with a publication object.
         """
 
+
 class IRequestFactory(interface.Interface):
 
     def __call__(input_stream, env):
         """Create a request object to handle input."""
 
+
 class ISOAPRequestFactory(IRequestFactory):
     """SOAP request factory"""
+
 
 class IHTTPRequestFactory(IRequestFactory):
     # TODO: should SOAP, XMLRPC, and Browser extend this?
     """generic HTTP request factory"""
 
+
 class IXMLRPCRequestFactory(IRequestFactory):
     """XMLRPC request factory"""
 
+
 class IBrowserRequestFactory(IRequestFactory):
     """Browser request factory"""
+
 
 class IFileContent(interface.Interface):
     """Marker interface for content that can be managed as files.
@@ -61,7 +65,7 @@ class IFileContent(interface.Interface):
 
 
 class IRequestPublicationFactory(interface.Interface):
-    """ request-publication factory """
+    """Request-publication factory"""
 
     def canHandle(environment):
         """Return ``True`` if it can handle the request, otherwise ``False``.
@@ -73,6 +77,7 @@ class IRequestPublicationFactory(interface.Interface):
     def __call__():
         """Return a tuple (request, publication)"""
 
+
 class IRequestPublicationRegistry(interface.Interface):
     """A registry to lookup a RequestPublicationFactory by
        request method + mime-type. Multiple factories can be configured
@@ -83,7 +88,7 @@ class IRequestPublicationRegistry(interface.Interface):
     """
 
     def register(method, mimetype, name, priority, factory):
-        """Registers a factory for method+mimetype."""
+        """Register a factory for method+mimetype."""
 
     def lookup(method, mimetype, environment):
         """Lookup a factory for a given method+mimetype and a

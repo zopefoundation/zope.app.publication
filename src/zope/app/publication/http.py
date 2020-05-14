@@ -13,11 +13,6 @@
 ##############################################################################
 """HTTP Publication
 """
-
-__docformat__ = 'restructuredtext'
-
-from zope.interface import Attribute
-from zope.interface import implements
 from zope.publisher.interfaces.http import IHTTPException
 from zope.publisher.interfaces.http import MethodNotAllowed
 from zope.publisher.publish import mapply
@@ -25,7 +20,7 @@ import zope.component
 
 from zope.app.publication.zopepublication import ZopePublication
 
-from zope.publisher.interfaces.http import IMethodNotAllowed #BBB import
+from zope.publisher.interfaces.http import IMethodNotAllowed  # noqa: F401 E501 (BBB and long line)
 
 
 class BaseHTTPPublication(ZopePublication):

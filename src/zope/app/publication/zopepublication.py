@@ -11,8 +11,6 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-__docformat__ = 'restructuredtext'
-
 import sys
 import logging
 from types import MethodType
@@ -51,7 +49,6 @@ from zope.authentication.interfaces import IAuthentication
 
 @implementer(IHeld)
 class Cleanup(object):
-
 
     def __init__(self, f):
         self._f = f
@@ -136,9 +133,8 @@ class ZopePublication(object):
         self._maybePlacefullyAuthenticate(request, ob)
 
     def afterTraversal(self, request, ob):
-        #recordMetaData(object, request)
+        # recordMetaData(object, request)
         self._maybePlacefullyAuthenticate(request, ob)
-
 
     def openedConnection(self, conn):
         # Hook for auto-refresh
@@ -162,7 +158,7 @@ class ZopePublication(object):
 
         request.annotations['ZODB.interfaces.IConnection'] = conn
         self.openedConnection(conn)
-        #conn.setDebugInfo(getattr(request, 'environ', None), request.other)
+        # conn.setDebugInfo(getattr(request, 'environ', None), request.other)
 
         root = conn.root()
         app = root.get(self.root_name, None)
@@ -173,7 +169,7 @@ class ZopePublication(object):
         return self.proxy(app)
 
     def traverseName(self, request, ob, name):
-        nm = name # the name to look up the object with
+        nm = name  # the name to look up the object with
 
         if name and name[:1] in '@+':
             # Process URI segment parameters.
@@ -224,8 +220,9 @@ class ZopePublication(object):
         notify(EndRequestEvent(ob, request))
 
     def annotateTransaction(self, txn, request, ob):
-        """Set some useful meta-information on the transaction. This
-        information is used by the undo framework, for example.
+        """Set some useful meta-information on the transaction.
+
+        This information is used by the undo framework, for example.
 
         This method is not part of the `IPublication` interface, since
         it's specific to this particular implementation.
@@ -285,10 +282,10 @@ class ZopePublication(object):
 
             errUtility.raising(exc_info, request)
             transaction.commit()
-        except:
+        except Exception:
             tryToLogException(
                 'Error while reporting an error to the Error Reporting utility'
-                )
+            )
             transaction.abort()
 
     def handleException(self, object, request, exc_info, retry_allowed=True):
@@ -296,7 +293,7 @@ class ZopePublication(object):
         # It must definitely be aborted.
         try:
             transaction.abort()
-        except:
+        except Exception:
             # Hm, a catastrophe.  We might want to know what preceded it.
             self._logErrorWithErrorReportingUtility(object, request, exc_info)
             raise
@@ -306,7 +303,8 @@ class ZopePublication(object):
             raise
 
         # Convert ConflictErrors to Retry exceptions.
-        # where transaction.interfaces.TransientError is a more generic exception
+        # where transaction.interfaces.TransientError is a more generic
+        # exception
         if retry_allowed and isinstance(exc_info[1],
                                         transaction.interfaces.TransientError):
             tryToLogWarning(
@@ -315,7 +313,7 @@ class ZopePublication(object):
                 % (request.get('PATH_INFO', '???'),
                    exc_info[1],
                    ),
-                )
+            )
             raise Retry(exc_info)
         # Are there any reasons why we'd want to let application-level error
         # handling determine whether a retry is allowed or not?
@@ -372,11 +370,10 @@ class ZopePublication(object):
                 if name is not None:
                     view = zope.component.queryMultiAdapter(
                         (exception, request), name=name)
-            except:
+            except Exception:
                 # Problem getting a view for this exception. Log an error.
                 tryToLogException(
                     'Exception while getting view on exception')
-
 
             if view is not None:
                 try:
@@ -384,19 +381,19 @@ class ZopePublication(object):
                     response.setResult(body)
                     transaction.commit()
                     if (ISystemErrorView.providedBy(view)
-                        and view.isSystemError()):
+                            and view.isSystemError()):
                         # Got a system error, want to log the error
 
                         # Lame hack to get around logging missfeature
                         # that is fixed in Python 2.4
                         try:
                             six.reraise(exc_info[0], exc_info[1], exc_info[2])
-                        except:
+                        except Exception:
                             logging.getLogger('SiteError').exception(
                                 str(request.URL),
-                                )
+                            )
 
-                except:
+                except Exception:
                     # Problem rendering the view for this exception.
                     # Log an error.
                     tryToLogException(
@@ -419,7 +416,7 @@ class ZopePublication(object):
             # exception
             try:
                 adapter = IExceptionSideEffects(exception, None)
-            except:
+            except Exception:
                 tryToLogException(
                     'Exception while getting IExceptionSideEffects adapter')
                 adapter = None
@@ -432,7 +429,7 @@ class ZopePublication(object):
                     # considered read-only.
                     adapter(object, request, exc_info)
                     transaction.commit()
-                except:
+                except Exception:
                     tryToLogException(
                         'Exception while calling'
                         ' IExceptionSideEffects adapter')
@@ -443,6 +440,7 @@ class ZopePublication(object):
         txn.note(note)
         self.annotateTransaction(txn, request, ob)
         return txn
+
 
 def tryToLogException(arg1, arg2=None):
     if arg2 is None:
@@ -455,8 +453,9 @@ def tryToLogException(arg1, arg2=None):
         logging.getLogger(subsystem).exception(message)
     # Bare except, because we want to swallow any exception raised while
     # logging an exception.
-    except:
+    except Exception:
         pass
+
 
 def tryToLogWarning(arg1, arg2=None, exc_info=False):
     if arg2 is None:
@@ -469,5 +468,5 @@ def tryToLogWarning(arg1, arg2=None, exc_info=False):
         logging.getLogger(subsystem).warning(message, exc_info=exc_info)
     # Bare except, because we want to swallow any exception raised while
     # logging a warning.
-    except:
+    except Exception:
         pass

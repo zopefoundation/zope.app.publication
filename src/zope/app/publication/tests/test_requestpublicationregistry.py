@@ -13,7 +13,7 @@
 ##############################################################################
 """Tests for the HTTP Publication Request Factory.
 """
-from unittest import TestCase, TestSuite, main, makeSuite
+from unittest import TestCase, TestSuite, makeSuite
 
 from zope import component, interface
 from zope.interface.verify import verifyClass
@@ -23,13 +23,14 @@ from zope.configuration.exceptions import ConfigurationError
 from zope.app.publication import interfaces
 from zope.app.publication.interfaces import IRequestPublicationRegistry
 from zope.app.publication.requestpublicationregistry import \
-     RequestPublicationRegistry
+    RequestPublicationRegistry
 from zope.app.publication.requestpublicationfactories import \
-     HTTPFactory, SOAPFactory, BrowserFactory, XMLRPCFactory
+    HTTPFactory, SOAPFactory, BrowserFactory, XMLRPCFactory
 
 
 def DummyFactory():
     return object
+
 
 class DummyRequestFactory(object):
     def __call__(self, input_stream, env):
@@ -39,6 +40,7 @@ class DummyRequestFactory(object):
 
     def setPublication(self, pub):
         self.pub = pub
+
 
 class PickyFactory(object):
     def __init__(self, name):
@@ -55,9 +57,11 @@ class PickyFactory(object):
     def setPublication(self, pub):
         self.pub = pub
 
+
 class NotSoPickyFactory(PickyFactory):
     def canHandle(self, env):
         return True
+
 
 class Test(PlacelessSetup, TestCase):
 
@@ -72,16 +76,15 @@ class Test(PlacelessSetup, TestCase):
         r.register('POST', 'text/xml', 'soap', 1, soap_f)
         browser_f = DummyFactory()
         r.register('*', '*', 'browser_default', 0, browser_f)
-        l = r.getFactoriesFor('POST', 'text/xml')
+        factories = r.getFactoriesFor('POST', 'text/xml')
         self.assertEqual(
-            l,
-            [{'name' : 'soap', 'priority' : 1, 'factory' : object},
-             {'name' : 'xmlrpc', 'priority' : 0, 'factory' : object}])
+            factories,
+            [{'name': 'soap', 'priority': 1, 'factory': object},
+             {'name': 'xmlrpc', 'priority': 0, 'factory': object}])
         self.assertEqual(r.getFactoriesFor('POST', 'text/html'), None)
 
     def test_configuration_same_priority(self):
         r = RequestPublicationRegistry()
-        xmlrpc_f = DummyFactory()
         r.register('POST', 'text/xml', 'xmlrpc', 0, DummyFactory)
         r.register('POST', 'text/xml', 'soap', 1, DummyFactory())
         # try to register a factory with the same priority
@@ -90,7 +93,6 @@ class Test(PlacelessSetup, TestCase):
 
     def test_configuration_reregistration(self):
         r = RequestPublicationRegistry()
-        xmlrpc_f = DummyFactory()
         r.register('POST', 'text/xml', 'xmlrpc', 0, DummyFactory)
         r.register('POST', 'text/xml', 'soap', 1, DummyFactory())
         # re-register 'soap' but with priority 2
@@ -109,18 +111,19 @@ class Test(PlacelessSetup, TestCase):
         r.register('HEAD', '*', 'http', 0, HTTPFactory())
         r.register('*', '*', 'http', 1, BrowserFactory())
 
-        self.assertEqual(len(r.getFactoriesFor('POST', 'text/xml')) , 2)
-        self.assertEqual(len(r.getFactoriesFor('POST', 'text/xml; charset=utf-8')) , 2)
-        self.assertEqual(len(r.getFactoriesFor('POST', '*')) , 1)
-        self.assertEqual(r.getFactoriesFor('GET', 'text/html') , None)
-        self.assertEqual(len(r.getFactoriesFor('HEAD', '*')) , 1)
+        self.assertEqual(len(r.getFactoriesFor('POST', 'text/xml')), 2)
+        self.assertEqual(
+            len(r.getFactoriesFor('POST', 'text/xml; charset=utf-8')), 2)
+        self.assertEqual(len(r.getFactoriesFor('POST', '*')), 1)
+        self.assertEqual(r.getFactoriesFor('GET', 'text/html'), None)
+        self.assertEqual(len(r.getFactoriesFor('HEAD', '*')), 1)
 
-        env =  {
-            'SERVER_URL':         'http://127.0.0.1',
-            'HTTP_HOST':          '127.0.0.1',
-            'CONTENT_LENGTH':     '0',
-            'GATEWAY_INTERFACE':  'TestFooInterface/1.0',
-            }
+        env = {
+            'SERVER_URL': 'http://127.0.0.1',
+            'HTTP_HOST': '127.0.0.1',
+            'CONTENT_LENGTH': '0',
+            'GATEWAY_INTERFACE': 'TestFooInterface/1.0',
+        }
 
         soaprequestfactory = DummyRequestFactory()
         interface.directlyProvides(
@@ -143,11 +146,11 @@ class Test(PlacelessSetup, TestCase):
         r.register('*', '*', 'generic', 0, NotSoPickyFactory('a'))
         r.register('GET', '*', 'genericget', 0, NotSoPickyFactory('b'))
         r.register('GET', 'foo/bar', 'pickyget', 2, PickyFactory('P'))
-        env =  {
+        env = {
             'SERVER_URL': 'http://127.0.0.1',
             'HTTP_HOST': '127.0.0.1',
             'CAN_HANDLE': 'true',
-            }
+        }
         self.assertEqual('a', r.lookup('FOO', 'zope/epoz', env).name)
         self.assertEqual('b', r.lookup('GET', 'zope/epoz', env).name)
         # The picky factory find the "CAN_HANDLE" key in the env, so yes
@@ -165,11 +168,11 @@ class Test(PlacelessSetup, TestCase):
         # we fail with a clear message. The lookup //used// to return None
         # in these case without the callee handling that case.
         r = RequestPublicationRegistry()
-        env =  {
+        env = {
             'SERVER_URL': 'http://127.0.0.1',
             'HTTP_HOST': '127.0.0.1',
             'CAN_HANDLE': 'true',
-            }
+        }
         # No registration found for the method/mime-type.
         r.register('GET', 'foo/bar', 'foobarget', 0, NotSoPickyFactory('a'))
         self.assertRaises(
@@ -187,10 +190,8 @@ class Test(PlacelessSetup, TestCase):
             ConfigurationError,
             r.lookup, 'BAZ', 'frop/fropple', env)
 
+
 def test_suite():
     return TestSuite((
         makeSuite(Test),
-        ))
-
-if __name__=='__main__':
-    main(defaultTest='test_suite')
+    ))

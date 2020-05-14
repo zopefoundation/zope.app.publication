@@ -16,14 +16,13 @@
 This module implements browser-specific publication and traversal components
 for the publisher.
 """
-__docformat__ = 'restructuredtext'
-
 from zope.component import queryMultiAdapter
 from zope.publisher.interfaces.browser import IBrowserPublisher
 
 from zope.app.publication.http import BaseHTTPPublication
 
-from zope.traversing.publicationtraverse import PublicationTraverser #BBB import
+from zope.traversing.publicationtraverse import PublicationTraverser  # noqa: F401 E501 (BBB and long line)
+
 
 class BrowserPublication(BaseHTTPPublication):
     """Web browser publication handling."""
@@ -46,6 +45,7 @@ class BrowserPublication(BaseHTTPPublication):
         super(BrowserPublication, self).afterCall(request, ob)
         if request.method == 'HEAD':
             request.response.setResult('')
+
 
 # For now, have a factory that returns a singleton
 class PublicationFactory(object):

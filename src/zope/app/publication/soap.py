@@ -24,8 +24,10 @@ browser requests.
 
 from zope.app.publication.http import BaseHTTPPublication
 
+
 # Don't need any special handling for SOAP
 SOAPPublication = BaseHTTPPublication
+
 
 class SOAPPublicationFactory(object):
 

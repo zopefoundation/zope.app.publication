@@ -1,10 +1,8 @@
-import os
 import unittest
 
 from zope.app.publication.traversers import SimpleComponentTraverser
 from zope.component import getMultiAdapter
 from zope.component.testlayer import ZCMLFileLayer
-from zope.interface import implements
 from zope.publisher.browser import TestRequest
 from zope.publisher.interfaces.browser import IBrowserPublisher
 
@@ -33,4 +31,3 @@ def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(ZCMLDependencies))
     return suite
-
