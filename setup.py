@@ -66,6 +66,7 @@ setup(
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
         'Natural Language :: English',
         'Operating System :: OS Independent',
         'Topic :: Internet :: WWW/HTTP',
@@ -76,6 +77,14 @@ setup(
     package_dir={'': 'src'},
     namespace_packages=['zope', 'zope.app'],
     extras_require=dict(test=TEST_REQUIREMENTS),
+    python_requires=', '.join([
+        '>=2.7',
+        '!=3.0.*',
+        '!=3.1.*',
+        '!=3.2.*',
+        '!=3.3.*',
+        '!=3.4.*',
+    ]),
     install_requires=[
         'six',
         'zope.interface',
