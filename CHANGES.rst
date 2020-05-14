@@ -5,8 +5,7 @@ CHANGES
 4.3.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Drop support for ``python setup.py test``.
 
 4.3.2 (2019-12-04)
 ------------------
