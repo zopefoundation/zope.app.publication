@@ -5,8 +5,7 @@ CHANGES
 4.3.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Remove eggtestinfo from setup.py, breaks installation.
 
 4.3.2 (2019-12-04)
 ------------------
