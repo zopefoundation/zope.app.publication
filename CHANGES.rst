@@ -5,7 +5,7 @@ CHANGES
 4.5 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Add support for Python 3.8.
 
 
 4.4 (2020-05-14)
