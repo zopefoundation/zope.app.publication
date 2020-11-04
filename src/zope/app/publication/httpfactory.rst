@@ -17,21 +17,21 @@ A regular GET, POST or HEAD
   >>> print(http(wsgi_app, b"""\
   ... GET / HTTP/1.1
   ... """))
-  HTTP/1.0 200 OK
+  HTTP/1.1 200 OK
   Content-Length: ...
   Content-Type: text/html;charset=utf-8
   ...
   >>> print(http(wsgi_app, b"""\
   ... POST / HTTP/1.1
   ... """))
-  HTTP/1.0 200 OK
+  HTTP/1.1 200 OK
   Content-Length: ...
   Content-Type: text/html;charset=utf-8
   ...
   >>> print(http(wsgi_app, b"""\
   ... HEAD / HTTP/1.1
   ... """))
-  HTTP/1.0 200 OK
+  HTTP/1.1 200 OK
   Content-Length: 0
   Content-Type: text/html;charset=utf-8
   <BLANKLINE>
