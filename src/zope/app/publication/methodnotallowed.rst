@@ -11,7 +11,7 @@ view,  HTTP 405 Method Not Allowed response is returned:
   >>> print(http(wsgi_app, b"""\
   ... FROG / HTTP/1.1
   ... """))
-  HTTP/1.0 405 Method Not Allowed
+  HTTP/1.1 405 Method Not Allowed
   Allow: DELETE, OPTIONS, PUT
   Content-Length: 18
   ...
@@ -19,7 +19,7 @@ view,  HTTP 405 Method Not Allowed response is returned:
   >>> print(http(wsgi_app, b"""\
   ... DELETE / HTTP/1.1
   ... """))
-  HTTP/1.0 405 Method Not Allowed
+  HTTP/1.1 405 Method Not Allowed
   ...
 
 Trying to PUT on an object which does not support PUT leads to 405:
@@ -28,7 +28,7 @@ Trying to PUT on an object which does not support PUT leads to 405:
   ... PUT / HTTP/1.1
   ... Authorization: Basic mgr:mgrpw
   ... """))
-  HTTP/1.0 405 Method Not Allowed
+  HTTP/1.1 405 Method Not Allowed
   ...
 
 Trying to PUT a not existing object on a container which does not support
@@ -38,7 +38,7 @@ PUT leads to 405:
   ... PUT /asdf HTTP/1.1
   ... Authorization: Basic mgr:mgrpw
   ... """))
-  HTTP/1.0 405 Method Not Allowed
+  HTTP/1.1 405 Method Not Allowed
   ...
 
 When ``handle_errors`` is set to ``False`` a traceback is displayed:

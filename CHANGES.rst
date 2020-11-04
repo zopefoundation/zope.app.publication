@@ -5,13 +5,16 @@ CHANGES
 4.5 (unreleased)
 ----------------
 
-- Add support for Python 3.8.
+- Add support for Python 3.8 and 3.9.
+
+- Update the tests to ``zope.app.wsgi >= 4.3``.
 
 
 4.4 (2020-05-14)
 ----------------
 
 - Drop support for ``python setup.py test``.
+
 
 4.3.2 (2019-12-04)
 ------------------

@@ -10,5 +10,5 @@ to an object that doesn't exist, as in:
   >>> print(http(wsgi_app, b"""\
   ... GET /eek HTTP/1.1
   ... """))
-  HTTP/1.0 404 Not Found
+  HTTP/1.1 404 Not Found
   ...
