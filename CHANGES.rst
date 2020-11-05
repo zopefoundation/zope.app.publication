@@ -2,7 +2,7 @@
 CHANGES
 =======
 
-4.5 (unreleased)
+4.5 (2020-11-05)
 ----------------
 
 - Add support for Python 3.8 and 3.9.
