@@ -22,4 +22,3 @@ lib/
 lib64
 parts/
 pyvenv.cfg
-.eggs
