@@ -15,6 +15,11 @@
 
 This module provides factories for tuples (request, publication).
 """
+from zope.interface import implementer
+from zope.publisher.browser import BrowserRequest
+from zope.publisher.http import HTTPRequest
+from zope.publisher.xmlrpc import XMLRPCRequest
+
 from zope import component
 from zope.app.publication import interfaces
 from zope.app.publication.browser import BrowserPublication
@@ -22,14 +27,10 @@ from zope.app.publication.http import HTTPPublication
 from zope.app.publication.interfaces import IRequestPublicationFactory
 from zope.app.publication.soap import SOAPPublication
 from zope.app.publication.xmlrpc import XMLRPCPublication
-from zope.interface import implementer
-from zope.publisher.browser import BrowserRequest
-from zope.publisher.http import HTTPRequest
-from zope.publisher.xmlrpc import XMLRPCRequest
 
 
 @implementer(IRequestPublicationFactory)
-class SOAPFactory(object):
+class SOAPFactory:
 
     def canHandle(self, environment):
         self.soap_req = component.queryUtility(interfaces.ISOAPRequestFactory)
@@ -40,7 +41,7 @@ class SOAPFactory(object):
 
 
 @implementer(IRequestPublicationFactory)
-class XMLRPCFactory(object):
+class XMLRPCFactory:
 
     def canHandle(self, environment):
         return True
@@ -52,7 +53,7 @@ class XMLRPCFactory(object):
 
 
 @implementer(IRequestPublicationFactory)
-class HTTPFactory(object):
+class HTTPFactory:
 
     def canHandle(self, environment):
         return True
@@ -64,7 +65,7 @@ class HTTPFactory(object):
 
 
 @implementer(IRequestPublicationFactory)
-class BrowserFactory(object):
+class BrowserFactory:
 
     def canHandle(self, environment):
         return True

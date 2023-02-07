@@ -24,7 +24,7 @@ from zope.publisher.interfaces.xmlrpc import IXMLRPCPublisher
 
 
 @implementer(IBrowserPublisher, IXMLRPCPublisher)
-class SimpleComponentTraverser(object):
+class SimpleComponentTraverser:
     """Browser traverser for simple components that can only traverse to views
     """
 
@@ -74,7 +74,7 @@ def NoTraverser(ob, request):
 
 
 @implementer(IBrowserPublisher)
-class TestTraverser(object):
+class TestTraverser:
     """Bobo-style traverser, mostly useful for testing"""
 
     def __init__(self, context, request):

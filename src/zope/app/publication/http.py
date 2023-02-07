@@ -14,19 +14,20 @@
 """HTTP Publication
 """
 import zope.component
-from zope.app.publication.zopepublication import ZopePublication
 from zope.publisher.interfaces.http import IHTTPException
 from zope.publisher.interfaces.http import \
     IMethodNotAllowed  # noqa: F401 E501 (BBB and long line)
 from zope.publisher.interfaces.http import MethodNotAllowed
 from zope.publisher.publish import mapply
 
+from zope.app.publication.zopepublication import ZopePublication
+
 
 class BaseHTTPPublication(ZopePublication):
     """Base for HTTP-based protocol publications"""
 
     def annotateTransaction(self, txn, request, ob):
-        txn = super(BaseHTTPPublication, self).annotateTransaction(
+        txn = super().annotateTransaction(
             txn, request, ob)
         request_info = request.method + ' ' + request.getURL()
         txn.setExtendedInfo('request_info', request_info)

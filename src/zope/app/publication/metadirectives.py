@@ -33,30 +33,30 @@ class IRequestPublicationDirective(Interface):
     """Link a request type to a request and publication factory"""
 
     name = TextLine(
-        title=u'Name',
-        description=u'The name of the publication factory.')
+        title='Name',
+        description='The name of the publication factory.')
 
     factory = GlobalObject(
-        title=u'Factory',
-        description=u'The request-publication factory')
+        title='Factory',
+        description='The request-publication factory')
 
     methods = Tokens(
-        title=u'Methods',
-        description=(u'A list of HTTP method names. If the method is a "*", '
-                     u'then all methods will match. Example: "GET POST"'),
+        title='Methods',
+        description=('A list of HTTP method names. If the method is a "*", '
+                     'then all methods will match. Example: "GET POST"'),
         value_type=TextLine(),
         required=False)
 
     mimetypes = Tokens(
-        title=u'Mime Types',
-        description=(u'A list of content/mime types of the request. If the '
-                     u'type is a "*" then all types will be matched. '
-                     u'Example: "text/html text/xml"'),
+        title='Mime Types',
+        description=('A list of content/mime types of the request. If the '
+                     'type is a "*" then all types will be matched. '
+                     'Example: "text/html text/xml"'),
         value_type=TextLine(),
         required=False)
 
     priority = Int(
-        title=u'Priority',
-        description=(u'A priority key used to concurrent'
+        title='Priority',
+        description=('A priority key used to concurrent'
                      ' publication factories.'),
         required=False)

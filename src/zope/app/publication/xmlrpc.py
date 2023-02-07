@@ -22,7 +22,7 @@ from zope.app.publication.http import BaseHTTPPublication
 XMLRPCPublication = BaseHTTPPublication
 
 
-class XMLRPCPublicationFactory(object):
+class XMLRPCPublicationFactory:
 
     def __init__(self, db):
         self.__pub = XMLRPCPublication(db)

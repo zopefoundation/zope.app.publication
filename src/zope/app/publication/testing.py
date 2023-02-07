@@ -16,9 +16,10 @@
 
 __docformat__ = "reStructuredText"
 
-import zope.app.publication
 from zope.app.wsgi.testlayer import BrowserLayer
 from zope.publisher.browser import BrowserPage
+
+import zope.app.publication
 
 
 class DefaultTestView(BrowserPage):

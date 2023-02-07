@@ -17,6 +17,10 @@ from unittest import TestCase
 from unittest import TestSuite
 from unittest import makeSuite
 
+from zope.component.testing import PlacelessSetup
+from zope.configuration.exceptions import ConfigurationError
+from zope.interface.verify import verifyClass
+
 from zope import component
 from zope import interface
 from zope.app.publication import interfaces
@@ -27,16 +31,13 @@ from zope.app.publication.requestpublicationfactories import SOAPFactory
 from zope.app.publication.requestpublicationfactories import XMLRPCFactory
 from zope.app.publication.requestpublicationregistry import \
     RequestPublicationRegistry
-from zope.component.testing import PlacelessSetup
-from zope.configuration.exceptions import ConfigurationError
-from zope.interface.verify import verifyClass
 
 
 def DummyFactory():
     return object
 
 
-class DummyRequestFactory(object):
+class DummyRequestFactory:
     def __call__(self, input_stream, env):
         self.input_stream = input_stream
         self.env = env
@@ -46,7 +47,7 @@ class DummyRequestFactory(object):
         self.pub = pub
 
 
-class PickyFactory(object):
+class PickyFactory:
     def __init__(self, name):
         self.name = name
 

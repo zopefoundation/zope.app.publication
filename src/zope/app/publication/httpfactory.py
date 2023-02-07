@@ -15,11 +15,12 @@
 """
 __docformat__ = 'restructuredtext'
 
+from zope.publisher.interfaces import ISkinnable
+from zope.publisher.skinnable import setDefaultSkin
+
 from zope import interface
 from zope.app.publication import interfaces
 from zope.app.publication.requestpublicationregistry import factoryRegistry
-from zope.publisher.interfaces import ISkinnable
-from zope.publisher.skinnable import setDefaultSkin
 
 
 def chooseClasses(method, environment):
@@ -32,7 +33,7 @@ def chooseClasses(method, environment):
 
 
 @interface.implementer(interfaces.IPublicationRequestFactory)
-class HTTPPublicationRequestFactory(object):
+class HTTPPublicationRequestFactory:
 
     def __init__(self, db):
         """See `zope.app.publication.interfaces.IPublicationRequestFactory`"""

@@ -13,13 +13,14 @@
 ##############################################################################
 """A registry for Request-Publication factories.
 """
-from zope.app.publication.interfaces import IRequestPublicationRegistry
 from zope.configuration.exceptions import ConfigurationError
 from zope.interface import implementer
 
+from zope.app.publication.interfaces import IRequestPublicationRegistry
+
 
 @implementer(IRequestPublicationRegistry)
-class RequestPublicationRegistry(object):
+class RequestPublicationRegistry:
     """The registry implements a three stage lookup for registered factories
     that have to deal with requests::
 
@@ -97,7 +98,7 @@ class RequestPublicationRegistry(object):
                 if factory.canHandle(environment):
                     return factory
         raise ConfigurationError(
-            'No registered publisher found for (%s/%s)' % (method, mimetype))
+            f'No registered publisher found for ({method}/{mimetype})')
 
 
 factoryRegistry = RequestPublicationRegistry()

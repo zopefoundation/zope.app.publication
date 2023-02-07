@@ -14,9 +14,10 @@
 """Test FTP Publication.
 """
 import zope.component
-from zope.app.publication.zopepublication import ZopePublication
 from zope.publisher.interfaces import NotFound
 from zope.publisher.publish import mapply
+
+from zope.app.publication.zopepublication import ZopePublication
 
 
 class FTPPublication(ZopePublication):
@@ -33,7 +34,7 @@ class FTPPublication(ZopePublication):
         return mapply(getattr(view, method), (), request)
 
     def annotateTransaction(self, txn, request, ob):
-        txn = super(FTPPublication, self).annotateTransaction(txn, request, ob)
+        txn = super().annotateTransaction(txn, request, ob)
         request_info = [request['command']]
         path = request.get('path', '')
         if path:

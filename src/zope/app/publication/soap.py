@@ -29,7 +29,7 @@ from zope.app.publication.http import BaseHTTPPublication
 SOAPPublication = BaseHTTPPublication
 
 
-class SOAPPublicationFactory(object):
+class SOAPPublicationFactory:
 
     def __init__(self, db):
         self.__pub = SOAPPublication(db)

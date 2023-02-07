@@ -18,12 +18,13 @@ from unittest import TestCase
 from unittest import TestSuite
 from unittest import makeSuite
 
-import zope.app.publication.http
-from zope import component
 from zope.interface import Interface
 from zope.interface import implementer
 from zope.publisher.http import HTTPRequest
 from zope.publisher.interfaces.http import IHTTPRequest
+
+import zope.app.publication.http
+from zope import component
 
 
 class ExampleInterface(Interface):
@@ -31,11 +32,11 @@ class ExampleInterface(Interface):
 
 
 @implementer(ExampleInterface)
-class C(object):
+class C:
     spammed = 0
 
 
-class V(object):
+class V:
 
     def __init__(self, context, request):
         self.context = context

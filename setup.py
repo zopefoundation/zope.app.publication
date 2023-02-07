@@ -12,7 +12,7 @@
 #
 ##############################################################################
 # This package is developed by the Zope Toolkit project, documented here:
-# http://docs.zope.org/zopetoolkit
+# https://zopetoolkit.readthedocs.io/
 # When developing and releasing this package, please follow the documented
 # Zope Toolkit policies as described by this documentation.
 ##############################################################################
@@ -48,7 +48,7 @@ setup(
     name='zope.app.publication',
     version='5.0.dev0',
     author='Zope Corporation and Contributors',
-    author_email='zope-dev@zope.org',
+    author_email='zope-dev@zope.dev',
     description='Zope publication',
     long_description=(
         read('README.rst') +
@@ -75,16 +75,13 @@ setup(
         'Topic :: Internet :: WWW/HTTP',
         'Framework :: Zope :: 3',
     ],
-    url='http://pypi.python.org/pypi/zope.app.publication',
+    url='https://pypi.org/project/zope.app.publication/',
     packages=find_packages('src'),
     package_dir={'': 'src'},
     namespace_packages=['zope', 'zope.app'],
     extras_require=dict(test=TEST_REQUIREMENTS),
-    python_requires=','.join([
-        '>=3.7',
-    ]),
+    python_requires='>=3.7',
     install_requires=[
-        'six',
         'zope.interface',
         'zope.authentication',
         'zope.component',
@@ -93,7 +90,6 @@ setup(
         'zope.location',
         'zope.publisher>=4.0.0a2',
         'zope.traversing>=4.0.0a2',
-        # 'zope.untrustedpython',
         'zope.i18n>=4.0.0a3',
         'transaction>=1.1.0',
         'setuptools',

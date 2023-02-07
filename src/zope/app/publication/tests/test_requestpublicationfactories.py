@@ -17,6 +17,8 @@ from unittest import TestCase
 from unittest import TestSuite
 from unittest import makeSuite
 
+from zope.component.testing import PlacelessSetup
+
 from zope import component
 from zope import interface
 from zope.app.publication import interfaces
@@ -28,10 +30,9 @@ from zope.app.publication.requestpublicationfactories import SOAPFactory
 from zope.app.publication.requestpublicationfactories import XMLRPCFactory
 from zope.app.publication.soap import SOAPPublication
 from zope.app.publication.xmlrpc import XMLRPCPublication
-from zope.component.testing import PlacelessSetup
 
 
-class DummyRequestFactory(object):
+class DummyRequestFactory:
     def __call__(self, input_stream, env):
         self.input_stream = input_stream
         self.env = env
@@ -44,7 +45,7 @@ class DummyRequestFactory(object):
 class Test(PlacelessSetup, TestCase):
 
     def setUp(self):
-        super(Test, self).setUp()
+        super().setUp()
         self.__env = {
             'SERVER_URL': 'http://127.0.0.1',
             'HTTP_HOST': '127.0.0.1',
