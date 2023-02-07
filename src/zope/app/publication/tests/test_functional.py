@@ -18,8 +18,8 @@ import doctest
 import re
 import unittest
 
-from zope.testing import renormalizing
 from zope.app.publication.testing import PublicationLayer
+from zope.testing import renormalizing
 
 
 checker = renormalizing.RENormalizing([

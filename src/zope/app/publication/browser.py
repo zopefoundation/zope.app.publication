@@ -16,12 +16,11 @@
 This module implements browser-specific publication and traversal components
 for the publisher.
 """
+from zope.app.publication.http import BaseHTTPPublication
 from zope.component import queryMultiAdapter
 from zope.publisher.interfaces.browser import IBrowserPublisher
-
-from zope.app.publication.http import BaseHTTPPublication
-
-from zope.traversing.publicationtraverse import PublicationTraverser  # noqa: F401 E501 (BBB and long line)
+from zope.traversing.publicationtraverse import \
+    PublicationTraverser  # noqa: F401 E501 (BBB and long line)
 
 
 class BrowserPublication(BaseHTTPPublication):

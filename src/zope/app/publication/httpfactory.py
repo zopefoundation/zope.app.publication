@@ -16,12 +16,10 @@
 __docformat__ = 'restructuredtext'
 
 from zope import interface
-
-from zope.publisher.interfaces import ISkinnable
-from zope.publisher.skinnable import setDefaultSkin
-
 from zope.app.publication import interfaces
 from zope.app.publication.requestpublicationregistry import factoryRegistry
+from zope.publisher.interfaces import ISkinnable
+from zope.publisher.skinnable import setDefaultSkin
 
 
 def chooseClasses(method, environment):

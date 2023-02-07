@@ -13,24 +13,27 @@
 ##############################################################################
 """Tests for the HTTP Publication Request Factory.
 """
-from unittest import TestCase, TestSuite, makeSuite
-
 from io import BytesIO
+from unittest import TestCase
+from unittest import TestSuite
+from unittest import makeSuite
 
-from zope import component, interface
+from zope import component
+from zope import interface
+from zope.app.publication import interfaces
+from zope.app.publication.browser import BrowserPublication
+from zope.app.publication.http import HTTPPublication
+from zope.app.publication.httpfactory import HTTPPublicationRequestFactory
+from zope.app.publication.requestpublicationfactories import BrowserFactory
+from zope.app.publication.requestpublicationfactories import HTTPFactory
+from zope.app.publication.requestpublicationfactories import SOAPFactory
+from zope.app.publication.requestpublicationfactories import XMLRPCFactory
+from zope.app.publication.requestpublicationregistry import factoryRegistry
+from zope.app.publication.xmlrpc import XMLRPCPublication
+from zope.component.testing import PlacelessSetup
 from zope.publisher.browser import BrowserRequest
 from zope.publisher.http import HTTPRequest
 from zope.publisher.xmlrpc import XMLRPCRequest
-from zope.component.testing import PlacelessSetup
-
-from zope.app.publication.httpfactory import HTTPPublicationRequestFactory
-from zope.app.publication.browser import BrowserPublication
-from zope.app.publication.http import HTTPPublication
-from zope.app.publication.xmlrpc import XMLRPCPublication
-from zope.app.publication import interfaces
-from zope.app.publication.requestpublicationregistry import factoryRegistry
-from zope.app.publication.requestpublicationfactories import \
-    HTTPFactory, SOAPFactory, BrowserFactory, XMLRPCFactory
 
 
 class DummyRequestFactory(object):

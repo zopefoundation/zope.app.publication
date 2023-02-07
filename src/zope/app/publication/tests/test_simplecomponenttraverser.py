@@ -14,11 +14,12 @@
 """Sample Component Traverser Test
 """
 import unittest
-from zope.publisher.interfaces import NotFound
-from zope.interface import Interface, directlyProvides
 
-from zope.app.publication.traversers import SimpleComponentTraverser
 from zope import component
+from zope.app.publication.traversers import SimpleComponentTraverser
+from zope.interface import Interface
+from zope.interface import directlyProvides
+from zope.publisher.interfaces import NotFound
 
 
 class ExampleInterface(Interface):

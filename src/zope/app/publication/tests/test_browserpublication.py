@@ -14,30 +14,29 @@
 """Browser Publication Tests
 """
 import unittest
-
 from io import BytesIO
 
+from persistent import Persistent
+
 from zope import component
-from zope.security.interfaces import ForbiddenAttribute
-from zope.interface import Interface, implementer
-
-from zope.publisher.publish import publish
-from zope.publisher.browser import TestRequest, BrowserView
-from zope.publisher.interfaces.browser import (IBrowserPublisher,
-                                               IDefaultBrowserLayer)
-from zope.security.proxy import removeSecurityProxy
-from zope.security.checker import defineChecker, NamesChecker
-
-from zope.principalregistry.principalregistry import principalRegistry
-
 from zope.app.publication.browser import BrowserPublication
 from zope.app.publication.httpfactory import HTTPPublicationRequestFactory
-from zope.app.publication.traversers import TestTraverser
-from zope.app.publication.tests.test_zopepublication \
-    import BasePublicationTests as BasePublicationTests_
 from zope.app.publication.tests import support
-
-from persistent import Persistent
+from zope.app.publication.tests.test_zopepublication import \
+    BasePublicationTests as BasePublicationTests_
+from zope.app.publication.traversers import TestTraverser
+from zope.interface import Interface
+from zope.interface import implementer
+from zope.principalregistry.principalregistry import principalRegistry
+from zope.publisher.browser import BrowserView
+from zope.publisher.browser import TestRequest
+from zope.publisher.interfaces.browser import IBrowserPublisher
+from zope.publisher.interfaces.browser import IDefaultBrowserLayer
+from zope.publisher.publish import publish
+from zope.security.checker import NamesChecker
+from zope.security.checker import defineChecker
+from zope.security.interfaces import ForbiddenAttribute
+from zope.security.proxy import removeSecurityProxy
 
 
 def foo():
@@ -256,8 +255,10 @@ class BrowserPublicationTests(BasePublicationTests):
         self.assertEqual(removeSecurityProxy(ob2).v, 1)
 
     def testTraverseNameApplicationControl(self):
-        from zope.applicationcontrol.applicationcontrol \
-            import applicationController, applicationControllerRoot
+        from zope.applicationcontrol.applicationcontrol import \
+            applicationController
+        from zope.applicationcontrol.applicationcontrol import \
+            applicationControllerRoot
         from zope.traversing.interfaces import IEtcNamespace
         component.provideUtility(applicationController,
                                  IEtcNamespace, name='process')
@@ -314,10 +315,16 @@ class HTTPPublicationRequestFactoryTests(BasePublicationTests):
 
     def setUp(self):
         super(BasePublicationTests, self).setUp()
+        from zope.app.publication.requestpublicationfactories import \
+            BrowserFactory
+        from zope.app.publication.requestpublicationfactories import \
+            HTTPFactory
+        from zope.app.publication.requestpublicationfactories import \
+            SOAPFactory
+        from zope.app.publication.requestpublicationfactories import \
+            XMLRPCFactory
         from zope.app.publication.requestpublicationregistry import \
             factoryRegistry
-        from zope.app.publication.requestpublicationfactories \
-            import SOAPFactory, XMLRPCFactory, HTTPFactory, BrowserFactory
 
         factoryRegistry.register('*', '*', 'HTTP', 0, HTTPFactory())
         factoryRegistry.register('POST', 'text/xml', 'SOAP', 20, SOAPFactory())

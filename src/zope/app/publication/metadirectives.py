@@ -22,9 +22,11 @@ Each directive also has a name and a sortkey.
 The sortkey helps when several directives can handle a request:
 they are sorted by this key and the highest one is taken.
 """
+from zope.configuration.fields import GlobalObject
+from zope.configuration.fields import Tokens
 from zope.interface import Interface
-from zope.configuration.fields import GlobalObject, Tokens
-from zope.schema import TextLine, Int
+from zope.schema import Int
+from zope.schema import TextLine
 
 
 class IRequestPublicationDirective(Interface):

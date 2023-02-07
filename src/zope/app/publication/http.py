@@ -13,14 +13,13 @@
 ##############################################################################
 """HTTP Publication
 """
+import zope.component
+from zope.app.publication.zopepublication import ZopePublication
 from zope.publisher.interfaces.http import IHTTPException
+from zope.publisher.interfaces.http import \
+    IMethodNotAllowed  # noqa: F401 E501 (BBB and long line)
 from zope.publisher.interfaces.http import MethodNotAllowed
 from zope.publisher.publish import mapply
-import zope.component
-
-from zope.app.publication.zopepublication import ZopePublication
-
-from zope.publisher.interfaces.http import IMethodNotAllowed  # noqa: F401 E501 (BBB and long line)
 
 
 class BaseHTTPPublication(ZopePublication):

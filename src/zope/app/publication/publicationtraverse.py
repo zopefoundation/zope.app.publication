@@ -12,8 +12,11 @@
 #
 ##############################################################################
 import warnings
-from zope.traversing.publicationtraverse import PublicationTraverse  # noqa: F401 E501 (BBB and long line)
-from zope.traversing.publicationtraverse import PublicationTraverser  # noqa: F401 E501 (BBB and long line)
+
+from zope.traversing.publicationtraverse import \
+    PublicationTraverse  # noqa: F401 E501 (BBB and long line)
+from zope.traversing.publicationtraverse import \
+    PublicationTraverser  # noqa: F401 E501 (BBB and long line)
 
 
 warnings.warn("""%s is deprecated

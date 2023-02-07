@@ -18,33 +18,38 @@ import logging
 import sys
 import unittest
 
+import transaction
 from ZODB.DB import DB
 from ZODB.DemoStorage import DemoStorage
-import transaction
-
-from zope.component.interfaces import ISite
-from zope.error.interfaces import IErrorReportingUtility
-from zope.interface import implementer, classImplements, implementedBy
-from zope.interface.interfaces import ComponentLookupError
-from zope.interface.verify import verifyClass
-from zope.location import Location
-from zope.publisher.base import TestPublication, TestRequest
-from zope.publisher.interfaces import IRequest, IPublishTraverse
-from zope.security import simplepolicies
-from zope.security.management import setSecurityPolicy, queryInteraction
-from zope.testing.cleanup import cleanUp
-from zope.site.site import LocalSiteManager
 
 from zope import component
 from zope.app.publication.tests import support
-
+from zope.app.publication.zopepublication import ZopePublication
 from zope.authentication.interfaces import IAuthentication
 from zope.authentication.interfaces import IFallbackUnauthenticatedPrincipal
 from zope.authentication.interfaces import IUnauthenticatedPrincipal
-from zope.security.interfaces import IPrincipal
+from zope.component.interfaces import ISite
+from zope.error.interfaces import IErrorReportingUtility
+from zope.interface import classImplements
+from zope.interface import implementedBy
+from zope.interface import implementer
+from zope.interface.interfaces import ComponentLookupError
+from zope.interface.verify import verifyClass
+from zope.location import Location
 from zope.principalregistry.principalregistry import principalRegistry
-from zope.app.publication.zopepublication import ZopePublication
-from zope.site.folder import Folder, rootFolder
+from zope.publisher.base import TestPublication
+from zope.publisher.base import TestRequest
+from zope.publisher.interfaces import IPublishTraverse
+from zope.publisher.interfaces import IRequest
+from zope.security import simplepolicies
+from zope.security.interfaces import IPrincipal
+from zope.security.management import queryInteraction
+from zope.security.management import setSecurityPolicy
+from zope.site.folder import Folder
+from zope.site.folder import rootFolder
+from zope.site.site import LocalSiteManager
+from zope.testing.cleanup import cleanUp
+
 
 PYTHON2 = sys.version_info[0] == 2
 
@@ -150,7 +155,9 @@ class BasePublicationTests(unittest.TestCase):
         connection.close()
         self.app = app
 
-        from zope.traversing.namespace import view, resource, etc
+        from zope.traversing.namespace import etc
+        from zope.traversing.namespace import resource
+        from zope.traversing.namespace import view
 
         support.provideNamespaceHandler('view', view)
         support.provideNamespaceHandler('resource', resource)
@@ -190,10 +197,10 @@ class ZopePublicationErrorHandling(BasePublicationTests):
             verifyClass(interface, TestPublication)
 
     def testRetryAllowed(self):
-        from zope.publisher.interfaces import Retry
-
         # a more generic version of ConflictError, but is the better thing
         from transaction.interfaces import TransientError
+
+        from zope.publisher.interfaces import Retry
         try:
             raise TransientError
         except Exception:
@@ -375,8 +382,9 @@ class ZopePublicationErrorHandling(BasePublicationTests):
 
     @unittest.skipIf(not PYTHON2, 'Python > 2 does not have classic classes')
     def testNoViewOnClassicClassException(self):
-        from zope.interface import Interface
         from types import ClassType
+
+        from zope.interface import Interface
 
         class ClassicError:
             __metaclass__ = ClassType
@@ -424,6 +432,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
                 return self.adapter
         factory = SideEffectsFactory()
         from ZODB.POSException import ConflictError
+
         from zope.interface import Interface
 
         class IConflictError(Interface):
@@ -608,10 +617,10 @@ class ZopePublicationTests(BasePublicationTests):
 
     def testTransactionAnnotation(self):
         from zope.interface import directlyProvides
-        from zope.location.traversing import LocationPhysicallyLocatable
         from zope.location.interfaces import ILocation
-        from zope.traversing.interfaces import IPhysicallyLocatable
+        from zope.location.traversing import LocationPhysicallyLocatable
         from zope.traversing.interfaces import IContainmentRoot
+        from zope.traversing.interfaces import IPhysicallyLocatable
         component.provideAdapter(LocationPhysicallyLocatable,
                                  (ILocation,), IPhysicallyLocatable)
 
@@ -650,10 +659,8 @@ class ZopePublicationTests(BasePublicationTests):
         self.assertEqual(txn_info['location'], expected_path)
 
     def testSiteEvents(self):
-        from zope.publisher.interfaces import (
-            IEndRequestEvent,
-            IStartRequestEvent,
-        )
+        from zope.publisher.interfaces import IEndRequestEvent
+        from zope.publisher.interfaces import IStartRequestEvent
         from zope.traversing.interfaces import IBeforeTraverseEvent
 
         start = []
@@ -733,8 +740,9 @@ class AuthZopePublicationTests(BasePublicationTests):
                                  (ISimpleReadContainer, IRequest),
                                  IPublishTraverse, name='')
 
+        from zope.security.checker import InterfaceChecker
+        from zope.security.checker import defineChecker
         from zope.site.interfaces import IFolder
-        from zope.security.checker import defineChecker, InterfaceChecker
         defineChecker(Folder, InterfaceChecker(IFolder))
 
     def testPlacefulAuth(self):

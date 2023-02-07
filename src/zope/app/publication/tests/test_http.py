@@ -13,15 +13,17 @@
 ##############################################################################
 """Test HTTP Publication
 """
-from unittest import TestCase, TestSuite, makeSuite
 from io import BytesIO
-
-from zope.interface import Interface, implementer
-from zope.publisher.http import HTTPRequest
-from zope.publisher.interfaces.http import IHTTPRequest
+from unittest import TestCase
+from unittest import TestSuite
+from unittest import makeSuite
 
 import zope.app.publication.http
 from zope import component
+from zope.interface import Interface
+from zope.interface import implementer
+from zope.publisher.http import HTTPRequest
+from zope.publisher.interfaces.http import IHTTPRequest
 
 
 class ExampleInterface(Interface):

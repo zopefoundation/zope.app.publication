@@ -16,16 +16,16 @@
 This module provides factories for tuples (request, publication).
 """
 from zope import component
-from zope.interface import implementer
-from zope.app.publication.interfaces import IRequestPublicationFactory
 from zope.app.publication import interfaces
+from zope.app.publication.browser import BrowserPublication
+from zope.app.publication.http import HTTPPublication
+from zope.app.publication.interfaces import IRequestPublicationFactory
 from zope.app.publication.soap import SOAPPublication
 from zope.app.publication.xmlrpc import XMLRPCPublication
-from zope.app.publication.http import HTTPPublication
-from zope.publisher.xmlrpc import XMLRPCRequest
-from zope.app.publication.browser import BrowserPublication
-from zope.publisher.http import HTTPRequest
+from zope.interface import implementer
 from zope.publisher.browser import BrowserRequest
+from zope.publisher.http import HTTPRequest
+from zope.publisher.xmlrpc import XMLRPCRequest
 
 
 @implementer(IRequestPublicationFactory)

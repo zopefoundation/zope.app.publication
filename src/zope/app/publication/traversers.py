@@ -14,12 +14,13 @@
 """Generic object traversers
 """
 import zope.component
-
-from zope.interface import providedBy, implementer
-from zope.publisher.interfaces import Unauthorized, NotFound
+from zope.interface import implementer
+from zope.interface import providedBy
+from zope.publisher.defaultview import getDefaultViewName
+from zope.publisher.interfaces import NotFound
+from zope.publisher.interfaces import Unauthorized
 from zope.publisher.interfaces.browser import IBrowserPublisher
 from zope.publisher.interfaces.xmlrpc import IXMLRPCPublisher
-from zope.publisher.defaultview import getDefaultViewName
 
 
 @implementer(IBrowserPublisher, IXMLRPCPublisher)

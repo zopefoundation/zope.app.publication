@@ -13,9 +13,9 @@
 ##############################################################################
 """A registry for Request-Publication factories.
 """
-from zope.interface import implementer
 from zope.app.publication.interfaces import IRequestPublicationRegistry
 from zope.configuration.exceptions import ConfigurationError
+from zope.interface import implementer
 
 
 @implementer(IRequestPublicationRegistry)

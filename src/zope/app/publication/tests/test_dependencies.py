@@ -1,12 +1,11 @@
 import unittest
 
+import zope.app.publication.tests
 from zope.app.publication.traversers import SimpleComponentTraverser
 from zope.component import getMultiAdapter
 from zope.component.testlayer import ZCMLFileLayer
 from zope.publisher.browser import TestRequest
 from zope.publisher.interfaces.browser import IBrowserPublisher
-
-import zope.app.publication.tests
 
 
 class ZCMLDependencies(unittest.TestCase):

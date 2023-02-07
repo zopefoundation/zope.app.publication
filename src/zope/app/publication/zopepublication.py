@@ -11,40 +11,48 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-import sys
 import logging
+import sys
 from types import MethodType
+
+import six
 
 import transaction
 
-import six
+import zope.authentication.interfaces
 import zope.component
 import zope.component.interfaces
+from zope.authentication.interfaces import IAuthentication
+from zope.authentication.interfaces import IFallbackUnauthenticatedPrincipal
+from zope.authentication.interfaces import IUnauthenticatedPrincipal
+from zope.browser.interfaces import ISystemErrorView
 from zope.component import queryMultiAdapter
+from zope.error.interfaces import IErrorReportingUtility
 from zope.event import notify
-from zope.interface import implementer, providedBy
+from zope.interface import implementer
+from zope.interface import providedBy
+from zope.location import LocationProxy
+from zope.publisher.defaultview import queryDefaultViewName
+from zope.publisher.interfaces import EndRequestEvent
+from zope.publisher.interfaces import IExceptionSideEffects
+from zope.publisher.interfaces import IHeld
+from zope.publisher.interfaces import IPublication
+from zope.publisher.interfaces import IPublishTraverse
+from zope.publisher.interfaces import IRequest
+from zope.publisher.interfaces import NotFound
+from zope.publisher.interfaces import Retry
+from zope.publisher.interfaces import StartRequestEvent
 from zope.publisher.publish import mapply
-from zope.publisher.interfaces import IExceptionSideEffects, IHeld
-from zope.publisher.interfaces import IPublication, IPublishTraverse, IRequest
-from zope.publisher.interfaces import NotFound, Retry
-from zope.security.management import newInteraction, endInteraction
 from zope.security.checker import ProxyFactory
+from zope.security.management import endInteraction
+from zope.security.management import newInteraction
 from zope.security.proxy import removeSecurityProxy
 from zope.traversing.interfaces import BeforeTraverseEvent
-from zope.traversing.interfaces import IPhysicallyLocatable
 from zope.traversing.interfaces import IEtcNamespace
+from zope.traversing.interfaces import IPhysicallyLocatable
 from zope.traversing.interfaces import TraversalError
-from zope.traversing.namespace import namespaceLookup, nsParse
-from zope.location import LocationProxy
-from zope.error.interfaces import IErrorReportingUtility
-
-import zope.authentication.interfaces
-from zope.browser.interfaces import ISystemErrorView
-from zope.publisher.defaultview import queryDefaultViewName
-from zope.publisher.interfaces import EndRequestEvent, StartRequestEvent
-from zope.authentication.interfaces import IUnauthenticatedPrincipal
-from zope.authentication.interfaces import IFallbackUnauthenticatedPrincipal
-from zope.authentication.interfaces import IAuthentication
+from zope.traversing.namespace import namespaceLookup
+from zope.traversing.namespace import nsParse
 
 
 @implementer(IHeld)

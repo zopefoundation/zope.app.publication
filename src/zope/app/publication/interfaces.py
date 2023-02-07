@@ -14,12 +14,11 @@
 """Publication Interfaces
 """
 from zope import interface
-
 # BBB: Re-import symbols to their old location.
-from zope.publisher.interfaces import IEndRequestEvent  # noqa: F401 (BBB)
 from zope.publisher.interfaces import EndRequestEvent  # noqa: F401 (BBB)
-from zope.traversing.interfaces import IBeforeTraverseEvent  # noqa: F401 (BBB)
+from zope.publisher.interfaces import IEndRequestEvent  # noqa: F401 (BBB)
 from zope.traversing.interfaces import BeforeTraverseEvent  # noqa: F401 (BBB)
+from zope.traversing.interfaces import IBeforeTraverseEvent  # noqa: F401 (BBB)
 
 
 class IPublicationRequestFactory(interface.Interface):

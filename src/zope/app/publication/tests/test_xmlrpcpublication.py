@@ -15,20 +15,21 @@
 """
 import unittest
 
+from zope import component
+from zope.app.publication.tests import support
 from zope.app.publication.tests.test_zopepublication import \
     BasePublicationTests
-from zope.app.publication.traversers import TestTraverser
 from zope.app.publication.traversers import SimpleComponentTraverser
+from zope.app.publication.traversers import TestTraverser
 from zope.app.publication.xmlrpc import XMLRPCPublication
-from zope.interface import Interface, implementer
+from zope.interface import Interface
+from zope.interface import implementer
 from zope.proxy import removeAllProxies
 from zope.publisher.interfaces import NotFound
-from zope.publisher.interfaces.xmlrpc import IXMLRPCView
-from zope.publisher.interfaces.xmlrpc import IXMLRPCRequest
 from zope.publisher.interfaces.xmlrpc import IXMLRPCPublisher
+from zope.publisher.interfaces.xmlrpc import IXMLRPCRequest
+from zope.publisher.interfaces.xmlrpc import IXMLRPCView
 from zope.publisher.xmlrpc import TestRequest
-from zope.app.publication.tests import support
-from zope import component
 
 
 class SimpleObject(object):

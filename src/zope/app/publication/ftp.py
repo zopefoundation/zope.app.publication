@@ -14,11 +14,9 @@
 """Test FTP Publication.
 """
 import zope.component
-
+from zope.app.publication.zopepublication import ZopePublication
 from zope.publisher.interfaces import NotFound
 from zope.publisher.publish import mapply
-
-from zope.app.publication.zopepublication import ZopePublication
 
 
 class FTPPublication(ZopePublication):
