@@ -18,10 +18,10 @@ for the publisher.
 """
 from zope.component import queryMultiAdapter
 from zope.publisher.interfaces.browser import IBrowserPublisher
+from zope.traversing.publicationtraverse import \
+    PublicationTraverser  # noqa: F401 E501 (BBB and long line)
 
 from zope.app.publication.http import BaseHTTPPublication
-
-from zope.traversing.publicationtraverse import PublicationTraverser  # noqa: F401 E501 (BBB and long line)
 
 
 class BrowserPublication(BaseHTTPPublication):
@@ -42,13 +42,13 @@ class BrowserPublication(BaseHTTPPublication):
                 return ob, None
 
     def afterCall(self, request, ob):
-        super(BrowserPublication, self).afterCall(request, ob)
+        super().afterCall(request, ob)
         if request.method == 'HEAD':
             request.response.setResult('')
 
 
 # For now, have a factory that returns a singleton
-class PublicationFactory(object):
+class PublicationFactory:
 
     def __init__(self, db):
         self.__pub = BrowserPublication(db)

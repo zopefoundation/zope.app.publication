@@ -10,11 +10,12 @@
 # fact that we have to import interfaces from these gives us this
 # clue. We will investigate pushing them down to these packages
 # later.
-from zope import component
-from zope.traversing.interfaces import ITraversable
 from zope.publisher.interfaces import IDefaultViewName
-from zope.publisher.interfaces.browser import (IDefaultBrowserLayer,
-                                               IBrowserRequest)
+from zope.publisher.interfaces.browser import IBrowserRequest
+from zope.publisher.interfaces.browser import IDefaultBrowserLayer
+from zope.traversing.interfaces import ITraversable
+
+from zope import component
 
 
 def provideNamespaceHandler(name, handler):

@@ -11,44 +11,49 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-import sys
 import logging
+import sys
 from types import MethodType
 
 import transaction
-
-import six
+import zope.authentication.interfaces
 import zope.component
 import zope.component.interfaces
+from zope.authentication.interfaces import IAuthentication
+from zope.authentication.interfaces import IFallbackUnauthenticatedPrincipal
+from zope.authentication.interfaces import IUnauthenticatedPrincipal
+from zope.browser.interfaces import ISystemErrorView
 from zope.component import queryMultiAdapter
+from zope.error.interfaces import IErrorReportingUtility
 from zope.event import notify
-from zope.interface import implementer, providedBy
+from zope.interface import implementer
+from zope.interface import providedBy
+from zope.location import LocationProxy
+from zope.publisher.defaultview import queryDefaultViewName
+from zope.publisher.interfaces import EndRequestEvent
+from zope.publisher.interfaces import IExceptionSideEffects
+from zope.publisher.interfaces import IHeld
+from zope.publisher.interfaces import IPublication
+from zope.publisher.interfaces import IPublishTraverse
+from zope.publisher.interfaces import IRequest
+from zope.publisher.interfaces import NotFound
+from zope.publisher.interfaces import Retry
+from zope.publisher.interfaces import StartRequestEvent
 from zope.publisher.publish import mapply
-from zope.publisher.interfaces import IExceptionSideEffects, IHeld
-from zope.publisher.interfaces import IPublication, IPublishTraverse, IRequest
-from zope.publisher.interfaces import NotFound, Retry
-from zope.security.management import newInteraction, endInteraction
 from zope.security.checker import ProxyFactory
+from zope.security.management import endInteraction
+from zope.security.management import newInteraction
 from zope.security.proxy import removeSecurityProxy
 from zope.traversing.interfaces import BeforeTraverseEvent
-from zope.traversing.interfaces import IPhysicallyLocatable
 from zope.traversing.interfaces import IEtcNamespace
+from zope.traversing.interfaces import IPhysicallyLocatable
 from zope.traversing.interfaces import TraversalError
-from zope.traversing.namespace import namespaceLookup, nsParse
-from zope.location import LocationProxy
-from zope.error.interfaces import IErrorReportingUtility
-
-import zope.authentication.interfaces
-from zope.browser.interfaces import ISystemErrorView
-from zope.publisher.defaultview import queryDefaultViewName
-from zope.publisher.interfaces import EndRequestEvent, StartRequestEvent
-from zope.authentication.interfaces import IUnauthenticatedPrincipal
-from zope.authentication.interfaces import IFallbackUnauthenticatedPrincipal
-from zope.authentication.interfaces import IAuthentication
+from zope.traversing.namespace import namespaceLookup
+from zope.traversing.namespace import nsParse
 
 
 @implementer(IHeld)
-class Cleanup(object):
+class Cleanup:
 
     def __init__(self, f):
         self._f = f
@@ -65,7 +70,7 @@ class Cleanup(object):
 
 
 @implementer(IPublication)
-class ZopePublication(object):
+class ZopePublication:
     """Base Zope publication specification."""
 
     root_name = 'Application'
@@ -228,7 +233,7 @@ class ZopePublication(object):
         it's specific to this particular implementation.
         """
         if request.principal is not None:
-            principal_id = six.text_type(request.principal.id)
+            principal_id = str(request.principal.id)
             txn.setUser(principal_id)
 
         # Work around methods that are usually used for views
@@ -263,7 +268,7 @@ class ZopePublication(object):
     def _logErrorWithErrorReportingUtility(self, object, request, exc_info):
         # Record the error with the ErrorReportingUtility
         self.beginErrorHandlingTransaction(request, object,
-                                           u'error reporting utility')
+                                           'error reporting utility')
         try:
             errUtility = zope.component.getUtility(IErrorReportingUtility)
 
@@ -342,7 +347,7 @@ class ZopePublication(object):
             # We definitely have an Exception
             # Set the request body, and abort the current transaction.
             self.beginErrorHandlingTransaction(
-                request, object, u'application error-handling')
+                request, object, 'application error-handling')
             view = None
             try:
                 # We need to get a location, because some template content of
@@ -387,7 +392,7 @@ class ZopePublication(object):
                         # Lame hack to get around logging missfeature
                         # that is fixed in Python 2.4
                         try:
-                            six.reraise(exc_info[0], exc_info[1], exc_info[2])
+                            raise exc_info[1].with_traceback(exc_info[2])
                         except Exception:
                             logging.getLogger('SiteError').exception(
                                 str(request.URL),
@@ -423,7 +428,7 @@ class ZopePublication(object):
 
             if adapter is not None:
                 self.beginErrorHandlingTransaction(
-                    request, object, u'application error-handling side-effect')
+                    request, object, 'application error-handling side-effect')
                 try:
                     # Although request is passed in here, it should be
                     # considered read-only.

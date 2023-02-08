@@ -14,18 +14,20 @@
 """Sample Component Traverser Test
 """
 import unittest
-from zope.publisher.interfaces import NotFound
-from zope.interface import Interface, directlyProvides
 
-from zope.app.publication.traversers import SimpleComponentTraverser
+from zope.interface import Interface
+from zope.interface import directlyProvides
+from zope.publisher.interfaces import NotFound
+
 from zope import component
+from zope.app.publication.traversers import SimpleComponentTraverser
 
 
 class ExampleInterface(Interface):
     pass
 
 
-class Container(object):
+class Container:
     def __init__(self, **kw):
         for k in kw:
             setattr(self, k, kw[k])
@@ -34,7 +36,7 @@ class Container(object):
         return getattr(self, name, default)
 
 
-class Request(object):
+class Request:
 
     def __init__(self, type):
         directlyProvides(self, type)
@@ -43,7 +45,7 @@ class Request(object):
         return ''
 
 
-class View(object):
+class View:
     def __init__(self, comp, request):
         self._comp = comp
 

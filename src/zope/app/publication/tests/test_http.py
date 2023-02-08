@@ -13,10 +13,13 @@
 ##############################################################################
 """Test HTTP Publication
 """
-from unittest import TestCase, TestSuite, makeSuite
 from io import BytesIO
+from unittest import TestCase
+from unittest import TestSuite
+from unittest import makeSuite
 
-from zope.interface import Interface, implementer
+from zope.interface import Interface
+from zope.interface import implementer
 from zope.publisher.http import HTTPRequest
 from zope.publisher.interfaces.http import IHTTPRequest
 
@@ -29,11 +32,11 @@ class ExampleInterface(Interface):
 
 
 @implementer(ExampleInterface)
-class C(object):
+class C:
     spammed = 0
 
 
-class V(object):
+class V:
 
     def __init__(self, context, request):
         self.context = context

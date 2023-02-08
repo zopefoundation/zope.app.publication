@@ -14,30 +14,29 @@
 """Browser Publication Tests
 """
 import unittest
-
 from io import BytesIO
 
-from zope import component
-from zope.security.interfaces import ForbiddenAttribute
-from zope.interface import Interface, implementer
-
-from zope.publisher.publish import publish
-from zope.publisher.browser import TestRequest, BrowserView
-from zope.publisher.interfaces.browser import (IBrowserPublisher,
-                                               IDefaultBrowserLayer)
-from zope.security.proxy import removeSecurityProxy
-from zope.security.checker import defineChecker, NamesChecker
-
+from persistent import Persistent
+from zope.interface import Interface
+from zope.interface import implementer
 from zope.principalregistry.principalregistry import principalRegistry
+from zope.publisher.browser import BrowserView
+from zope.publisher.browser import TestRequest
+from zope.publisher.interfaces.browser import IBrowserPublisher
+from zope.publisher.interfaces.browser import IDefaultBrowserLayer
+from zope.publisher.publish import publish
+from zope.security.checker import NamesChecker
+from zope.security.checker import defineChecker
+from zope.security.interfaces import ForbiddenAttribute
+from zope.security.proxy import removeSecurityProxy
 
+from zope import component
 from zope.app.publication.browser import BrowserPublication
 from zope.app.publication.httpfactory import HTTPPublicationRequestFactory
-from zope.app.publication.traversers import TestTraverser
-from zope.app.publication.tests.test_zopepublication \
-    import BasePublicationTests as BasePublicationTests_
 from zope.app.publication.tests import support
-
-from persistent import Persistent
+from zope.app.publication.tests.test_zopepublication import \
+    BasePublicationTests as BasePublicationTests_
+from zope.app.publication.traversers import TestTraverser
 
 
 def foo():
@@ -46,7 +45,7 @@ def foo():
 
 
 @implementer(IBrowserPublisher)
-class DummyPublished(object):
+class DummyPublished:
 
     def publishTraverse(self, request, name):
         if name == 'bruce':
@@ -70,7 +69,7 @@ class BasePublicationTests(BasePublicationTests_):
         return request
 
 
-class SimpleObject(object):
+class SimpleObject:
     def __init__(self, v):
         self.v = v
 
@@ -163,7 +162,7 @@ class BrowserPublicationTests(BasePublicationTests):
     def testAdaptedTraverseNameWrapping(self):
 
         @implementer(IBrowserPublisher)
-        class Adapter(object):
+        class Adapter:
             def __init__(self, context, request):
                 self.context = context
                 self.counter = 0
@@ -186,7 +185,7 @@ class BrowserPublicationTests(BasePublicationTests):
     def testAdaptedTraverseDefaultWrapping(self):
         # Test default content and make sure that it's wrapped.
         @implementer(IBrowserPublisher)
-        class Adapter(object):
+        class Adapter:
             def __init__(self, context, request):
                 self.context = context
 
@@ -210,7 +209,7 @@ class BrowserPublicationTests(BasePublicationTests):
     def testTraverseName(self):
         pub = self.klass(self.db)
 
-        class C(object):
+        class C:
             x = SimpleObject(1)
         ob = C()
         r = self._createRequest('/x', pub)
@@ -229,11 +228,11 @@ class BrowserPublicationTests(BasePublicationTests):
             pass
 
         @implementer(ExampleInterface)
-        class C(object):
+        class C:
             pass
         ob = C()
 
-        class V(object):
+        class V:
             def __init__(self, context, request):
                 pass
         r = self._createRequest('/@@spam', pub)
@@ -246,7 +245,7 @@ class BrowserPublicationTests(BasePublicationTests):
     def testTraverseNameSiteManager(self):
         pub = self.klass(self.db)
 
-        class C(object):
+        class C:
             def getSiteManager(self):
                 return SimpleObject(1)
         ob = C()
@@ -256,8 +255,10 @@ class BrowserPublicationTests(BasePublicationTests):
         self.assertEqual(removeSecurityProxy(ob2).v, 1)
 
     def testTraverseNameApplicationControl(self):
-        from zope.applicationcontrol.applicationcontrol \
-            import applicationController, applicationControllerRoot
+        from zope.applicationcontrol.applicationcontrol import \
+            applicationController
+        from zope.applicationcontrol.applicationcontrol import \
+            applicationControllerRoot
         from zope.traversing.interfaces import IEtcNamespace
         component.provideUtility(applicationController,
                                  IEtcNamespace, name='process')
@@ -275,13 +276,13 @@ class BrowserPublicationTests(BasePublicationTests):
     def testHEADFuxup(self):
         pub = self.klass(None)
 
-        class User(object):
+        class User:
             id = 'bob'
 
         # With a normal request, we should get a body:
         request = TestRequest(BytesIO(b''), {'PATH_INFO': '/'})
         request.setPrincipal(User())
-        request.response.setResult(u"spam")
+        request.response.setResult("spam")
         pub.afterCall(request, None)
         self.assertEqual(request.response.consumeBody(), b'spam')
 
@@ -289,14 +290,14 @@ class BrowserPublicationTests(BasePublicationTests):
         request = TestRequest(BytesIO(b''), {'PATH_INFO': '/'})
         request.setPrincipal(User())
         request.method = 'HEAD'
-        request.response.setResult(u"spam")
+        request.response.setResult("spam")
         pub.afterCall(request, None)
         self.assertEqual(request.response.consumeBody(), b'')
 
     def testUnicode_NO_HTTP_CHARSET(self):
         # Test so that a unicode body doesn't cause a UnicodeEncodeError
         request = TestRequest(BytesIO(b''), {})
-        request.response.setResult(u"\u0442\u0435\u0441\u0442")
+        request.response.setResult("\u0442\u0435\u0441\u0442")
         headers = request.response.getHeaders()
         headers.sort()
         self.assertEqual(
@@ -314,10 +315,16 @@ class HTTPPublicationRequestFactoryTests(BasePublicationTests):
 
     def setUp(self):
         super(BasePublicationTests, self).setUp()
+        from zope.app.publication.requestpublicationfactories import \
+            BrowserFactory
+        from zope.app.publication.requestpublicationfactories import \
+            HTTPFactory
+        from zope.app.publication.requestpublicationfactories import \
+            SOAPFactory
+        from zope.app.publication.requestpublicationfactories import \
+            XMLRPCFactory
         from zope.app.publication.requestpublicationregistry import \
             factoryRegistry
-        from zope.app.publication.requestpublicationfactories \
-            import SOAPFactory, XMLRPCFactory, HTTPFactory, BrowserFactory
 
         factoryRegistry.register('*', '*', 'HTTP', 0, HTTPFactory())
         factoryRegistry.register('POST', 'text/xml', 'SOAP', 20, SOAPFactory())
@@ -336,8 +343,9 @@ class HTTPPublicationRequestFactoryTests(BasePublicationTests):
 
 
 def test_suite():
+    loadTestsFromTestCase = unittest.defaultTestLoader.loadTestsFromTestCase
     return unittest.TestSuite((
-        unittest.makeSuite(BrowserPublicationTests, 'test'),
-        unittest.makeSuite(BrowserDefaultTests, 'test'),
-        unittest.makeSuite(HTTPPublicationRequestFactoryTests, 'test'),
+        loadTestsFromTestCase(BrowserPublicationTests),
+        loadTestsFromTestCase(BrowserDefaultTests),
+        loadTestsFromTestCase(HTTPPublicationRequestFactoryTests),
     ))

@@ -11,15 +11,16 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-from __future__ import print_function
+
 import doctest
 import unittest
 
-import zope.app.publication.browser
 import zope.component
 import zope.interface
 import zope.publisher.interfaces.browser
 import zope.traversing.namespace
+
+import zope.app.publication.browser
 
 
 class Proxy:

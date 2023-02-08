@@ -13,26 +13,31 @@
 ##############################################################################
 """Tests for the HTTP Publication Request Factory.
 """
-from unittest import TestCase, TestSuite, makeSuite
+from unittest import TestCase
+from unittest import TestSuite
+from unittest import makeSuite
 
-from zope import component, interface
-from zope.interface.verify import verifyClass
 from zope.component.testing import PlacelessSetup
-
 from zope.configuration.exceptions import ConfigurationError
+from zope.interface.verify import verifyClass
+
+from zope import component
+from zope import interface
 from zope.app.publication import interfaces
 from zope.app.publication.interfaces import IRequestPublicationRegistry
+from zope.app.publication.requestpublicationfactories import BrowserFactory
+from zope.app.publication.requestpublicationfactories import HTTPFactory
+from zope.app.publication.requestpublicationfactories import SOAPFactory
+from zope.app.publication.requestpublicationfactories import XMLRPCFactory
 from zope.app.publication.requestpublicationregistry import \
     RequestPublicationRegistry
-from zope.app.publication.requestpublicationfactories import \
-    HTTPFactory, SOAPFactory, BrowserFactory, XMLRPCFactory
 
 
 def DummyFactory():
     return object
 
 
-class DummyRequestFactory(object):
+class DummyRequestFactory:
     def __call__(self, input_stream, env):
         self.input_stream = input_stream
         self.env = env
@@ -42,7 +47,7 @@ class DummyRequestFactory(object):
         self.pub = pub
 
 
-class PickyFactory(object):
+class PickyFactory:
     def __init__(self, name):
         self.name = name
 
@@ -164,6 +169,7 @@ class Test(PlacelessSetup, TestCase):
 
     def test_fail_if_no_factory_can_be_found(self):
         from zope.configuration.exceptions import ConfigurationError
+
         # If cannot find a factory that would handle the requestm at all
         # we fail with a clear message. The lookup //used// to return None
         # in these case without the callee handling that case.

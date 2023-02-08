@@ -15,23 +15,25 @@
 """
 import unittest
 
-from zope.app.publication.tests.test_zopepublication import \
-    BasePublicationTests
-from zope.app.publication.traversers import TestTraverser
-from zope.app.publication.traversers import SimpleComponentTraverser
-from zope.app.publication.xmlrpc import XMLRPCPublication
-from zope.interface import Interface, implementer
+from zope.interface import Interface
+from zope.interface import implementer
 from zope.proxy import removeAllProxies
 from zope.publisher.interfaces import NotFound
-from zope.publisher.interfaces.xmlrpc import IXMLRPCView
-from zope.publisher.interfaces.xmlrpc import IXMLRPCRequest
 from zope.publisher.interfaces.xmlrpc import IXMLRPCPublisher
+from zope.publisher.interfaces.xmlrpc import IXMLRPCRequest
+from zope.publisher.interfaces.xmlrpc import IXMLRPCView
 from zope.publisher.xmlrpc import TestRequest
-from zope.app.publication.tests import support
+
 from zope import component
+from zope.app.publication.tests import support
+from zope.app.publication.tests.test_zopepublication import \
+    BasePublicationTests
+from zope.app.publication.traversers import SimpleComponentTraverser
+from zope.app.publication.traversers import TestTraverser
+from zope.app.publication.xmlrpc import XMLRPCPublication
 
 
-class SimpleObject(object):
+class SimpleObject:
     def __init__(self, v):
         self.v = v
 
@@ -48,7 +50,7 @@ class XMLRPCPublicationTests(BasePublicationTests):
     def testTraverseName(self):
         pub = self.klass(self.db)
 
-        class C(object):
+        class C:
             x = SimpleObject(1)
         ob = C()
         r = self._createRequest('/x', pub)
@@ -65,13 +67,13 @@ class XMLRPCPublicationTests(BasePublicationTests):
             pass
 
         @implementer(ExampleInterface)
-        class C(object):
+        class C:
 
             def foo(self):
                 return 'bar'
 
         @implementer(IXMLRPCView)
-        class V(object):
+        class V:
             def __init__(self, context, request):
                 pass
 
@@ -91,13 +93,13 @@ class XMLRPCPublicationTests(BasePublicationTests):
             pass
 
         @implementer(ExampleInterface)
-        class C(object):
+        class C:
             pass
 
         ob = C()
 
         @implementer(IXMLRPCView)
-        class V(object):
+        class V:
             def __init__(self, context, request):
                 pass
 
@@ -118,7 +120,7 @@ class XMLRPCPublicationTests(BasePublicationTests):
     def testTraverseNameSiteManager(self):
         pub = self.klass(self.db)
 
-        class C(object):
+        class C:
             def getSiteManager(self):
                 return SimpleObject(1)
         ob = C()
@@ -129,5 +131,6 @@ class XMLRPCPublicationTests(BasePublicationTests):
 
 def test_suite():
     return unittest.TestSuite((
-        unittest.makeSuite(XMLRPCPublicationTests),
+        unittest.defaultTestLoader.loadTestsFromTestCase(
+            XMLRPCPublicationTests),
     ))
