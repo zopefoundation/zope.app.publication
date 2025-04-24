@@ -23,8 +23,8 @@ class ZCMLDependencies(unittest.TestCase):
         sample = object()
         res = getMultiAdapter(
             (sample, request), IBrowserPublisher)
-        self.assertTrue(isinstance(res, SimpleComponentTraverser))
-        self.assertTrue(res.context is sample)
+        self.assertIsInstance(res, SimpleComponentTraverser)
+        self.assertIs(res.context, sample)
 
 
 def test_suite():

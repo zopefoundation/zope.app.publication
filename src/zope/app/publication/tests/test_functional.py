@@ -32,7 +32,7 @@ excchecker = renormalizing.RENormalizing([
      "MethodNotAllowed")
 ])
 
-optionflags = doctest.ELLIPSIS+doctest.NORMALIZE_WHITESPACE
+optionflags = doctest.ELLIPSIS + doctest.NORMALIZE_WHITESPACE
 
 
 def setUpTestLayer(test):

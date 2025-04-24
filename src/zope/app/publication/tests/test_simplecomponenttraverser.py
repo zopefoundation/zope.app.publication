@@ -72,7 +72,7 @@ class Test(unittest.TestCase):
         component.provideAdapter(View, (None, ExampleInterface), Interface,
                                  name='foo')
 
-        self.assertTrue(T.publishTraverse(req, 'foo').__class__ is View)
+        self.assertIs(T.publishTraverse(req, 'foo').__class__, View)
 
         self.assertRaises(NotFound, T.publishTraverse, req, 'morebar')
 
