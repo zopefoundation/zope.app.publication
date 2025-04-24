@@ -15,8 +15,6 @@
 """
 from io import BytesIO
 from unittest import TestCase
-from unittest import TestSuite
-from unittest import makeSuite
 
 from zope.component.testing import PlacelessSetup
 from zope.publisher.browser import BrowserRequest
@@ -142,9 +140,3 @@ class Test(PlacelessSetup, TestCase):
             r = self.__factory(BytesIO(b''), self.__env)
             self.assertEqual(r.__class__, HTTPRequest)
             self.assertEqual(r.publication.__class__, HTTPPublication)
-
-
-def test_suite():
-    return TestSuite((
-        makeSuite(Test),
-    ))

@@ -457,7 +457,7 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         self.publication.handleException(
             self.object, self.request, sys.exc_info(), retry_allowed=False)
         # assert that we get a new transaction
-        self.assertTrue(txn is not transaction.get())
+        self.assertIsNot(txn, transaction.get())
 
     def testAbortTransactionWithErrorReportingUtility(self):
         # provide our fake error reporting utility
@@ -482,8 +482,8 @@ class ZopePublicationErrorHandling(BasePublicationTests):
         self.assertEqual(len(error_log.exceptions), 1)
         error_info, request = error_log.exceptions[0]
         self.assertEqual(error_info[0], FooError)
-        self.assertTrue(isinstance(error_info[1], FooError))
-        self.assertTrue(request is self.request)
+        self.assertIsInstance(error_info[1], FooError)
+        self.assertIs(request, self.request)
 
     def testLogBeforeAbort(self):
         # If we get an exception, and then (a catastrophe, but one that has
@@ -520,8 +520,8 @@ class ZopePublicationErrorHandling(BasePublicationTests):
             self.assertEqual(len(error_log.exceptions), 1)
             error_info, request = error_log.exceptions[0]
             self.assertEqual(error_info[0], AnEarlierError)
-            self.assertTrue(isinstance(error_info[1], AnEarlierError))
-            self.assertTrue(request is self.request)
+            self.assertIsInstance(error_info[1], AnEarlierError)
+            self.assertIs(request, self.request)
         finally:
             # (Tear down:)
             transaction.abort = abort
@@ -545,7 +545,7 @@ class ZopePublicationTests(BasePublicationTests):
         component.provideUtility(principal, IFallbackUnauthenticatedPrincipal)
 
         self.publication.beforeTraversal(self.request)
-        self.assertTrue(self.request.principal is principal)
+        self.assertIs(self.request.principal, principal)
 
     def testTransactionCommitAfterCall(self):
         root = self.db.open().root()
@@ -555,7 +555,7 @@ class ZopePublicationTests(BasePublicationTests):
         root['foo'] = object()
         last_txn_info = self.storage.lastTransaction()
         self.publication.afterCall(self.request, self.object)
-        self.assertTrue(txn is not transaction.get())
+        self.assertIsNot(txn, transaction.get())
         new_txn_info = self.storage.lastTransaction()
         self.assertNotEqual(last_txn_info, new_txn_info)
 
@@ -571,7 +571,7 @@ class ZopePublicationTests(BasePublicationTests):
         txn.doom()
         self.publication.afterCall(self.request, self.object)
         # assert that we get a new transaction
-        self.assertTrue(txn is not transaction.get())
+        self.assertIsNot(txn, transaction.get())
         new_txn_info = self.storage.lastTransaction()
         # No transaction should be committed
         self.assertEqual(last_txn_info, new_txn_info)
@@ -604,7 +604,7 @@ class ZopePublicationTests(BasePublicationTests):
 
         from zope.publisher.interfaces import IRequest
         expected_path = "/foo/bar"
-        expected_user = f"/ {self.user.id}".encode('utf-8')
+        expected_user = f"/ {self.user.id}".encode()
         expected_request = IRequest.__module__ + '.' + IRequest.getName()
 
         self.publication.afterCall(self.request, bar)

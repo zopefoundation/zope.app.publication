@@ -15,8 +15,6 @@
 """
 from io import BytesIO
 from unittest import TestCase
-from unittest import TestSuite
-from unittest import makeSuite
 
 from zope.interface import Interface
 from zope.interface import implementer
@@ -59,9 +57,3 @@ class Test(TestCase):
         ob = C()
         pub.callObject(request, ob)
         self.assertEqual(ob.spammed, 1)
-
-
-def test_suite():
-    return TestSuite((
-        makeSuite(Test),
-    ))

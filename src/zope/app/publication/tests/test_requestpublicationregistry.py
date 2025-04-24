@@ -14,8 +14,6 @@
 """Tests for the HTTP Publication Request Factory.
 """
 from unittest import TestCase
-from unittest import TestSuite
-from unittest import makeSuite
 
 from zope.component.testing import PlacelessSetup
 from zope.configuration.exceptions import ConfigurationError
@@ -135,13 +133,19 @@ class Test(PlacelessSetup, TestCase):
             soaprequestfactory, interfaces.ISOAPRequestFactory)
         component.provideUtility(soaprequestfactory)
 
-        self.assertTrue(
-            isinstance(r.lookup('POST', 'text/xml', env), XMLRPCFactory))
+        self.assertIsInstance(
+            r.lookup('POST', 'text/xml', env),
+            XMLRPCFactory
+        )
         env['HTTP_SOAPACTION'] = 'foo'
-        self.assertTrue(
-            isinstance(r.lookup('POST', 'text/xml', env), SOAPFactory))
-        self.assertTrue(
-            isinstance(r.lookup('FOO', 'zope/sucks', env), BrowserFactory))
+        self.assertIsInstance(
+            r.lookup('POST', 'text/xml', env),
+            SOAPFactory
+        )
+        self.assertIsInstance(
+            r.lookup('FOO', 'zope/sucks', env),
+            BrowserFactory
+        )
 
     def test_fallback_to_generic_publicationfactory(self):
         # If a found publication factory for the given method/mime-type
@@ -195,9 +199,3 @@ class Test(PlacelessSetup, TestCase):
         self.assertRaises(
             ConfigurationError,
             r.lookup, 'BAZ', 'frop/fropple', env)
-
-
-def test_suite():
-    return TestSuite((
-        makeSuite(Test),
-    ))

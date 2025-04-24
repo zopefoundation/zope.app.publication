@@ -105,7 +105,7 @@ factoryRegistry = RequestPublicationRegistry()
 
 try:
     import zope.testing.cleanup
-except ImportError:
+except ModuleNotFoundError:
     pass
 else:
     zope.testing.cleanup.addCleanUp(lambda: factoryRegistry.__init__())

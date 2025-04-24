@@ -14,8 +14,6 @@
 """Tests for the HTTP Publication Request Factory.
 """
 from unittest import TestCase
-from unittest import TestSuite
-from unittest import makeSuite
 
 from zope.component.testing import PlacelessSetup
 
@@ -102,9 +100,3 @@ class Test(PlacelessSetup, TestCase):
         request, publication = factory()
         self.assertEqual(isinstance(request, DummyRequestFactory), True)
         self.assertEqual(publication, BrowserPublication)
-
-
-def test_suite():
-    return TestSuite((
-        makeSuite(Test),
-    ))
