@@ -18,7 +18,6 @@
 ##############################################################################
 import os
 
-from setuptools import find_packages
 from setuptools import setup
 
 
@@ -40,7 +39,7 @@ TEST_REQUIREMENTS = [
     'zope.securitypolicy',
     'zope.site>=4.0.0a1',
     'zope.testing',
-    'zope.testrunner',
+    'zope.testrunner >= 6.4',
     'ZODB >= 5.1',
 ]
 
@@ -76,9 +75,6 @@ setup(
         'Framework :: Zope :: 3',
     ],
     url='https://pypi.org/project/zope.app.publication/',
-    packages=find_packages('src'),
-    package_dir={'': 'src'},
-    namespace_packages=['zope', 'zope.app'],
     extras_require=dict(test=TEST_REQUIREMENTS),
     python_requires='>=3.9',
     install_requires=[
