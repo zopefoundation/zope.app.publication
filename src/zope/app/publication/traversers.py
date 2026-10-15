@@ -83,7 +83,7 @@ class TestTraverser:
     def browserDefault(self, request):
         ob = self.context
 
-        providedIfaces = [iface for iface in providedBy(ob)]
+        providedIfaces = [*providedBy(ob)]
         if providedIfaces:
             view_name = getDefaultViewName(ob, request)
             return ob, (("@@%s" % view_name),)
